@@ -27,18 +27,19 @@
      */
     "allowJs": true,
     "checkJs": true,
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client", "svelte"],
     "paths": {
-      "canisters/counter": [
-        ".dfx/local/canisters/counter"
-      ]
+      "canisters/dao": [".dfx/local/canisters/dao"]
     }
   },
   /**
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["src/frontend/**/*.d.ts", "src/frontend/**/*.ts", "src/frontend/**/*.js", "src/frontend/**/*.svelte"]
+  "include": [
+    "src/frontend/**/*.d.ts",
+    "src/frontend/**/*.ts",
+    "src/frontend/**/*.js",
+    "src/frontend/**/*.svelte"
+  ]
 }

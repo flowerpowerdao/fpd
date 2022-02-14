@@ -1,26 +1,33 @@
 <script lang="ts">
   import logo from "../assets/logo-dark.svg";
   import { onMount } from "svelte";
-  import { counter } from "canisters/counter";
+  import { Principal } from "@dfinity/principal";
+  import { dao } from "canisters/dao";
+  import type {
+    Proposal,
+    Account,
+    Result_2,
+  } from ".dfx/local/canisters/dao/dao.did";
 
-  let count: number = 0;
+  let proposals: Proposal[] = [];
+  let proposalReturn: Result_2;
+  let accounts: Account[] = [];
 
-  const refreshCounter = async () => {
-    const res: any = await counter.getValue();
-    count = res.toString();
+  const listAccounts = async () => {
+    accounts = await dao.list_accounts();
   };
 
-  const increment = async () => {
-    await counter.increment();
-    refreshCounter();
+  const listProposals = async () => {
+    proposals = await dao.list_proposals();
   };
 
-  const decrement = async () => {
-    await counter.decrement();
-    refreshCounter();
+  const submitProposal = async () => {
+    proposalReturn = await dao.submit_proposal({
+      method: "chill",
+      canister_id: Principal.from("aaaaa-aa"),
+      message: [0, 1, 2, 3],
+    });
   };
-
-  onMount(refreshCounter);
 </script>
 
 <header class="App-header">
@@ -68,11 +75,14 @@
       </a>
     </div>
   </div>
-  <button class="demo-button" on:click={increment}>
-    Count is: {count}
+  <button class="demo-button" on:click={submitProposal}>
+    Create Proposal: {JSON.stringify(proposalReturn)}
   </button>
-  <button class="demo-button" on:click={decrement}>
-    Count is: {count}
+  <button class="demo-button" on:click={listAccounts}>
+    List Accounts : {accounts}
+  </button>
+  <button class="demo-button" on:click={listProposals}>
+    List Proposals: {proposals}
   </button>
   <p style="font-size: 0.6em;">This counter is running inside a canister</p>
   <p style="font-size: 0.4em;">

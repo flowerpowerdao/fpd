@@ -1,12 +1,12 @@
 {
   "canisters": {
     "dao": {
-      "main": "backend/Main.mo",
+      "main": "src/backend/Main.mo",
       "type": "motoko"
     },
     "assets": {
       "dependencies": [
-        "counter"
+        "dao"
       ],
       "frontend": {
         "entrypoint": "dist/index.html"
