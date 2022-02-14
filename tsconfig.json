@@ -40,5 +40,5 @@
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["frontend/**/*.d.ts", "frontend/**/*.ts", "frontend/**/*.js", "frontend/**/*.svelte"]
+  "include": ["src/frontend/**/*.d.ts", "src/frontend/**/*.ts", "src/frontend/**/*.js", "src/frontend/**/*.svelte"]
 }
