@@ -3,30 +3,22 @@
   import { onMount } from "svelte";
   import { Principal } from "@dfinity/principal";
   import { dao } from "canisters/dao";
-  import type {
-    Proposal,
-    Account,
-    Result_2,
-  } from ".dfx/local/canisters/dao/dao.did";
+  import type { Proposal, Result_1 } from ".dfx/local/canisters/dao/dao.did";
+  import { fromErr, fromOk, isOk } from "../utils";
 
   let proposals: Proposal[] = [];
-  let proposalReturn: Result_2;
-  let accounts: Account[] = [];
-
-  const listAccounts = async () => {
-    accounts = await dao.list_accounts();
-  };
+  let proposalReturn: Result_1;
 
   const listProposals = async () => {
     proposals = await dao.list_proposals();
   };
 
   const submitProposal = async () => {
-    proposalReturn = await dao.submit_proposal({
-      method: "chill",
-      canister_id: Principal.from("aaaaa-aa"),
-      message: [0, 1, 2, 3],
-    });
+    proposalReturn = await dao.submit_proposal("My first proposal", [
+      "fishing",
+      "swimming",
+      "dancing",
+    ]);
   };
 </script>
 
@@ -76,13 +68,17 @@
     </div>
   </div>
   <button class="demo-button" on:click={submitProposal}>
-    Create Proposal: {JSON.stringify(proposalReturn)}
-  </button>
-  <button class="demo-button" on:click={listAccounts}>
-    List Accounts : {accounts}
+    Create Proposal: <br />{proposalReturn
+      ? isOk(proposalReturn)
+        ? fromOk(proposalReturn)
+        : fromErr(proposalReturn)
+      : "hi"}
   </button>
   <button class="demo-button" on:click={listProposals}>
-    List Proposals: {proposals}
+    List Proposals: 
+    {#each proposals as proposal}
+       {proposal.description}
+    {/each}
   </button>
   <p style="font-size: 0.6em;">This counter is running inside a canister</p>
   <p style="font-size: 0.4em;">
