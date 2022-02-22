@@ -1,7 +1,4 @@
 <script lang="ts">
-  import logo from "../assets/logo-dark.svg";
-  import { onMount } from "svelte";
-  import { Principal } from "@dfinity/principal";
   import { dao } from "canisters/dao";
   import type { Proposal, Result_1 } from ".dfx/local/canisters/dao/dao.did";
   import { fromErr, fromOk, isOk } from "../utils";
@@ -23,50 +20,6 @@
 </script>
 
 <header class="App-header">
-  <img src={logo} class="App-logo" alt="logo" />
-  <p style="font-size: 2em; margin-bottom: 0.5em">
-    Ready. Lets build the new web
-  </p>
-  <div
-    style="display: flex; font-size: 0.7em; text-align: left; padding: 2em; border-radius: 30px; flex-direction: column; background: rgb(220 218 224 / 25%);"
-  >
-    <div>
-      <code>npm run dev:</code>
-      <span> Runs the development server</span>
-    </div>
-    <div>
-      <code>npm run build:</code>
-      <span> Builds your frontend for production</span>
-    </div>
-    <div>
-      <code>npm run serve:</code>
-      <span> Serves your production-built frontend locally</span>
-    </div>
-    <hr />
-    <div>
-      <code>dfx deploy:</code>
-      <span> Compiles & deploys your canisters</span>
-    </div>
-    <div style="text-align: center; font-size: 0.8em; margin-top: 2em;">
-      <a
-        class="App-link"
-        href="https://vitejs.dev/guide/features.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Vite Docs
-      </a>
-      {" | "}
-      <a
-        class="App-link"
-        href="https://sdk.dfinity.org/docs/developers-guide/sdk-guide.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        IC SDK Docs
-      </a>
-    </div>
-  </div>
   <button class="demo-button" on:click={submitProposal}>
     Create Proposal: <br />{proposalReturn
       ? isOk(proposalReturn)
@@ -75,15 +28,11 @@
       : "hi"}
   </button>
   <button class="demo-button" on:click={listProposals}>
-    List Proposals: 
+    List Proposals:
     {#each proposals as proposal}
-       {proposal.description}
+      {proposal.description}
     {/each}
   </button>
-  <p style="font-size: 0.6em;">This counter is running inside a canister</p>
-  <p style="font-size: 0.4em;">
-    by <a href="https://twitter.com/miamaruq">@miamaruq</a>
-  </p>
 </header>
 
 <style global>
