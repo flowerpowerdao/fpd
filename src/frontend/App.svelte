@@ -1,12 +1,24 @@
 <script lang="ts">
-  import Intro from "./components/Intro.svelte";
-  import Auth from "./components/Auth.svelte";
+  import Router from "svelte-spa-router";
+  import Dashboard from "./pages/Dashboard.svelte";
+
+  const routes = {
+    // Exact path
+    "/": Dashboard,
+
+    // Using named parameters, with last being optional
+    // "/author/:first/:last?": Author,
+
+    // Wildcard parameter
+    // "/book/*": Book,
+
+    // Catch-all
+    // This is optional, but if present it must be the last
+    // "*": NotFound,
+  };
 </script>
 
-<div class="App">
-  <Auth />
-  <Intro />
-</div>
+<Router {routes} />
 
 <style global>
   body {
@@ -16,13 +28,5 @@
       "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  button {
-    font-weight: 600;
-  }
-
-  .App {
-    text-align: center;
   }
 </style>
