@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'"
   },
   "dependencies": {
     "@dfinity/agent": "0.10.0",
