@@ -1,9 +1,9 @@
 <script lang="ts">
   import Intro from "../components/Intro.svelte";
-  import Auth from "../components/Auth.svelte";
+  import PlugButton from "../components/PlugButton.svelte";
 </script>
 
 <div class="text-center">
-  <Auth />
+  <PlugButton />
   <Intro />
 </div>

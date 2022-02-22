@@ -1,6 +1,5 @@
 <script lang="ts">
   import Router from "svelte-spa-router";
-  import PlugButton from "./components/PlugButton.svelte";
   import Dashboard from "./pages/Dashboard.svelte";
 
   const routes = {
