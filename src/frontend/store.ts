@@ -1,7 +1,8 @@
 import { writable } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
-import { HttpAgent, SignIdentity } from "@dfinity/agent";
+import { Actor, HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
+import { dao, canisterId, idlFactory, createActor } from "canisters/dao";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -15,12 +16,14 @@ export const defaultAgent = new HttpAgent({
 type State = {
   isAuthed: "plug" | "stoic" | null;
   agent: HttpAgent;
+  actor: Actor;
   principal: Principal;
 };
 
 const defaultState = {
   isAuthed: null,
   agent: defaultAgent,
+  actor: dao,
   principal: null,
 };
 
@@ -56,28 +59,50 @@ export const createStore = ({
 
         if (!window.ic?.plug?.createActor) return;
         const agent = await window.ic?.plug.agent;
+        const actor = await window.ic?.plug.createActor({
+          canisterId,
+          interfaceFactory: idlFactory,
+        });
+        if (!actor) return;
         const principal = await agent.getPrincipal();
-        update((state) => ({ ...state, agent, principal, isAuthed: "plug" }));
+        update((state) => ({
+          ...state,
+          actor,
+          agent,
+          principal,
+          isAuthed: "plug",
+        }));
       });
     },
     stoicConnect: () => {
-      StoicIdentity.load().then(async (identity: SignIdentity) => {
-        identity = await StoicIdentity.connect();
-        let agent = new HttpAgent({
+      StoicIdentity.load().then(async (identity) => {
+        if (identity !== false) {
+          //ID is a already connected wallet!
+        } else {
+          //No existing connection, lets make one!
+          identity = await StoicIdentity.connect();
+        }
+        const agent = new HttpAgent({
           identity,
           host: HOST,
+        });
+        const actor = createActor(canisterId, {
+          agentOptions: { identity, host: HOST },
         });
         update((state) => ({
           ...state,
           agent,
+          actor,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
         }));
       });
     },
     disconnect: () => {
+      console.log("disconnected");
       StoicIdentity.disconnect();
       window.ic?.plug?.deleteAgent();
+      window.ic?.plug?.disconnect();
       update((state) => defaultState);
     },
   };
@@ -96,8 +121,9 @@ declare global {
           whitelist?: string[];
           host?: string;
         }) => Promise<void>;
-        createActor: (options: {}) => Promise<void>;
+        createActor: (options: {}) => Promise<Actor>;
         isConnected: () => Promise<boolean>;
+        disconnect: () => Promise<boolean>;
         createAgent: (args?: {
           whitelist: string[];
           host?: string;

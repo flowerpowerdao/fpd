@@ -1,7 +1,17 @@
 <script>
   import { onMount } from "svelte";
+  import { StoicIdentity } from "ic-stoic-identity";
 
   import { store } from "../store";
+
+  onMount(async () => {
+    StoicIdentity.load().then(async (identity) => {
+      if (identity !== false) {
+        //ID is a already connected wallet!
+        store.stoicConnect();
+      }
+    });
+  });
 </script>
 
 {#if $store.isAuthed === "stoic"}
