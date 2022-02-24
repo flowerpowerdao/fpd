@@ -16,7 +16,7 @@ export const defaultAgent = new HttpAgent({
 type State = {
   isAuthed: "plug" | "stoic" | null;
   agent: HttpAgent;
-  actor: Actor;
+  actor: typeof dao;
   principal: Principal;
 };
 
@@ -40,15 +40,20 @@ export const createStore = ({
     subscribe,
     plugConnect: async () => {
       console.log("plug");
-      if (await window.ic?.plug.isConnected()) {
-        let principal = await window.ic?.plug.getPrincipal();
-        update((state) => ({
-          ...state,
-          isAuthed: "plug",
-          principal: principal,
-        }));
-        return;
-      }
+      // seems like the agent is deleted when the page is reloaded
+      // and createActor needs an agent to work properly. this is supposed to be fixed in a
+      // future release, but for now we can't create a new actor without prompting the user again
+
+      // if (await window.ic?.plug.isConnected()) {
+      //   let principal = await window.ic?.plug.getPrincipal();
+      //   update((state) => ({
+      //     ...state,
+      //     isAuthed: "plug",
+      //     principal: principal,
+      //   }));
+      //   return;
+      // }
+
       if (window.ic?.plug === undefined) {
         window.open("https://plugwallet.ooo/", "_blank");
         return;
@@ -59,6 +64,17 @@ export const createStore = ({
 
         if (!window.ic?.plug?.createActor) return;
         const agent = await window.ic?.plug.agent;
+
+        // Fetch root key for certificate validation during development
+        if (process.env.NODE_ENV !== "production") {
+          agent.fetchRootKey().catch((err) => {
+            console.warn(
+              "Unable to fetch root key. Check to ensure that your local replica is running",
+            );
+            console.error(err);
+          });
+        }
+
         const actor = await window.ic?.plug.createActor({
           canisterId,
           interfaceFactory: idlFactory,
@@ -86,9 +102,24 @@ export const createStore = ({
           identity,
           host: HOST,
         });
-        const actor = createActor(canisterId, {
-          agentOptions: { identity, host: HOST },
+
+        // Fetch root key for certificate validation during development
+        if (process.env.NODE_ENV !== "production") {
+          console.log("moin")
+          agent.fetchRootKey().catch((err) => {
+            console.warn(
+              "Unable to fetch root key. Check to ensure that your local replica is running",
+            );
+            console.error(err);
+          });
+        }
+
+        //Create an actor canister
+        const actor: typeof dao = Actor.createActor(idlFactory, {
+          agent,
+          canisterId,
         });
+
         update((state) => ({
           ...state,
           agent,
@@ -108,7 +139,10 @@ export const createStore = ({
   };
 };
 
-export const store = createStore({ whitelist: [process.env.DAO_CANISTER_ID] });
+export const store = createStore({
+  whitelist: [canisterId],
+  host: HOST,
+});
 
 declare global {
   interface Window {
@@ -121,7 +155,7 @@ declare global {
           whitelist?: string[];
           host?: string;
         }) => Promise<void>;
-        createActor: (options: {}) => Promise<Actor>;
+        createActor: (options: {}) => Promise<typeof dao>;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
         createAgent: (args?: {

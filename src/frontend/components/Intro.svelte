@@ -1,17 +1,22 @@
 <script lang="ts">
-  import { dao } from "canisters/dao";
+  import { store } from "../store";
   import type { Proposal, Result_1 } from ".dfx/local/canisters/dao/dao.did";
   import { fromErr, fromOk, isOk } from "../utils";
 
   let proposals: Proposal[] = [];
   let proposalReturn: Result_1;
+  let principal: string = "";
 
   const listProposals = async () => {
-    proposals = await dao.list_proposals();
+    proposals = await $store.actor.list_proposals();
+  };
+
+  const whoAmI = async () => {
+    principal = await $store.actor.whoami();
   };
 
   const submitProposal = async () => {
-    proposalReturn = await dao.submit_proposal("My first proposal", [
+    proposalReturn = await $store.actor.submit_proposal("My first proposal", [
       "fishing",
       "swimming",
       "dancing",
@@ -32,6 +37,9 @@
     {#each proposals as proposal}
       {proposal.description}
     {/each}
+  </button>
+  <button class="demo-button" on:click={whoAmI}>
+    {principal}
   </button>
 </header>
 

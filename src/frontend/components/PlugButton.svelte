@@ -4,11 +4,11 @@
   import plugLogo from "../assets/plug.svg";
   import { store } from "../store";
 
-  onMount(async () => {
-    if (await window.ic?.plug.isConnected()) {
-      store.plugConnect();
-    }
-  });
+  // onMount(async () => {
+  //   if (await window.ic?.plug.isConnected()) {
+  //     store.plugConnect();
+  //   }
+  // });
 </script>
 
 {#if $store.isAuthed === "plug"}
