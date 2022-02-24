@@ -28,7 +28,7 @@
      */
     // "allowJs": true,
     "checkJs": true,
-    "types": ["vite/client", "svelte"],
+    "types": ["vite/client", "svelte", "node"],
     "paths": {
       "canisters/dao": [".dfx/local/canisters/dao"]
     }
