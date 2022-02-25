@@ -1,0 +1,9 @@
+<script lang="ts">
+  import PlugButton from "../components/PlugButton.svelte";
+  import StoicButton from "../components/StoicButton.svelte";
+</script>
+
+<div class="flex flex-col items-stretch gap-4 py-4">
+  <StoicButton />
+  <PlugButton />
+</div>

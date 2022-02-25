@@ -26,3 +26,34 @@ export function isErr(result): boolean {
   }
   return false;
 }
+
+export function fromVariantToString(v): string {
+  // A Motoko variant is stored in javascript as an
+  // object with a single property eg {"system": null}
+  return Object.keys(v)[0];
+}
+
+export function getVariantValue(v): any {
+  // A Motoko variant can be stored with a value, represented in javascript as an
+  // object with a single property eg {"system": possiblevalue }
+  // return the possible value
+  return Object.values(v)[0];
+}
+
+export const toNullable = <T>(value?: T): [] | [T] => {
+  return value ? [value] : [];
+};
+
+export const fromNullable = <T>(value: [] | [T]): T | undefined => {
+  return value?.[0];
+};
+
+export type Time = bigint;
+
+export const fromTimestamp = (value: Time): Date => {
+  return new Date(Number(value) / 1000000);
+};
+
+export const toTimestamp = (value: Date): Time => {
+  return BigInt(value.getTime());
+};

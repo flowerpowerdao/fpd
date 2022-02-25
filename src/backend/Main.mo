@@ -27,7 +27,7 @@ shared(install) actor class DAO() = Self {
   };
 
   /// Submit a proposal
-  public shared({caller}) func submit_proposal(description: Text, options: [Text]) : async Types.Result<Nat, Text> {
+  public shared({caller}) func submit_proposal(description: Text, options: [Text], duration : Nat) : async Types.Result<Nat, Text> {
     let proposal_id = next_proposal_id;
     next_proposal_id += 1;
 
@@ -35,7 +35,7 @@ shared(install) actor class DAO() = Self {
       id = proposal_id;
       description = description;
       timestamp = Time.now();
-      expiryDate = Time.now() + 432000000000000; // 5 days
+      expiryDate = Time.now() + 86_400_000_000_000 * duration; // 5 days
       proposer = caller;
       flowers = List.nil();
       options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{

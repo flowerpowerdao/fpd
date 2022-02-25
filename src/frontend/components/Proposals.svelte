@@ -1,14 +1,27 @@
 <script lang="ts">
   import { store } from "../store";
-  import type { Proposal, Result_1 } from "../../declarations/dao/dao.did";
+  import type {
+    Proposal as ProposalType,
+    Result_1,
+  } from "../../declarations/dao/dao.did";
   import { fromErr, fromOk, isOk } from "../utils";
+  import { onMount } from "svelte";
+  import ProposalOverview from "./ProposalOverview.svelte";
+  import { fromVariantToString } from "../utils";
 
-  let proposals: Proposal[] = [];
+  let openProposals: ProposalType[] = [];
+  let closedProposals: ProposalType[] = [];
   let proposalReturn: Result_1;
   let principal: string = "";
 
-  const listProposals = async () => {
-    proposals = await $store.actor.list_proposals();
+  const fetchProposals = async () => {
+    let proposals = await $store.actor.list_proposals();
+    openProposals = proposals.filter(
+      (proposal) => fromVariantToString(proposal.state) === "open",
+    );
+    closedProposals = proposals.filter(
+      (proposal) => fromVariantToString(proposal.state) === "closed",
+    );
   };
 
   const whoAmI = async () => {
@@ -22,7 +35,25 @@
       "dancing",
     ]);
   };
+
+  onMount(async () => {
+    await fetchProposals();
+  });
 </script>
+
+<div class="text-4xl">Open Proposals</div>
+<div>
+  {#each openProposals as proposal}
+    <ProposalOverview {proposal} bg={"green"} />
+  {/each}
+</div>
+
+<div class="text-4xl">Closed Proposals</div>
+<div>
+  {#each closedProposals as proposal}
+    <ProposalOverview {proposal} bg={"grey"} />
+  {/each}
+</div>
 
 <header class="App-header">
   <button class="demo-button" on:click={submitProposal}>
@@ -32,11 +63,8 @@
         : fromErr(proposalReturn)
       : "hi"}
   </button>
-  <button class="demo-button" on:click={listProposals}>
-    List Proposals:
-    {#each proposals as proposal}
-      {proposal.description}
-    {/each}
+  <button class="demo-button" on:click={fetchProposals}>
+    List Proposals
   </button>
   <button class="demo-button" on:click={whoAmI}>
     {principal}

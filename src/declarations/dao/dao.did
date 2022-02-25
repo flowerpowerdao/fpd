@@ -27,13 +27,15 @@ type ProposalState =
 type Proposal = 
  record {
    description: text;
+   expiryDate: int;
+   flowers: List;
    id: nat;
    options: vec Option;
    proposer: principal;
    state: ProposalState;
    timestamp: int;
    totalVotes: nat;
-   voters: List_1;
+   voters: List_2;
  };
 type Option = 
  record {
@@ -41,17 +43,22 @@ type Option =
    voters: Trie;
    votes: nat;
  };
-type List_1 = 
+type List_2 = 
  opt record {
        principal;
-       List_1;
+       List_2;
      };
-type List = 
+type List_1 = 
  opt record {
        record {
          Key;
          nat;
        };
+       List_1;
+     };
+type List = 
+ opt record {
+       nat32;
        List;
      };
 type Leaf = 
@@ -69,7 +76,7 @@ type DAO =
  service {
    get_proposal: (nat) -> (opt Proposal) query;
    list_proposals: () -> (vec Proposal) query;
-   submit_proposal: (text, vec text) -> (Result_1);
+   submit_proposal: (text, vec text, nat) -> (Result_1);
    vote: (VoteArgs) -> (Result);
    whoami: () -> (text) query;
  };
@@ -85,6 +92,6 @@ type AssocList =
          Key;
          nat;
        };
-       List;
+       List_1;
      };
 service : () -> DAO
