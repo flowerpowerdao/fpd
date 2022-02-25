@@ -1,8 +1,19 @@
 import { writable } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
-import { Actor, HttpAgent } from "@dfinity/agent";
+import { HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
-import { dao, canisterId, idlFactory, createActor } from "../declarations/dao";
+import {
+  dao,
+  canisterId as daoCanisterId,
+  idlFactory,
+  createActor as createDaoActor,
+} from "../declarations/dao";
+import {
+  createActor as createBtcflowerActor,
+  btcflowerActor,
+  canisterId as btcflowerCanisterId,
+  idlFactory as btcflowerIdlFactory,
+} from "../canisters/btcflower";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -16,14 +27,16 @@ export const defaultAgent = new HttpAgent({
 type State = {
   isAuthed: "plug" | "stoic" | null;
   agent: HttpAgent;
-  actor: typeof dao;
+  daoActor: typeof dao;
   principal: Principal;
+  btcflowerActor: typeof btcflowerActor;
 };
 
 const defaultState = {
   isAuthed: null,
   agent: defaultAgent,
-  actor: dao,
+  daoActor: dao,
+  btcflowerActor: null,
   principal: null,
 };
 
@@ -40,20 +53,6 @@ export const createStore = ({
     subscribe,
     plugConnect: async () => {
       console.log("plug");
-      // seems like the agent is deleted when the page is reloaded
-      // and createActor needs an agent to work properly. this is supposed to be fixed in a
-      // future release, but for now we can't create a new actor without prompting the user again
-
-      // if (await window.ic?.plug.isConnected()) {
-      //   let principal = await window.ic?.plug.getPrincipal();
-      //   update((state) => ({
-      //     ...state,
-      //     isAuthed: "plug",
-      //     principal: principal,
-      //   }));
-      //   return;
-      // }
-
       if (window.ic?.plug === undefined) {
         window.open("https://plugwallet.ooo/", "_blank");
         return;
@@ -75,15 +74,25 @@ export const createStore = ({
           });
         }
 
-        const actor = await window.ic?.plug.createActor({
-          canisterId,
+        const daoActor = (await window.ic?.plug.createActor({
+          daoCanisterId,
           interfaceFactory: idlFactory,
-        });
-        if (!actor) return;
+        })) as typeof dao;
+
+        const btcActor = (await window.ic?.plug.createActor({
+          canisterId: btcflowerCanisterId,
+          interfaceFactory: btcflowerIdlFactory,
+        })) as typeof btcflowerActor;
+
+        if (!daoActor || !btcflowerActor) {
+          console.warn("couldn't create actors");
+          return;
+        }
         const principal = await agent.getPrincipal();
         update((state) => ({
           ...state,
-          actor,
+          daoActor,
+          btcflowerActor: btcActor,
           agent,
           principal,
           isAuthed: "plug",
@@ -114,16 +123,23 @@ export const createStore = ({
           });
         }
 
-        //Create an actor canister
-        const actor: typeof dao = Actor.createActor(idlFactory, {
-          agent,
-          canisterId,
+        const daoActor = createDaoActor(daoCanisterId, {
+          agentOptions: {
+            source: agent,
+          },
+        });
+
+        const btcActor = createBtcflowerActor(btcflowerCanisterId, {
+          agentOptions: {
+            source: agent,
+          },
         });
 
         update((state) => ({
           ...state,
           agent,
-          actor,
+          dapActor: daoActor,
+          btcflowerActor: btcActor,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
         }));
@@ -134,13 +150,13 @@ export const createStore = ({
       StoicIdentity.disconnect();
       window.ic?.plug?.deleteAgent();
       window.ic?.plug?.disconnect();
-      update((state) => defaultState);
+      update(() => defaultState);
     },
   };
 };
 
 export const store = createStore({
-  whitelist: [canisterId],
+  whitelist: [daoCanisterId, btcflowerCanisterId],
   host: HOST,
 });
 
@@ -148,14 +164,16 @@ declare global {
   interface Window {
     ic: {
       plug: {
-        agent: any;
+        agent: HttpAgent;
         getPrincipal: () => Promise<Principal>;
         deleteAgent: () => void;
         requestConnect: (options?: {
           whitelist?: string[];
           host?: string;
         }) => Promise<void>;
-        createActor: (options: {}) => Promise<typeof dao>;
+        createActor: (options: {}) => Promise<
+          typeof dao | typeof btcflowerActor
+        >;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
         createAgent: (args?: {
