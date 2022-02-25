@@ -1,6 +1,6 @@
 <script lang="ts">
   import { store } from "../store";
-  import type { Proposal, Result_1 } from ".dfx/local/canisters/dao/dao.did";
+  import type { Proposal, Result_1 } from "../../declarations/dao/dao.did";
   import { fromErr, fromOk, isOk } from "../utils";
 
   let proposals: Proposal[] = [];

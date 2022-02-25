@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
-import { dao, canisterId, idlFactory, createActor } from "canisters/dao";
+import { dao, canisterId, idlFactory, createActor } from "../declarations/dao";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -105,7 +105,7 @@ export const createStore = ({
 
         // Fetch root key for certificate validation during development
         if (process.env.NODE_ENV !== "production") {
-          console.log("moin")
+          console.log("moin");
           agent.fetchRootKey().catch((err) => {
             console.warn(
               "Unable to fetch root key. Check to ensure that your local replica is running",
