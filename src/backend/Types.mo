@@ -17,10 +17,12 @@ module {
     id : Nat;
     description: Text;
     options : [Option];
+    flowers: List.List<Nat32>;
     voters : List.List<Principal>;
     state : ProposalState;
     totalVotes: Nat;
     timestamp : Int;
+    expiryDate: Int;
     proposer : Principal;
   };
 

@@ -18,7 +18,7 @@ shared(install) actor class DAO() = Self {
   stable var next_proposal_id : Nat = 0;
 
   system func heartbeat() : async () {
-    await remove_expired_proposals();
+    await closeExpiredProposals();
   };
 
   func proposal_get(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposal_key(id), Nat.equal);
@@ -35,7 +35,9 @@ shared(install) actor class DAO() = Self {
       id = proposal_id;
       description = description;
       timestamp = Time.now();
+      expiryDate = Time.now() + 432000000000000; // 5 days
       proposer = caller;
+      flowers = List.nil();
       options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{
         let option : Types.Option = {
           text = text;
@@ -74,15 +76,22 @@ shared(install) actor class DAO() = Self {
         if (proposal.state != #open) {
             return #err("Proposal " # debug_show(args.proposalId) # " is not open for voting");
         };
-        switch (await getVotingPower(caller)) {
+        switch (await getFlowersFrom(caller)) {
           case null { return #err("Caller does not own any flowers") };
-          case (?votingPower) {
-            if (List.some(proposal.voters, func (e : Principal) : Bool = e == caller)) {
-                return #err("Already voted");
+          case (?userFlowers : ?[Nat32]) {
+
+            // check if a flower already voted
+            for (userFlower in Iter.fromArray(userFlowers)) {
+              if (List.some(proposal.flowers,func (e : Nat32) : Bool = e == userFlower)) {
+                  return #err("Already voted");
+              };
             };
 
             // make array mutable
             let options = Array.thaw<Types.Option>(proposal.options);
+
+            // get the amount of flowers and thus voting power a holder has
+            let votingPower : Nat = userFlowers.size();
 
             // calculate total votes received
             let totalVotes = proposal.totalVotes + votingPower;
@@ -96,15 +105,18 @@ shared(install) actor class DAO() = Self {
             
 
             let voters = List.push(caller, proposal.voters);
+            let flowers = List.append(List.fromArray<Nat32>(userFlowers), proposal.flowers);
 
             let updated_proposal = {
                 id = proposal.id;
                 description = proposal.description;
                 voters;
                 totalVotes;
+                flowers;
                 options = Array.freeze(options);
                 state = proposal.state;
                 timestamp = proposal.timestamp;
+                expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
             };
             proposal_put(args.proposalId, updated_proposal);
@@ -115,36 +127,37 @@ shared(install) actor class DAO() = Self {
     };
   };
 
-  func getVotingPower(principal: Principal) : async ?Nat {
+  func getFlowersFrom(principal: Principal) : async ?[Nat32] {
     let accountId = Hex.encode(AccountId.fromPrincipal(principal, null));
     let btcflower = actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
     
     switch (await btcflower.tokens(accountId)) {
       case (#ok(flowers)) {
-        return ?flowers.size()
+        return ?flowers
       };
       case _ return null;
     }
   };
 
-  /// Execute the given proposal
-  func execute_proposal(proposal: Types.Proposal) : async Types.Result<(), Text> {
-      // unimplemented until raw call is supported
-      #ok
-  };
-
   /// Remove expired proposals
-  func remove_expired_proposals() : async () {
+  func closeExpiredProposals() : async () {
+    for (kv in Trie.iter(proposals)) {
+       if (Time.now() > kv.1.expiryDate) {
+         closeProposal(kv.1)
+       }
+    }
   };
 
-  func update_proposal_state(proposal: Types.Proposal, state: Types.ProposalState) {
+  func closeProposal(proposal: Types.Proposal) {
       let updated = {
-          state;
+          state = #closed;
           description = proposal.description;
           options = proposal.options;
           id = proposal.id;
           voters = proposal.voters;
+          flowers = proposal.flowers;
           timestamp = proposal.timestamp;
+          expiryDate = proposal.expiryDate;
           proposer = proposal.proposer;
           totalVotes = proposal.totalVotes;
       };
