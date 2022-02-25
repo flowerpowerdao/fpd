@@ -1,78 +1,33 @@
 <script lang="ts">
   import { onMount } from "svelte";
+
   import plugLogo from "../assets/plug.svg";
+  import { store } from "../store";
 
-  $: connected = false;
-  $: principalId = "";
-
-  onMount(() => {
-    verifyConnection();
-  });
-
-  const verifyConnection = async () => {
-    connected = await (window as any).ic?.plug.isConnected();
-
-    if (!connected) {
-      await (window as any).ic?.plug
-        .requestConnect()
-        .then(async () => {
-          connected = true;
-          await getPrincipal();
-        })
-        .catch(() => {
-          console.log("Couldn't connect to plug");
-        });
-    } else {
-      await getPrincipal();
-      connected = true;
-      return connected;
-    }
-
-    return connected;
-  };
-
-  const getPrincipal = async () => {
-    let principal = await (window as any).ic?.plug.getPrincipal();
-    console.log("principal", principal.toString());
-    principalId = principal.toString();
-  };
-
-  const handleConnect = async () => {
-    if (!(window as any).ic?.plug) {
-      window.open("https://plugwallet.ooo/", "_blank");
-      return;
-    }
-
-    connected = await verifyConnection();
-    if (!connected) return;
-
-    onConnectCallback(connected);
-  };
-
-  const onConnectCallback = (connected: boolean) => {
-    console.log("onConnectCallback connected to plug", connected);
-  };
+  // onMount(async () => {
+  //   if (await window.ic?.plug.isConnected()) {
+  //     store.plugConnect();
+  //   }
+  // });
 </script>
 
-{#if connected}
+{#if $store.isAuthed === "plug"}
   <div class="flex justify-end p-2 items-center">
     <button
       class="plug-button p-2 flex justify-end items-center"
-      on:click={async () => {
-        handleConnect();
-      }}
+      on:click={store.disconnect}
     >
       <img class="plug-logo" src={plugLogo} alt="plug-logo" />
-      {principalId.slice(0, 5) + "..." + principalId.slice(-5)}
+      {$store.principal.toString().slice(0, 5) +
+        "..." +
+        $store.principal.toString().slice(-5)}
     </button>
   </div>
-{:else}
-  <div class="flex justify-end p-2 items-center">
-    <button class="flex items-center plug-button" on:click={handleConnect}>
-      <img class="plug-logo" src={plugLogo} alt="plug-logo" />
-      Connect to Plug
-    </button>
-  </div>
+{:else if !$store.isAuthed}
+  <button class="flex items-center plug-button" on:click={store.plugConnect}>
+    <img class="plug-logo" src={plugLogo} alt="plug-logo" />
+    Connect to Plug
+  </button>
 {/if}
 
 <style>

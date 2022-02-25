@@ -52,6 +52,10 @@ shared(install) actor class DAO() = Self {
     #ok(proposal_id)
   };
 
+  public query ({caller}) func whoami (): async Text{
+    return Principal.toText(caller);
+  };
+
   /// Return the proposal with the given ID, if one exists
   public query func get_proposal(proposal_id: Nat) : async ?Types.Proposal {
     proposal_get(proposal_id)

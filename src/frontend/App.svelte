@@ -1,6 +1,7 @@
 <script lang="ts">
   import Router from "svelte-spa-router";
   import Dashboard from "./pages/Dashboard.svelte";
+  import "./global.css";
 
   const routes = {
     // Exact path
@@ -19,17 +20,3 @@
 </script>
 
 <Router {routes} />
-
-<style global lang="postcss">
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-  body {
-    margin: 0;
-    font-family: Ropota, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-      "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-</style>
