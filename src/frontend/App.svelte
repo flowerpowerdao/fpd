@@ -1,6 +1,7 @@
 <script lang="ts">
   import Router from "svelte-spa-router";
   import Dashboard from "./pages/Dashboard.svelte";
+  import "./global.css";
 
   const routes = {
     // Exact path
@@ -19,9 +20,3 @@
 </script>
 
 <Router {routes} />
-
-<style global lang="postcss">
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-</style>
