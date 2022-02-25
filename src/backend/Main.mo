@@ -52,7 +52,7 @@ shared(install) actor class DAO() = Self {
     #ok(proposal_id)
   };
 
-  public shared({caller}) func whoami (): async Text{
+  public query ({caller}) func whoami (): async Text{
     return Principal.toText(caller);
   };
 

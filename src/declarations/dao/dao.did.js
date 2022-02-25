@@ -40,7 +40,7 @@ export const idlFactory = ({ IDL }) => {
     'list_proposals' : IDL.Func([], [IDL.Vec(Proposal)], ['query']),
     'submit_proposal' : IDL.Func([IDL.Text, IDL.Vec(IDL.Text)], [Result_1], []),
     'vote' : IDL.Func([VoteArgs], [Result], []),
-    'whoami' : IDL.Func([], [IDL.Text], []),
+    'whoami' : IDL.Func([], [IDL.Text], ['query']),
   });
   return DAO;
 };

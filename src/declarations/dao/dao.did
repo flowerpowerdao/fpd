@@ -71,7 +71,7 @@ type DAO =
    list_proposals: () -> (vec Proposal) query;
    submit_proposal: (text, vec text) -> (Result_1);
    vote: (VoteArgs) -> (Result);
-   whoami: () -> (text);
+   whoami: () -> (text) query;
  };
 type Branch = 
  record {
