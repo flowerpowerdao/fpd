@@ -19,23 +19,23 @@ type Result =
    err: text;
    ok: ProposalState;
  };
+type ProposalView = 
+ variant {
+   closed: ClosedProposal;
+   open: OpenProposal;
+ };
 type ProposalState = 
  variant {
    closed;
    open;
  };
-type Proposal = 
+type ProposalOverview = 
  record {
-   description: text;
    expiryDate: int;
-   flowers: List;
    id: nat;
-   options: vec Option;
-   proposer: principal;
    state: ProposalState;
-   timestamp: int;
+   title: text;
    totalVotes: nat;
-   voters: List_2;
  };
 type Option = 
  record {
@@ -43,6 +43,21 @@ type Option =
    voters: Trie;
    votes: nat;
  };
+type OpenProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowers: List;
+   id: nat;
+   options: vec OpenOption;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+   voters: List_2;
+ };
+type OpenOption = record {"text": text;};
 type List_2 = 
  opt record {
        principal;
@@ -74,11 +89,26 @@ type Key =
 type Hash = nat32;
 type DAO = 
  service {
-   get_proposal: (nat) -> (opt Proposal) query;
-   list_proposals: () -> (vec Proposal) query;
-   submit_proposal: (text, vec text, nat) -> (Result_1);
+   getProposal: (nat) -> (opt ProposalView) query;
+   listProposalOverviews: () -> (vec ProposalOverview) query;
+   listProposals: () -> (vec ProposalView) query;
+   submitProposal: (text, text, vec text, nat) -> (Result_1);
    vote: (VoteArgs) -> (Result);
-   whoami: () -> (text) query;
+   whoAmI: () -> (text) query;
+ };
+type ClosedProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowers: List;
+   id: nat;
+   options: vec Option;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+   voters: List_2;
  };
 type Branch = 
  record {

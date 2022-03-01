@@ -1,13 +1,13 @@
 <script lang="ts">
   import Router from "svelte-spa-router";
-  import Dashboard from "./pages/Dashboard.svelte";
   import Header from "./components/Header.svelte";
   import "./global.css";
   import Proposal from "./components/Proposal.svelte";
+  import Proposals from "./pages/Proposals.svelte";
 
   const routes = {
     // Exact path
-    "/": Dashboard,
+    "/": Proposals,
     "/proposal/:id": Proposal,
 
     // Using named parameters, with last being optional

@@ -4,10 +4,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview",
+    "serve": "HOST=0.0.0.0 vite preview --host",
     "seed": "./seed.sh",
     "prebuild": "npm run copy:types",
-    "prestart": "npm run copy:types",
+    "predev": "dfx deploy && npm run seed",
     "copy:types": "rsync -avr .dfx/$(echo ${DFX_NETWORK:-'**'})/canisters/** --exclude='assets/' --exclude='idl/' --exclude='*.wasm' --delete src/declarations",
     "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'"
   },

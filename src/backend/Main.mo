@@ -11,6 +11,7 @@ import Trie "mo:base/Trie";
 import AccountId "mo:accountid/AccountId";
 import Hex "mo:hex/Hex";
 
+import Type "Types";
 import Types "./Types";
 
 shared(install) actor class DAO() = Self {
@@ -27,13 +28,14 @@ shared(install) actor class DAO() = Self {
   };
 
   /// Submit a proposal
-  public shared({caller}) func submit_proposal(description: Text, options: [Text], duration : Nat) : async Types.Result<Nat, Text> {
+  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text], duration : Nat) : async Types.Result<Nat, Text> {
     let proposal_id = next_proposal_id;
     next_proposal_id += 1;
 
     let proposal : Types.Proposal = {
       id = proposal_id;
-      description = description;
+      title;
+      description;
       timestamp = Time.now();
       expiryDate = Time.now() + 86_400_000_000_000 * duration; // 5 days
       proposer = caller;
@@ -54,18 +56,52 @@ shared(install) actor class DAO() = Self {
     #ok(proposal_id)
   };
 
-  public query ({caller}) func whoami (): async Text{
+  public query ({caller}) func whoAmI (): async Text{
     return Principal.toText(caller);
   };
 
   /// Return the proposal with the given ID, if one exists
-  public query func get_proposal(proposal_id: Nat) : async ?Types.Proposal {
-    proposal_get(proposal_id)
+  public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
+    switch (proposal_get(proposal_id)) {
+      case(?proposal) {
+        if (proposal.state == #open) {
+            return ?#open(createOpenProposal(proposal))
+        } else {
+          return ?#closed(proposal);
+        }
+      };
+      case (_) return null ;
+    }
   };
 
   /// Return the list of all proposals
-  public query func list_proposals() : async [Types.Proposal] {
-    Iter.toArray(Iter.map(Trie.iter(proposals), func (kv : (Nat, Types.Proposal)) : Types.Proposal = kv.1))
+  public query func listProposalOverviews() : async [Types.ProposalOverview] {
+    Iter.toArray(Iter.map(
+      Trie.iter(proposals),
+      func (kv : (Nat, Types.Proposal)) : Types.ProposalOverview{
+        return { 
+          title = kv.1.title;
+          expiryDate = kv.1.expiryDate;
+          id = kv.1.id;
+          totalVotes = kv.1.totalVotes;
+          state = kv.1.state;
+        }
+      }
+    ))
+  };
+
+  /// Return the list of all proposals
+  public query func listProposals() : async [Types.ProposalView] {
+    Iter.toArray(Iter.map(
+      Trie.iter(proposals),
+      func (kv : (Nat, Types.Proposal)) : Types.ProposalView{
+        if (kv.1.state == #open) {
+            return #open(createOpenProposal(kv.1))
+        } else {
+          return #closed(kv.1);
+        }
+      }
+    ))
   };
 
   // Vote on an open proposal
@@ -110,6 +146,7 @@ shared(install) actor class DAO() = Self {
             let updated_proposal = {
                 id = proposal.id;
                 description = proposal.description;
+                title = proposal.title;
                 voters;
                 totalVotes;
                 flowers;
@@ -148,10 +185,37 @@ shared(install) actor class DAO() = Self {
     }
   };
 
+  func createOpenProposal (proposal : Type.Proposal) : Type.OpenProposal{
+    let openProposal : Type.OpenProposal= {
+      id = proposal.id; 
+      title = proposal.title;
+      description = proposal.description;
+      options = Array.map<Type.Option, Type.OpenOption>(
+        proposal.options,
+        func (o : Type.Option) : Type.OpenOption{
+          let ov = {
+            text = o.text;
+          };
+          return ov;
+        }
+      );
+      flowers = proposal.flowers;
+      voters = proposal.voters;
+      state = proposal.state;
+      totalVotes = proposal.totalVotes;
+      timestamp = proposal.timestamp;
+      expiryDate = proposal.expiryDate;
+      proposer = proposal.proposer;
+    };
+
+    return openProposal;
+  };
+
   func closeProposal(proposal: Types.Proposal) {
       let updated = {
           state = #closed;
           description = proposal.description;
+          title = proposal.title;
           options = proposal.options;
           id = proposal.id;
           voters = proposal.voters;

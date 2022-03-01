@@ -13,17 +13,53 @@ module {
     voters: Trie.Trie<Principal, Nat>;
   };
 
+  public type ClosedOption = Option;
+
+  public type OpenOption = {
+    text: Text; 
+  };
+
   public type Proposal = {
-    id : Nat;
-    description: Text;
-    options : [Option];
-    flowers: List.List<Nat32>;
-    voters : List.List<Principal>;
-    state : ProposalState;
+    id : Nat; // unique proposal id
+    title: Text; // title of the proposal
+    description: Text; // short description
+    options : [Option]; // options that can be voted on
+    flowers: List.List<Nat32>; // flowers that already voted
+    voters : List.List<Principal>; // principals that participated in the vote
+    state : ProposalState; // is the proposal accepting votes or not
+    totalVotes: Nat; // total votes cast on this proposal recognizing the voting power
+    timestamp : Int; // when the proposal was created
+    expiryDate: Int; // when the voting period ends
+    proposer : Principal; // principal of the creator of the proposal
+  };
+
+  public type ProposalView = {
+    #open : OpenProposal;
+    #closed : ClosedProposal;
+  };
+
+  public type ClosedProposal = Proposal;
+
+  public type OpenProposal = {
+    id : Nat; // unique proposal id
+    title: Text; // title of the proposal
+    description: Text; // short description
+    options : [OpenOption]; // options that can be voted on
+    flowers: List.List<Nat32>; // flowers that already voted
+    voters : List.List<Principal>; // principals that participated in the vote
+    state : ProposalState; // is the proposal accepting votes or not
+    totalVotes: Nat; // total votes cast on this proposal recognizing the voting power
+    timestamp : Int; // when the proposal was created
+    expiryDate: Int; // when the voting period ends
+    proposer : Principal; // principal of the creator of the proposal
+  };
+
+  public type ProposalOverview = {
+    id: Nat;
+    title : Text;
     totalVotes: Nat;
-    timestamp : Int;
     expiryDate: Int;
-    proposer : Principal;
+    state: ProposalState;
   };
 
   public type ProposalState = {

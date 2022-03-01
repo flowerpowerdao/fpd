@@ -1,21 +1,23 @@
 <script lang="ts">
   import { store } from "../store";
   import type {
-    Proposal as ProposalType,
+    ProposalOverview as ProposalOverviewType,
     Result_1,
   } from "../../declarations/dao/dao.did";
   import { fromErr, fromOk, isOk } from "../utils";
   import { onMount } from "svelte";
-  import ProposalOverview from "./ProposalOverview.svelte";
+  import OpenProposal from "../components/OpenProposal.svelte";
+  import ClosedProposal from "../components/ClosedProposal.svelte";
   import { fromVariantToString } from "../utils";
 
-  let openProposals: ProposalType[] = [];
-  let closedProposals: ProposalType[] = [];
+  let openProposals: ProposalOverviewType[] = [];
+  let closedProposals: ProposalOverviewType[] = [];
   let proposalReturn: Result_1;
   let principal: string = "";
 
   const fetchProposals = async () => {
-    let proposals = await $store.actor.list_proposals();
+    let proposals = await $store.actor.listProposalOverviews();
+
     openProposals = proposals.filter(
       (proposal) => fromVariantToString(proposal.state) === "open",
     );
@@ -25,15 +27,16 @@
   };
 
   const whoAmI = async () => {
-    principal = await $store.actor.whoami();
+    principal = await $store.actor.whoAmI();
   };
 
   const submitProposal = async () => {
-    proposalReturn = await $store.actor.submit_proposal("My first proposal", [
-      "fishing",
-      "swimming",
-      "dancing",
-    ]);
+    proposalReturn = await $store.actor.submitProposal(
+      "My first proposal",
+      "a great description",
+      ["fishing", "swimming", "dancing"],
+      BigInt(1),
+    );
   };
 
   onMount(async () => {
@@ -44,14 +47,14 @@
 <div class="text-4xl">Open Proposals</div>
 <div>
   {#each openProposals as proposal}
-    <ProposalOverview {proposal} bg={"green"} />
+    <OpenProposal {proposal} />
   {/each}
 </div>
 
 <div class="text-4xl">Closed Proposals</div>
 <div>
   {#each closedProposals as proposal}
-    <ProposalOverview {proposal} bg={"grey"} />
+    <ClosedProposal {proposal} />
   {/each}
 </div>
 

@@ -24,8 +24,9 @@ export const idlFactory = ({ IDL }) => {
     'voters' : Trie,
   });
   List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
-  const Proposal = IDL.Record({
+  const ClosedProposal = IDL.Record({
     'id' : IDL.Nat,
+    'title' : IDL.Text,
     'expiryDate' : IDL.Int,
     'totalVotes' : IDL.Nat,
     'description' : IDL.Text,
@@ -36,19 +37,49 @@ export const idlFactory = ({ IDL }) => {
     'options' : IDL.Vec(Option),
     'flowers' : List,
   });
+  const OpenOption = IDL.Record({ 'text' : IDL.Text });
+  const OpenProposal = IDL.Record({
+    'id' : IDL.Nat,
+    'title' : IDL.Text,
+    'expiryDate' : IDL.Int,
+    'totalVotes' : IDL.Nat,
+    'description' : IDL.Text,
+    'voters' : List_2,
+    'state' : ProposalState,
+    'timestamp' : IDL.Int,
+    'proposer' : IDL.Principal,
+    'options' : IDL.Vec(OpenOption),
+    'flowers' : List,
+  });
+  const ProposalView = IDL.Variant({
+    'closed' : ClosedProposal,
+    'open' : OpenProposal,
+  });
+  const ProposalOverview = IDL.Record({
+    'id' : IDL.Nat,
+    'title' : IDL.Text,
+    'expiryDate' : IDL.Int,
+    'totalVotes' : IDL.Nat,
+    'state' : ProposalState,
+  });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });
   const Result = IDL.Variant({ 'ok' : ProposalState, 'err' : IDL.Text });
   const DAO = IDL.Service({
-    'get_proposal' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], ['query']),
-    'list_proposals' : IDL.Func([], [IDL.Vec(Proposal)], ['query']),
-    'submit_proposal' : IDL.Func(
-        [IDL.Text, IDL.Vec(IDL.Text), IDL.Nat],
+    'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(ProposalView)], ['query']),
+    'listProposalOverviews' : IDL.Func(
+        [],
+        [IDL.Vec(ProposalOverview)],
+        ['query'],
+      ),
+    'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
+    'submitProposal' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Vec(IDL.Text), IDL.Nat],
         [Result_1],
         [],
       ),
     'vote' : IDL.Func([VoteArgs], [Result], []),
-    'whoami' : IDL.Func([], [IDL.Text], ['query']),
+    'whoAmI' : IDL.Func([], [IDL.Text], ['query']),
   });
   return DAO;
 };
