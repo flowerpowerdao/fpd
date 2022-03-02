@@ -3,7 +3,7 @@
   import type {
     OpenProposal as OpenProposalType,
     ClosedProposal as ClosedProposalType,
-  } from "../../declarations/dao/dao.did";
+  } from "../../declarations/dao/dao.did.d";
   import {
     fromTimestamp,
     fromNullable,
@@ -11,6 +11,7 @@
     getVariantValue,
   } from "../utils";
   import { store } from "../store";
+  import OpenOption from "./OpenOption.svelte";
 
   // this is needed for URL params
   export let params;
@@ -88,8 +89,8 @@
         {proposal.description}
       </div>
       {#each proposal.options as option}
-        <div class="flex justify-between">
-          <div>{option.text}</div>
+        <div class="flex justify-center">
+          <OpenOption {option} />
         </div>
       {/each}
     </div>
