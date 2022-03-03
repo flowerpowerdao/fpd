@@ -89,8 +89,7 @@ export const createStore = ({
           return;
         }
         const principal = await agent.getPrincipal();
-        update((state) => ({
-          ...state,
+        update(() => ({
           daoActor,
           btcflowerActor: btcActor,
           agent,
@@ -135,8 +134,7 @@ export const createStore = ({
           },
         });
 
-        update((state) => ({
-          ...state,
+        update(() => ({
           agent,
           daoActor,
           btcflowerActor: btcActor,
