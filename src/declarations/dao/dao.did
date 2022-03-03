@@ -17,7 +17,7 @@ type Result_1 =
 type Result = 
  variant {
    err: text;
-   ok: ProposalState;
+   ok;
  };
 type ProposalView = 
  variant {
@@ -55,14 +55,8 @@ type OpenProposal =
    timestamp: int;
    title: text;
    totalVotes: nat;
-   voters: List_2;
  };
 type OpenOption = record {"text": text;};
-type List_2 = 
- opt record {
-       principal;
-       List_2;
-     };
 type List_1 = 
  opt record {
        record {
@@ -94,7 +88,6 @@ type DAO =
    listProposals: () -> (vec ProposalView) query;
    submitProposal: (text, text, vec text, nat) -> (Result_1);
    vote: (VoteArgs) -> (Result);
-   whoAmI: () -> (text) query;
  };
 type ClosedProposal = 
  record {
@@ -108,7 +101,6 @@ type ClosedProposal =
    timestamp: int;
    title: text;
    totalVotes: nat;
-   voters: List_2;
  };
 type Branch = 
  record {

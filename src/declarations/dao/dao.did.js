@@ -1,9 +1,7 @@
 export const idlFactory = ({ IDL }) => {
   const List = IDL.Rec();
   const List_1 = IDL.Rec();
-  const List_2 = IDL.Rec();
   const Trie = IDL.Rec();
-  List_2.fill(IDL.Opt(IDL.Tuple(IDL.Principal, List_2)));
   const ProposalState = IDL.Variant({ 'closed' : IDL.Null, 'open' : IDL.Null });
   const Branch = IDL.Record({
     'left' : Trie,
@@ -30,7 +28,6 @@ export const idlFactory = ({ IDL }) => {
     'expiryDate' : IDL.Int,
     'totalVotes' : IDL.Nat,
     'description' : IDL.Text,
-    'voters' : List_2,
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
@@ -44,7 +41,6 @@ export const idlFactory = ({ IDL }) => {
     'expiryDate' : IDL.Int,
     'totalVotes' : IDL.Nat,
     'description' : IDL.Text,
-    'voters' : List_2,
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
@@ -64,7 +60,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });
-  const Result = IDL.Variant({ 'ok' : ProposalState, 'err' : IDL.Text });
+  const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const DAO = IDL.Service({
     'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(ProposalView)], ['query']),
     'listProposalOverviews' : IDL.Func(
@@ -79,7 +75,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'vote' : IDL.Func([VoteArgs], [Result], []),
-    'whoAmI' : IDL.Func([], [IDL.Text], ['query']),
   });
   return DAO;
 };

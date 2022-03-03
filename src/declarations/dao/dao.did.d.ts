@@ -7,7 +7,6 @@ export interface ClosedProposal {
   'expiryDate' : bigint,
   'totalVotes' : bigint,
   'description' : string,
-  'voters' : List_2,
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,
@@ -25,14 +24,12 @@ export interface DAO {
       arg_3: bigint,
     ) => Promise<Result_1>,
   'vote' : (arg_0: VoteArgs) => Promise<Result>,
-  'whoAmI' : () => Promise<string>,
 }
 export type Hash = number;
 export interface Key { 'key' : Principal, 'hash' : Hash }
 export interface Leaf { 'size' : bigint, 'keyvals' : AssocList }
 export type List = [] | [[number, List]];
 export type List_1 = [] | [[[Key, bigint], List_1]];
-export type List_2 = [] | [[Principal, List_2]];
 export interface OpenOption { 'text' : string }
 export interface OpenProposal {
   'id' : bigint,
@@ -40,7 +37,6 @@ export interface OpenProposal {
   'expiryDate' : bigint,
   'totalVotes' : bigint,
   'description' : string,
-  'voters' : List_2,
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,
@@ -59,7 +55,7 @@ export type ProposalState = { 'closed' : null } |
   { 'open' : null };
 export type ProposalView = { 'closed' : ClosedProposal } |
   { 'open' : OpenProposal };
-export type Result = { 'ok' : ProposalState } |
+export type Result = { 'ok' : null } |
   { 'err' : string };
 export type Result_1 = { 'ok' : bigint } |
   { 'err' : string };
