@@ -138,7 +138,7 @@ export const createStore = ({
         update((state) => ({
           ...state,
           agent,
-          dapActor: daoActor,
+          daoActor,
           btcflowerActor: btcActor,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
