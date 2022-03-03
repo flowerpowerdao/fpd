@@ -2,7 +2,7 @@
   import Router from "svelte-spa-router";
   import Header from "./components/Header.svelte";
   import "./global.css";
-  import Proposal from "./components/Proposal.svelte";
+  import Proposal from "./pages/Proposal.svelte";
   import Proposals from "./pages/Proposals.svelte";
   import NotFound from "./pages/NotFound.svelte";
 

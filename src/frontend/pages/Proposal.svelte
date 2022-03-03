@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type {
-    OpenProposal as OpenProposalType,
-    ClosedProposal as ClosedProposalType,
+    OpenProposal,
+    ClosedProposal,
   } from "../../declarations/dao/dao.did.d";
   import {
     fromTimestamp,
@@ -11,19 +11,19 @@
     getVariantValue,
   } from "../utils";
   import { store } from "../store";
-  import OpenOption from "./OpenOption.svelte";
+  import OpenOption from "../components/OpenOption.svelte";
 
   // this is needed for URL params
   export let params;
 
   // variables
-  let proposal: OpenProposalType | ClosedProposalType;
+  let proposal: OpenProposal | ClosedProposal;
   let status: string;
 
   // functions
   const isClosedProposal = (
-    proposal: OpenProposalType | ClosedProposalType,
-  ): proposal is ClosedProposalType => {
+    proposal: OpenProposal | ClosedProposal,
+  ): proposal is ClosedProposal => {
     if (fromVariantToString(proposal.state) === "closed") {
       return true;
     } else {
@@ -58,9 +58,6 @@
       <div class="">
         Total Votes Cast: {proposal.totalVotes}
       </div>
-      <div class="">
-        Distinct Voters: {proposal.voters.length}
-      </div>
       <div>
         {proposal.description}
       </div>
@@ -81,9 +78,6 @@
       </div>
       <div class="">
         Total Votes Cast: {proposal.totalVotes}
-      </div>
-      <div class="">
-        Distinct Voters: {proposal.voters.length}
       </div>
       <div>
         {proposal.description}
