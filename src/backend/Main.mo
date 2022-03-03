@@ -16,24 +16,24 @@ import Types "./Types";
 
 shared(install) actor class DAO() = Self {
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
-  stable var next_proposal_id : Nat = 0;
+  stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
+  stable var nextProposalId : Nat = 0;
 
   system func heartbeat() : async () {
     await closeExpiredProposals();
   };
 
-  func proposal_get(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposal_key(id), Nat.equal);
-  func proposal_put(id : Nat, proposal : Types.Proposal) {
-    proposals := Trie.put(proposals, Types.proposal_key(id), Nat.equal, proposal).0;
-  };
+  /******************
+  * PUBLIC METHODS *
+  ******************/
 
   /// Submit a proposal
   public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text], duration : Nat) : async Types.Result<Nat, Text> {
-    let proposal_id = next_proposal_id;
-    next_proposal_id += 1;
+    let proposalId = nextProposalId;
+    nextProposalId += 1;
 
     let proposal : Types.Proposal = {
-      id = proposal_id;
+      id = proposalId;
       title;
       description;
       timestamp = Time.now();
@@ -52,17 +52,13 @@ shared(install) actor class DAO() = Self {
       state = #open;
       voters = List.nil();
     };
-    proposal_put(proposal_id, proposal);
-    #ok(proposal_id)
-  };
-
-  public query ({caller}) func whoAmI (): async Text{
-    return Principal.toText(caller);
+    putProposalInTrie(proposalId, proposal);
+    #ok(proposalId)
   };
 
   /// Return the proposal with the given ID, if one exists
   public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
-    switch (proposal_get(proposal_id)) {
+    switch (getProposalFromTrie(proposal_id)) {
       case(?proposal) {
         if (proposal.state == #open) {
             return ?#open(createOpenProposal(proposal))
@@ -74,7 +70,7 @@ shared(install) actor class DAO() = Self {
     }
   };
 
-  /// Return the list of all proposals
+  /// Return the list of all proposal overviews
   public query func listProposalOverviews() : async [Types.ProposalOverview] {
     Iter.toArray(Iter.map(
       Trie.iter(proposals),
@@ -105,8 +101,8 @@ shared(install) actor class DAO() = Self {
   };
 
   // Vote on an open proposal
-  public shared({caller}) func vote(args: Types.VoteArgs) : async Types.Result<Types.ProposalState, Text> {
-    switch (proposal_get(args.proposalId)) {
+  public shared({caller}) func vote(args: Types.VoteArgs) : async Types.Result<(), Text> {
+    switch (getProposalFromTrie(args.proposalId)) {
       case null { #err("No proposal with ID " # debug_show(args.proposalId) # " exists") };
       case (?proposal) {
         if (proposal.state != #open) {
@@ -135,19 +131,17 @@ shared(install) actor class DAO() = Self {
             // assemble updated proposal option
             options[args.option] := {
               text  = proposal.options[args.option].text;
-              voters = Trie.put(proposal.options[args.option].voters, Types.account_key(caller), Principal.equal, votingPower).0;
+              voters = Trie.put(proposal.options[args.option].voters, Types.accountKey(caller), Principal.equal, votingPower).0;
               votes = proposal.options[args.option].votes + votingPower;
             };
             
 
-            let voters = List.push(caller, proposal.voters);
             let flowers = List.append(List.fromArray<Nat32>(userFlowers), proposal.flowers);
 
             let updated_proposal = {
                 id = proposal.id;
                 description = proposal.description;
                 title = proposal.title;
-                voters;
                 totalVotes;
                 flowers;
                 options = Array.freeze(options);
@@ -156,13 +150,27 @@ shared(install) actor class DAO() = Self {
                 expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
             };
-            proposal_put(args.proposalId, updated_proposal);
+            // updated proposal in stable memory
+            putProposalInTrie(args.proposalId, updated_proposal);
+            // update voting history in stable memory
+            switch (getVotingHistoryFromTrie(caller)) {
+              case null {
+                putVotingHistoryInTrie(caller, List.make<Nat>(args.proposalId));
+              };
+              case (?votingHistory) {
+                putVotingHistoryInTrie(caller, List.push<Nat>(args.proposalId, votingHistory ));
+              };
+            };
           };
         };
-        #ok(proposal.state)
+        #ok()
       };
     };
   };
+
+  /*******************
+  * PRIVATE METHODS *
+  *******************/
 
   func getFlowersFrom(principal: Principal) : async ?[Nat32] {
     let accountId = Hex.encode(AccountId.fromPrincipal(principal, null));
@@ -200,7 +208,6 @@ shared(install) actor class DAO() = Self {
         }
       );
       flowers = proposal.flowers;
-      voters = proposal.voters;
       state = proposal.state;
       totalVotes = proposal.totalVotes;
       timestamp = proposal.timestamp;
@@ -218,13 +225,25 @@ shared(install) actor class DAO() = Self {
           title = proposal.title;
           options = proposal.options;
           id = proposal.id;
-          voters = proposal.voters;
           flowers = proposal.flowers;
           timestamp = proposal.timestamp;
           expiryDate = proposal.expiryDate;
           proposer = proposal.proposer;
           totalVotes = proposal.totalVotes;
       };
-      proposal_put(proposal.id, updated);
+      putProposalInTrie(proposal.id, updated);
   };
+
+  func getProposalFromTrie(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposalKey(id), Nat.equal);
+
+  func putProposalInTrie(id : Nat, proposal : Types.Proposal) {
+    proposals := Trie.put(proposals, Types.proposalKey(id), Nat.equal, proposal).0;
+  };
+
+  func getVotingHistoryFromTrie(principal : Principal) : ?List.List<Nat> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
+  
+  func putVotingHistoryInTrie(principal : Principal, votingHistory: List.List<Nat>) {
+    votingHistories:= Trie.put(votingHistories, Types.accountKey(principal), Principal.equal, votingHistory).0;
+  };
+
 };

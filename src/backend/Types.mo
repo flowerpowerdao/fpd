@@ -25,7 +25,6 @@ module {
     description: Text; // short description
     options : [Option]; // options that can be voted on
     flowers: List.List<Nat32>; // flowers that already voted
-    voters : List.List<Principal>; // principals that participated in the vote
     state : ProposalState; // is the proposal accepting votes or not
     totalVotes: Nat; // total votes cast on this proposal recognizing the voting power
     timestamp : Int; // when the proposal was created
@@ -46,7 +45,6 @@ module {
     description: Text; // short description
     options : [OpenOption]; // options that can be voted on
     flowers: List.List<Nat32>; // flowers that already voted
-    voters : List.List<Principal>; // principals that participated in the vote
     state : ProposalState; // is the proposal accepting votes or not
     totalVotes: Nat; // total votes cast on this proposal recognizing the voting power
     timestamp : Int; // when the proposal was created
@@ -76,7 +74,7 @@ module {
     proposalId : Nat 
   };
 
-  public func proposal_key(t: Nat) : Trie.Key<Nat> = { key = t; hash = Int.hash t };
+  public func proposalKey(t: Nat) : Trie.Key<Nat> = { key = t; hash = Int.hash t };
 
-  public func account_key(t: Principal) : Trie.Key<Principal> = { key = t; hash = Principal.hash t };
+  public func accountKey(t: Principal) : Trie.Key<Principal> = { key = t; hash = Principal.hash t };
 }
