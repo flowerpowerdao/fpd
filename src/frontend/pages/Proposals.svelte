@@ -13,7 +13,6 @@
   let openProposals: ProposalOverviewType[] = [];
   let closedProposals: ProposalOverviewType[] = [];
   let proposalReturn: Result_1;
-  let principal: string = "";
 
   const fetchProposals = async () => {
     let proposals = await $store.actor.listProposalOverviews();
@@ -24,10 +23,6 @@
     closedProposals = proposals.filter(
       (proposal) => fromVariantToString(proposal.state) === "closed",
     );
-  };
-
-  const whoAmI = async () => {
-    principal = await $store.actor.whoAmI();
   };
 
   const submitProposal = async () => {
@@ -68,9 +63,6 @@
   </button>
   <button class="demo-button" on:click={fetchProposals}>
     List Proposals
-  </button>
-  <button class="demo-button" on:click={whoAmI}>
-    {principal}
   </button>
 </header>
 
