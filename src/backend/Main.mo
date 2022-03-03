@@ -60,7 +60,7 @@ shared(install) actor class DAO() = Self {
     switch (getProposalInternal(proposal_id)) {
       case(?proposal) {
         if (proposal.state == #open) {
-            return ?#open(createOpenProposal(proposal))
+            return ?#open(removeVotingInformationFromProposal(proposal))
         } else {
           return ?#closed(proposal);
         }
@@ -91,7 +91,7 @@ shared(install) actor class DAO() = Self {
       Trie.iter(proposals),
       func (kv : (Nat, Types.Proposal)) : Types.ProposalView{
         if (kv.1.state == #open) {
-            return #open(createOpenProposal(kv.1))
+            return #open(removeVotingInformationFromProposal(kv.1))
         } else {
           return #closed(kv.1);
         }
@@ -192,7 +192,7 @@ shared(install) actor class DAO() = Self {
     }
   };
 
-  func createOpenProposal (proposal : Types.Proposal) : Types.OpenProposal{
+  func removeVotingInformationFromProposal (proposal : Types.Proposal) : Types.OpenProposal{
     let openProposal : Types.OpenProposal= {
       id = proposal.id; 
       title = proposal.title;
