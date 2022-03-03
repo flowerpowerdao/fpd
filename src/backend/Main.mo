@@ -38,7 +38,7 @@ shared(install) actor class DAO() = Self {
       timestamp = Time.now();
       expiryDate = Time.now() + 86_400_000_000_000 * duration; // 5 days
       proposer = caller;
-      flowers = List.nil();
+      flowersVoted = List.nil();
       options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{
         let option : Types.Option = {
           text = text;
@@ -113,7 +113,7 @@ shared(install) actor class DAO() = Self {
 
             // check if a flower already voted
             for (userFlower in Iter.fromArray(userFlowers)) {
-              if (List.some(proposal.flowers,func (e : Nat32) : Bool = e == userFlower)) {
+              if (List.some(proposal.flowersVoted,func (e : Nat32) : Bool = e == userFlower)) {
                   return #err("Already voted");
               };
             };
@@ -135,14 +135,14 @@ shared(install) actor class DAO() = Self {
             };
             
 
-            let flowers = List.append(List.fromArray<Nat32>(userFlowers), proposal.flowers);
+            let flowersVoted = List.append(List.fromArray<Nat32>(userFlowers), proposal.flowersVoted);
 
             let updated_proposal = {
                 id = proposal.id;
                 description = proposal.description;
                 title = proposal.title;
                 totalVotes;
-                flowers;
+                flowersVoted;
                 options = Array.freeze(options);
                 state = proposal.state;
                 timestamp = proposal.timestamp;
@@ -206,7 +206,7 @@ shared(install) actor class DAO() = Self {
           return ov;
         }
       );
-      flowers = proposal.flowers;
+      flowersVoted = proposal.flowersVoted;
       state = proposal.state;
       totalVotes = proposal.totalVotes;
       timestamp = proposal.timestamp;
@@ -224,7 +224,7 @@ shared(install) actor class DAO() = Self {
           title = proposal.title;
           options = proposal.options;
           id = proposal.id;
-          flowers = proposal.flowers;
+          flowersVoted = proposal.flowersVoted;
           timestamp = proposal.timestamp;
           expiryDate = proposal.expiryDate;
           proposer = proposal.proposer;
