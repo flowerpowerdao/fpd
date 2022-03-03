@@ -11,7 +11,6 @@ import Trie "mo:base/Trie";
 import AccountId "mo:accountid/AccountId";
 import Hex "mo:hex/Hex";
 
-import Type "Types";
 import Types "./Types";
 
 shared(install) actor class DAO() = Self {
@@ -193,14 +192,14 @@ shared(install) actor class DAO() = Self {
     }
   };
 
-  func createOpenProposal (proposal : Type.Proposal) : Type.OpenProposal{
-    let openProposal : Type.OpenProposal= {
+  func createOpenProposal (proposal : Types.Proposal) : Types.OpenProposal{
+    let openProposal : Types.OpenProposal= {
       id = proposal.id; 
       title = proposal.title;
       description = proposal.description;
-      options = Array.map<Type.Option, Type.OpenOption>(
+      options = Array.map<Types.Option, Types.OpenOption>(
         proposal.options,
-        func (o : Type.Option) : Type.OpenOption{
+        func (o : Types.Option) : Types.OpenOption{
           let ov = {
             text = o.text;
           };
