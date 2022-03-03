@@ -13,15 +13,51 @@ module {
     voters: Trie.Trie<Principal, Nat>;
   };
 
+  public type ClosedOption = Option;
+
+  public type OpenOption = {
+    text: Text; 
+  };
+
   public type Proposal = {
-    id : Nat;
-    description: Text;
-    options : [Option];
-    voters : List.List<Principal>;
-    state : ProposalState;
+    id : Nat; // unique proposal id
+    title : Text; // title of the proposal
+    description : Text; // short description
+    options : [Option]; // options that can be voted on
+    flowersVoted : List.List<Nat32>; // flowers that already voted
+    state : ProposalState; // is the proposal accepting votes or not
+    totalVotes : Nat; // total votes cast on this proposal recognizing the voting power
+    timestamp : Int; // when the proposal was created
+    expiryDate : Int; // when the voting period ends
+    proposer : Principal; // principal of the creator of the proposal
+  };
+
+  public type ProposalView = {
+    #open : OpenProposal;
+    #closed : ClosedProposal;
+  };
+
+  public type ClosedProposal = Proposal;
+
+  public type OpenProposal = {
+    id : Nat; // unique proposal id
+    title : Text; // title of the proposal
+    description : Text; // short description
+    options : [OpenOption]; // options that can be voted on
+    flowersVoted : List.List<Nat32>; // flowers that already voted
+    state : ProposalState; // is the proposal accepting votes or not
+    totalVotes : Nat; // total votes cast on this proposal recognizing the voting power
+    timestamp : Int; // when the proposal was created
+    expiryDate : Int; // when the voting period ends
+    proposer : Principal; // principal of the creator of the proposal
+  };
+
+  public type ProposalOverview = {
+    id: Nat;
+    title : Text;
     totalVotes: Nat;
-    timestamp : Int;
-    proposer : Principal;
+    expiryDate: Int;
+    state: ProposalState;
   };
 
   public type ProposalState = {
@@ -38,7 +74,7 @@ module {
     proposalId : Nat 
   };
 
-  public func proposal_key(t: Nat) : Trie.Key<Nat> = { key = t; hash = Int.hash t };
+  public func proposalKey(t: Nat) : Trie.Key<Nat> = { key = t; hash = Int.hash t };
 
-  public func account_key(t: Principal) : Trie.Key<Principal> = { key = t; hash = Principal.hash t };
+  public func accountKey(t: Principal) : Trie.Key<Principal> = { key = t; hash = Principal.hash t };
 }
