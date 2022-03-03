@@ -51,13 +51,13 @@ shared(install) actor class DAO() = Self {
       state = #open;
       voters = List.nil();
     };
-    putProposalInTrie(proposalId, proposal);
+    putProposalInternal(proposalId, proposal);
     #ok(proposalId)
   };
 
   /// Return the proposal with the given ID, if one exists
   public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
-    switch (getProposalFromTrie(proposal_id)) {
+    switch (getProposalInternal(proposal_id)) {
       case(?proposal) {
         if (proposal.state == #open) {
             return ?#open(createOpenProposal(proposal))
@@ -101,7 +101,7 @@ shared(install) actor class DAO() = Self {
 
   // Vote on an open proposal
   public shared({caller}) func vote(args: Types.VoteArgs) : async Types.Result<(), Text> {
-    switch (getProposalFromTrie(args.proposalId)) {
+    switch (getProposalInternal(args.proposalId)) {
       case null { #err("No proposal with ID " # debug_show(args.proposalId) # " exists") };
       case (?proposal) {
         if (proposal.state != #open) {
@@ -150,14 +150,14 @@ shared(install) actor class DAO() = Self {
                 proposer = proposal.proposer;
             };
             // updated proposal in stable memory
-            putProposalInTrie(args.proposalId, updated_proposal);
+            putProposalInternal(args.proposalId, updated_proposal);
             // update voting history in stable memory
-            switch (getVotingHistoryFromTrie(caller)) {
+            switch (getVotingHistoryInternal(caller)) {
               case null {
-                putVotingHistoryInTrie(caller, List.make<Nat>(args.proposalId));
+                putVotingHistoryInternal(caller, List.make<Nat>(args.proposalId));
               };
               case (?votingHistory) {
-                putVotingHistoryInTrie(caller, List.push<Nat>(args.proposalId, votingHistory ));
+                putVotingHistoryInternal(caller, List.push<Nat>(args.proposalId, votingHistory ));
               };
             };
           };
@@ -230,18 +230,18 @@ shared(install) actor class DAO() = Self {
           proposer = proposal.proposer;
           totalVotes = proposal.totalVotes;
       };
-      putProposalInTrie(proposal.id, updated);
+      putProposalInternal(proposal.id, updated);
   };
 
-  func getProposalFromTrie(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposalKey(id), Nat.equal);
+  func getProposalInternal(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposalKey(id), Nat.equal);
 
-  func putProposalInTrie(id : Nat, proposal : Types.Proposal) {
+  func putProposalInternal(id : Nat, proposal : Types.Proposal) {
     proposals := Trie.put(proposals, Types.proposalKey(id), Nat.equal, proposal).0;
   };
 
-  func getVotingHistoryFromTrie(principal : Principal) : ?List.List<Nat> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
+  func getVotingHistoryInternal(principal : Principal) : ?List.List<Nat> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
   
-  func putVotingHistoryInTrie(principal : Principal, votingHistory: List.List<Nat>) {
+  func putVotingHistoryInternal(principal : Principal, votingHistory: List.List<Nat>) {
     votingHistories:= Trie.put(votingHistories, Types.accountKey(principal), Principal.equal, votingHistory).0;
   };
 
