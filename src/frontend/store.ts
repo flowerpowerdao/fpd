@@ -36,7 +36,7 @@ const defaultState = {
   isAuthed: null,
   agent: defaultAgent,
   daoActor: dao,
-  btcflowerActor: null,
+  btcflowerActor: btcflowerActor,
   principal: null,
 };
 
