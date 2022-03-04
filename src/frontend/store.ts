@@ -115,12 +115,15 @@ export const createStore = ({
 
       const principal = await window.ic.plug.agent.getPrincipal();
 
+      const votingPower = await getVotingPower(principal, btcflowerPlug);
+
       update((prevState) => ({
         ...prevState,
         daoActor: daoPlug,
         btcflowerActor: btcflowerPlug,
         principal,
         isAuthed: "plug",
+        votingPower,
       }));
     },
     stoicConnect: () => {
@@ -158,12 +161,18 @@ export const createStore = ({
           },
         });
 
+        const votingPower = await getVotingPower(
+          identity.getPrincipal(),
+          btcflowerStoic,
+        );
+
         update((prevState) => ({
           ...prevState,
           daoActor: daoStoic,
           btcflowerActor: btcflowerStoic,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
+          votingPower,
         }));
       });
     },
@@ -174,25 +183,21 @@ export const createStore = ({
       window.ic?.plug?.disconnect();
       update(() => defaultState);
     },
-    getVotingPower: async () => {
-      let principal = get({ subscribe }).principal; // get the principal from the store
-      let btcflowerActor = get({ subscribe }).btcflowerActor; // use the actor from the store, not the default actor
-      if (principal) {
-        // if we have a principal, get the voting power
-        let result = await btcflowerActor.tokens(
-          principalToAccountId(principal, null),
-        );
-        if (fromVariantToString(result) === "ok") {
-          update((prevState) => {
-            return {
-              ...prevState,
-              votingPower: getVariantValue(result).length,
-            };
-          });
-        }
-      }
-    },
   };
+};
+
+const getVotingPower = async (
+  principal: Principal,
+  btcflower: typeof btcflowerActor,
+) => {
+  // if we have a principal, get the voting power
+  let result = await btcflower.tokens(principalToAccountId(principal, null));
+  if (fromVariantToString(result) === "ok") {
+    return getVariantValue(result).length;
+  } else {
+    console.error("error getting voting power");
+    return 0;
+  }
 };
 
 export const store = createStore({
