@@ -1,3 +1,6 @@
+import { sha224 } from "js-sha256";
+import crc32 from "crc-32";
+
 // Results
 export function fromOk(result): any {
   // get the value from an ok result
@@ -57,3 +60,24 @@ export const fromTimestamp = (value: Time): Date => {
 export const toTimestamp = (value: Date): Time => {
   return BigInt(value.getTime());
 };
+
+// from tipjar (https://github.com/ninegua/tipjar/blob/b68730fa85a6b3d46aa2173ddc9a9b268d1be45b/src/tipjar_assets/src/agent.js#L62)
+export function principalToAccountId(principal, subaccount) {
+  const shaObj = sha224.create();
+  shaObj.update("\x0Aaccount-id");
+  shaObj.update(principal.toUint8Array());
+  shaObj.update(subaccount ? subaccount : new Uint8Array(32));
+  const hash = new Uint8Array(shaObj.array());
+  const crc = crc32.buf(hash);
+  return toHexString([
+    (crc >> 24) & 0xff,
+    (crc >> 16) & 0xff,
+    (crc >> 8) & 0xff,
+    crc & 0xff,
+    ...hash,
+  ]);
+}
+
+export function toHexString(byteArray: number[]) {
+  return Buffer.from(byteArray).toString("hex");
+}

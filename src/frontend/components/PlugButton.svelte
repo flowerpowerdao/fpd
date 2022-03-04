@@ -3,24 +3,21 @@
 
   import plugLogo from "../assets/plug.svg";
   import { store } from "../store";
-
-  // onMount(async () => {
-  //   if (await window.ic?.plug.isConnected()) {
-  //     store.plugConnect();
-  //   }
-  // });
 </script>
 
 {#if $store.isAuthed === "plug"}
   <div class="flex justify-end p-2 items-center">
     <button
-      class="plug-button p-2 flex justify-end items-center"
+      class="plug-button p-2 flex justify-between items-center"
       on:click={store.disconnect}
     >
-      <img class="plug-logo" src={plugLogo} alt="plug-logo" />
-      {$store.principal.toString().slice(0, 5) +
-        "..." +
-        $store.principal.toString().slice(-5)}
+      <div class="flex items-center mr-4">
+        <img class="plug-logo" src={plugLogo} alt="plug-logo" />
+        {$store.principal.toString().slice(0, 5) +
+          "..." +
+          $store.principal.toString().slice(-5)}
+      </div>
+      <span>{$store.votingPower + " "} Flowers</span>
     </button>
   </div>
 {:else if !$store.isAuthed}

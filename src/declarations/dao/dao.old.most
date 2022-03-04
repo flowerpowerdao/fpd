@@ -1,0 +1,18 @@
+type Branch<K, V> = {left : Trie<K, V>; right : Trie<K, V>; size : Nat};
+type Leaf<K, V> = {keyvals : AssocList/1<Key<K>, V>; size : Nat};
+type Proposal =
+  {
+    description : Text;
+    id : Nat;
+    options : [Option];
+    proposer : Principal;
+    state : ProposalState;
+    timestamp : Int;
+    totalVotes : Nat;
+    voters : List<Principal>
+  };
+actor {
+  stable var next_proposal_id : Nat;
+  stable var proposals :
+    {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>}
+};

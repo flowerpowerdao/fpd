@@ -15,7 +15,7 @@
   let proposalReturn: Result_1;
 
   const fetchProposals = async () => {
-    let proposals = await $store.actor.listProposalOverviews();
+    let proposals = await $store.daoActor.listProposalOverviews();
 
     openProposals = proposals.filter(
       (proposal) => fromVariantToString(proposal.state) === "open",
@@ -26,7 +26,7 @@
   };
 
   const submitProposal = async () => {
-    proposalReturn = await $store.actor.submitProposal(
+    proposalReturn = await $store.daoActor.submitProposal(
       "My first proposal",
       "a great description",
       ["fishing", "swimming", "dancing"],
@@ -34,10 +34,31 @@
     );
   };
 
+  const checkFlowerBalance = async () => {
+    await store.getVotingPower();
+  };
+
   onMount(async () => {
     await fetchProposals();
   });
 </script>
+
+<header class="App-header">
+  <button class="demo-button" on:click={submitProposal}>
+    Create Proposal: <br />{proposalReturn
+      ? isOk(proposalReturn)
+        ? fromOk(proposalReturn)
+        : fromErr(proposalReturn)
+      : "hi"}
+  </button>
+  <button class="demo-button" on:click={fetchProposals}>
+    List Proposals
+  </button>
+
+  <button class="demo-button" on:click={checkFlowerBalance}>
+    {$store.votingPower}
+  </button>
+</header>
 
 <div class="text-4xl">Open Proposals</div>
 <div>
@@ -52,19 +73,6 @@
     <ClosedProposal {proposal} />
   {/each}
 </div>
-
-<header class="App-header">
-  <button class="demo-button" on:click={submitProposal}>
-    Create Proposal: <br />{proposalReturn
-      ? isOk(proposalReturn)
-        ? fromOk(proposalReturn)
-        : fromErr(proposalReturn)
-      : "hi"}
-  </button>
-  <button class="demo-button" on:click={fetchProposals}>
-    List Proposals
-  </button>
-</header>
 
 <style global>
   .App-logo {

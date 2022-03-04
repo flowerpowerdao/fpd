@@ -5,7 +5,10 @@ import { idlFactory } from "./btcflower.did.js";
 export { idlFactory } from "./btcflower.did.js";
 
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = "pk6rk-6aaaa-aaaae-qaazq-cai";
+export const canisterId =
+  process.env.NODE_ENV === "development"
+    ? "ryjl3-tyaaa-aaaaa-aaaba-cai"
+    : "pk6rk-6aaaa-aaaae-qaazq-cai";
 
 /**
  *

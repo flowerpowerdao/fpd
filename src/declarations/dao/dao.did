@@ -47,7 +47,7 @@ type OpenProposal =
  record {
    description: text;
    expiryDate: int;
-   flowers: List;
+   flowersVoted: List;
    id: nat;
    options: vec OpenOption;
    proposer: principal;
@@ -93,7 +93,7 @@ type ClosedProposal =
  record {
    description: text;
    expiryDate: int;
-   flowers: List;
+   flowersVoted: List;
    id: nat;
    options: vec Option;
    proposer: principal;
