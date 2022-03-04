@@ -30,6 +30,7 @@ type State = {
   daoActor: typeof dao;
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
+  votingPower: number;
 };
 
 const defaultState = {
@@ -38,6 +39,7 @@ const defaultState = {
   daoActor: dao,
   btcflowerActor: btcflowerActor,
   principal: null,
+  votingPower: 0,
 };
 
 export const createStore = ({
@@ -89,7 +91,8 @@ export const createStore = ({
           return;
         }
         const principal = await agent.getPrincipal();
-        update(() => ({
+        update((prevState) => ({
+          ...prevState,
           daoActor,
           btcflowerActor: btcActor,
           agent,
@@ -134,7 +137,8 @@ export const createStore = ({
           },
         });
 
-        update(() => ({
+        update((prevState) => ({
+          ...prevState,
           agent,
           daoActor,
           btcflowerActor: btcActor,
@@ -149,6 +153,15 @@ export const createStore = ({
       window.ic?.plug?.deleteAgent();
       window.ic?.plug?.disconnect();
       update(() => defaultState);
+    },
+    getVotingPower: async () => {
+      const tokens = await btcflowerActor.getTokens();
+      update((prevState) => {
+        return {
+          ...prevState,
+          votingPower: tokens.length,
+        };
+      });
     },
   };
 };
