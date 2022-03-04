@@ -32,7 +32,7 @@
   };
 
   const fetchProposal = async () => {
-    let proposalView = await $store.actor.getProposal(BigInt(params.id));
+    let proposalView = await $store.daoActor.getProposal(BigInt(params.id));
     let temp = fromNullable(proposalView); // undefined or ProposalView
     if (temp) {
       status = fromVariantToString(temp);

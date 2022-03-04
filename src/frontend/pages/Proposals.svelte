@@ -15,7 +15,7 @@
   let proposalReturn: Result_1;
 
   const fetchProposals = async () => {
-    let proposals = await $store.actor.listProposalOverviews();
+    let proposals = await $store.daoActor.listProposalOverviews();
 
     openProposals = proposals.filter(
       (proposal) => fromVariantToString(proposal.state) === "open",
@@ -26,7 +26,7 @@
   };
 
   const submitProposal = async () => {
-    proposalReturn = await $store.actor.submitProposal(
+    proposalReturn = await $store.daoActor.submitProposal(
       "My first proposal",
       "a great description",
       ["fishing", "swimming", "dancing"],
