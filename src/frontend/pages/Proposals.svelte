@@ -34,10 +34,6 @@
     );
   };
 
-  const checkFlowerBalance = async () => {
-    await store.getVotingPower();
-  };
-
   onMount(async () => {
     await fetchProposals();
   });
@@ -55,9 +51,6 @@
     List Proposals
   </button>
 
-  <button class="demo-button" on:click={checkFlowerBalance}>
-    {$store.votingPower}
-  </button>
 </header>
 
 <div class="text-4xl">Open Proposals</div>
