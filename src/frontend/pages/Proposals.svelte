@@ -34,6 +34,10 @@
     );
   };
 
+  const checkFlowerBalance = async () => {
+    await store.getVotingPower();
+  };
+
   onMount(async () => {
     await fetchProposals();
   });
@@ -63,6 +67,10 @@
   </button>
   <button class="demo-button" on:click={fetchProposals}>
     List Proposals
+  </button>
+
+  <button class="demo-button" on:click={checkFlowerBalance}>
+    {$store.votingPower}
   </button>
 </header>
 

@@ -1,16 +1,21 @@
-import { writable } from "svelte/store";
+import { writable, get } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
 import { HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import {
-  dao,
-  canisterId as daoCanisterId,
-  idlFactory,
+  fromVariantToString,
+  getVariantValue,
+  principalToAccountId,
+} from "./utils";
+import {
+  dao as daoActor,
   createActor as createDaoActor,
+  canisterId as daoCanisterId,
+  idlFactory as daoIdlFactory,
 } from "../declarations/dao";
 import {
-  createActor as createBtcflowerActor,
   btcflowerActor,
+  createActor as createBtcflowerActor,
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
 } from "../canisters/btcflower";
@@ -27,7 +32,7 @@ export const defaultAgent = new HttpAgent({
 type State = {
   isAuthed: "plug" | "stoic" | null;
   agent: HttpAgent;
-  daoActor: typeof dao;
+  daoActor: typeof daoActor;
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
   votingPower: number;
@@ -36,8 +41,8 @@ type State = {
 const defaultState = {
   isAuthed: null,
   agent: defaultAgent,
-  daoActor: dao,
-  btcflowerActor: btcflowerActor,
+  daoActor,
+  btcflowerActor,
   principal: null,
   votingPower: 0,
 };
@@ -76,25 +81,25 @@ export const createStore = ({
           });
         }
 
-        const daoActor = (await window.ic?.plug.createActor({
+        const dao = (await window.ic?.plug.createActor({
           daoCanisterId,
-          interfaceFactory: idlFactory,
-        })) as typeof dao;
+          interfaceFactory: daoIdlFactory,
+        })) as typeof daoActor;
 
-        const btcActor = (await window.ic?.plug.createActor({
+        const btcflower = (await window.ic?.plug.createActor({
           canisterId: btcflowerCanisterId,
           interfaceFactory: btcflowerIdlFactory,
         })) as typeof btcflowerActor;
 
-        if (!daoActor || !btcflowerActor) {
+        if (!dao || !btcflower) {
           console.warn("couldn't create actors");
           return;
         }
         const principal = await agent.getPrincipal();
         update((prevState) => ({
           ...prevState,
-          daoActor,
-          btcflowerActor: btcActor,
+          daoActor: dao,
+          btcflowerActor: btcflower,
           agent,
           principal,
           isAuthed: "plug",
@@ -125,13 +130,13 @@ export const createStore = ({
           });
         }
 
-        const daoActor = createDaoActor(daoCanisterId, {
+        const dao = createDaoActor(daoCanisterId, {
           agentOptions: {
             source: agent,
           },
         });
 
-        const btcActor = createBtcflowerActor(btcflowerCanisterId, {
+        const btcflower = createBtcflowerActor(btcflowerCanisterId, {
           agentOptions: {
             source: agent,
           },
@@ -140,8 +145,8 @@ export const createStore = ({
         update((prevState) => ({
           ...prevState,
           agent,
-          daoActor,
-          btcflowerActor: btcActor,
+          daoActor: dao,
+          btcflowerActor: btcflower,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
         }));
@@ -155,13 +160,21 @@ export const createStore = ({
       update(() => defaultState);
     },
     getVotingPower: async () => {
-      const tokens = await btcflowerActor.getTokens();
-      update((prevState) => {
-        return {
-          ...prevState,
-          votingPower: tokens.length,
-        };
-      });
+      let principal = get({ subscribe }).principal; // get the principal from the store
+      let btcflowerActor = get({ subscribe }).btcflowerActor; // use the actor from the store, not the default actor
+      if (principal) { // if we have a principal, get the voting power
+        let result = await btcflowerActor.tokens(
+          principalToAccountId(principal, null),
+        );
+        if (fromVariantToString(result) === "ok") {
+          update((prevState) => {
+            return {
+              ...prevState,
+              votingPower: getVariantValue(result).length,
+            };
+          });
+        }
+      }
     },
   };
 };
@@ -183,7 +196,7 @@ declare global {
           host?: string;
         }) => Promise<void>;
         createActor: (options: {}) => Promise<
-          typeof dao | typeof btcflowerActor
+          typeof daoActor | typeof btcflowerActor
         >;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
