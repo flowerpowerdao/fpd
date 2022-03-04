@@ -3,6 +3,7 @@ export const idlFactory = ({ IDL }) => {
   const List_1 = IDL.Rec();
   const Trie = IDL.Rec();
   const ProposalState = IDL.Variant({ 'closed' : IDL.Null, 'open' : IDL.Null });
+  List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
   const Branch = IDL.Record({
     'left' : Trie,
     'size' : IDL.Nat,
@@ -21,7 +22,6 @@ export const idlFactory = ({ IDL }) => {
     'text' : IDL.Text,
     'voters' : Trie,
   });
-  List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
   const ClosedProposal = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
@@ -31,8 +31,8 @@ export const idlFactory = ({ IDL }) => {
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
+    'flowersVoted' : List,
     'options' : IDL.Vec(Option),
-    'flowers' : List,
   });
   const OpenOption = IDL.Record({ 'text' : IDL.Text });
   const OpenProposal = IDL.Record({
@@ -44,8 +44,8 @@ export const idlFactory = ({ IDL }) => {
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
+    'flowersVoted' : List,
     'options' : IDL.Vec(OpenOption),
-    'flowers' : List,
   });
   const ProposalView = IDL.Variant({
     'closed' : ClosedProposal,

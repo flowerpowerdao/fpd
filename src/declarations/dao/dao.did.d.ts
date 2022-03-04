@@ -10,8 +10,8 @@ export interface ClosedProposal {
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,
+  'flowersVoted' : List,
   'options' : Array<Option>,
-  'flowers' : List,
 }
 export interface DAO {
   'getProposal' : (arg_0: bigint) => Promise<[] | [ProposalView]>,
@@ -40,8 +40,8 @@ export interface OpenProposal {
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,
+  'flowersVoted' : List,
   'options' : Array<OpenOption>,
-  'flowers' : List,
 }
 export interface Option { 'votes' : bigint, 'text' : string, 'voters' : Trie }
 export interface ProposalOverview {
