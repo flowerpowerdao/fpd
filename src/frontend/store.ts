@@ -22,7 +22,7 @@ import {
 
 export const HOST =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:8000"
+    ? "http://localhost:3000"
     : "https://ic0.app";
 
 export const defaultAgent = new HttpAgent({
@@ -59,16 +59,17 @@ export const createStore = ({
   return {
     subscribe,
     plugConnect: async () => {
-      console.log("plug");
       if (window.ic?.plug === undefined) {
         window.open("https://plugwallet.ooo/", "_blank");
         return;
       }
 
       window.ic?.plug.requestConnect({ whitelist, host }).then(async () => {
+        // check wether agent and createActor are present
         if (!window.ic?.plug?.agent) return;
-
         if (!window.ic?.plug?.createActor) return;
+
+        // get the agent
         const agent = await window.ic?.plug.agent;
 
         // Fetch root key for certificate validation during development
@@ -81,25 +82,27 @@ export const createStore = ({
           });
         }
 
-        const dao = (await window.ic?.plug.createActor({
-          daoCanisterId,
+        const daoPlug = (await window.ic?.plug.createActor({
+          canisterId: daoCanisterId,
           interfaceFactory: daoIdlFactory,
         })) as typeof daoActor;
 
-        const btcflower = (await window.ic?.plug.createActor({
+        const btcflowerPlug = (await window.ic?.plug.createActor({
           canisterId: btcflowerCanisterId,
           interfaceFactory: btcflowerIdlFactory,
         })) as typeof btcflowerActor;
 
-        if (!dao || !btcflower) {
+        if (!daoPlug || !btcflowerPlug) {
           console.warn("couldn't create actors");
           return;
         }
+
         const principal = await agent.getPrincipal();
+
         update((prevState) => ({
           ...prevState,
-          daoActor: dao,
-          btcflowerActor: btcflower,
+          daoActor: daoPlug,
+          btcflowerActor: btcflowerPlug,
           agent,
           principal,
           isAuthed: "plug",
@@ -162,7 +165,8 @@ export const createStore = ({
     getVotingPower: async () => {
       let principal = get({ subscribe }).principal; // get the principal from the store
       let btcflowerActor = get({ subscribe }).btcflowerActor; // use the actor from the store, not the default actor
-      if (principal) { // if we have a principal, get the voting power
+      if (principal) {
+        // if we have a principal, get the voting power
         let result = await btcflowerActor.tokens(
           principalToAccountId(principal, null),
         );

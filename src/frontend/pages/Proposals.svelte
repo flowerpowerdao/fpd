@@ -43,20 +43,6 @@
   });
 </script>
 
-<div class="text-4xl">Open Proposals</div>
-<div>
-  {#each openProposals as proposal}
-    <OpenProposal {proposal} />
-  {/each}
-</div>
-
-<div class="text-4xl">Closed Proposals</div>
-<div>
-  {#each closedProposals as proposal}
-    <ClosedProposal {proposal} />
-  {/each}
-</div>
-
 <header class="App-header">
   <button class="demo-button" on:click={submitProposal}>
     Create Proposal: <br />{proposalReturn
@@ -73,6 +59,20 @@
     {$store.votingPower}
   </button>
 </header>
+
+<div class="text-4xl">Open Proposals</div>
+<div>
+  {#each openProposals as proposal}
+    <OpenProposal {proposal} />
+  {/each}
+</div>
+
+<div class="text-4xl">Closed Proposals</div>
+<div>
+  {#each closedProposals as proposal}
+    <ClosedProposal {proposal} />
+  {/each}
+</div>
 
 <style global>
   .App-logo {
