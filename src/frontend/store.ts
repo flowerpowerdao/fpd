@@ -53,24 +53,40 @@ export const createStore = ({
   return {
     subscribe,
     plugConnect: async () => {
+      // check if plug is installed in the browser
       if (window.ic?.plug === undefined) {
         window.open("https://plugwallet.ooo/", "_blank");
         return;
       }
 
-      const hasAllowed = await window.ic?.plug.requestConnect({
-        whitelist,
-        host,
-      });
-
-      if (!hasAllowed) {
-        console.warn("plug connection refused");
-        return;
+      const connected = await window.ic?.plug?.isConnected();
+      if (!connected) {
+        const hasAllowed = await window.ic?.plug.requestConnect({
+          whitelist,
+          host,
+        });
+        if (!hasAllowed) {
+          console.warn("plug connection refused");
+          return;
+        }
       }
 
-      // check wether agent and createActor are present
-      if (!window.ic?.plug?.agent) return;
-      if (!window.ic?.plug?.createActor) return;
+      // check wether agent is present
+      // if not create it
+      if (!window.ic?.plug?.agent) {
+        console.warn("no agent found");
+        const result = await window.ic?.plug?.createAgent({
+          whitelist,
+          host,
+        });
+        result
+          ? console.log("agent created")
+          : console.warn("agent creation failed");
+      }
+      if (!window.ic?.plug?.createActor) {
+        console.warn("no createActor found");
+        return;
+      }
 
       // Fetch root key for certificate validation during development
       if (process.env.NODE_ENV !== "production") {

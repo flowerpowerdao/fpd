@@ -17,23 +17,25 @@ type Result_1 =
 type Result = 
  variant {
    err: text;
-   ok: ProposalState;
+   ok;
+ };
+type ProposalView = 
+ variant {
+   closed: ClosedProposal;
+   open: OpenProposal;
  };
 type ProposalState = 
  variant {
    closed;
    open;
  };
-type Proposal = 
+type ProposalOverview = 
  record {
-   description: text;
+   expiryDate: int;
    id: nat;
-   options: vec Option;
-   proposer: principal;
    state: ProposalState;
-   timestamp: int;
+   title: text;
    totalVotes: nat;
-   voters: List_1;
  };
 type Option = 
  record {
@@ -41,17 +43,31 @@ type Option =
    voters: Trie;
    votes: nat;
  };
+type OpenProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowersVoted: List;
+   id: nat;
+   options: vec OpenOption;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+ };
+type OpenOption = record {"text": text;};
 type List_1 = 
- opt record {
-       principal;
-       List_1;
-     };
-type List = 
  opt record {
        record {
          Key;
          nat;
        };
+       List_1;
+     };
+type List = 
+ opt record {
+       nat32;
        List;
      };
 type Leaf = 
@@ -65,6 +81,19 @@ type Key =
    key: principal;
  };
 type Hash = nat32;
+type ClosedProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowersVoted: List;
+   id: nat;
+   options: vec Option;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+ };
 type Branch = 
  record {
    left: Trie;
@@ -77,12 +106,12 @@ type AssocList =
          Key;
          nat;
        };
-       List;
+       List_1;
      };
 service : {
-  get_proposal: (nat) -> (opt Proposal) query;
-  list_proposals: () -> (vec Proposal) query;
-  submit_proposal: (text, vec text) -> (Result_1);
+  getProposal: (nat) -> (opt ProposalView) query;
+  listProposalOverviews: () -> (vec ProposalOverview) query;
+  listProposals: () -> (vec ProposalView) query;
+  submitProposal: (text, text, vec text, nat) -> (Result_1);
   vote: (VoteArgs) -> (Result);
-  whoami: () -> (text) query;
 }
