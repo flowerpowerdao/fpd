@@ -25,13 +25,8 @@ export const HOST =
     ? "http://localhost:3000"
     : "https://ic0.app";
 
-export const defaultAgent = new HttpAgent({
-  host: HOST,
-});
-
 type State = {
   isAuthed: "plug" | "stoic" | null;
-  agent: HttpAgent;
   daoActor: typeof daoActor;
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
@@ -40,7 +35,6 @@ type State = {
 
 const defaultState = {
   isAuthed: null,
-  agent: defaultAgent,
   daoActor,
   btcflowerActor,
   principal: null,
@@ -64,50 +58,54 @@ export const createStore = ({
         return;
       }
 
-      window.ic?.plug.requestConnect({ whitelist, host }).then(async () => {
-        // check wether agent and createActor are present
-        if (!window.ic?.plug?.agent) return;
-        if (!window.ic?.plug?.createActor) return;
-
-        // get the agent
-        const agent = await window.ic?.plug.agent;
-
-        // Fetch root key for certificate validation during development
-        if (process.env.NODE_ENV !== "production") {
-          agent.fetchRootKey().catch((err) => {
-            console.warn(
-              "Unable to fetch root key. Check to ensure that your local replica is running",
-            );
-            console.error(err);
-          });
-        }
-
-        const daoPlug = (await window.ic?.plug.createActor({
-          canisterId: daoCanisterId,
-          interfaceFactory: daoIdlFactory,
-        })) as typeof daoActor;
-
-        const btcflowerPlug = (await window.ic?.plug.createActor({
-          canisterId: btcflowerCanisterId,
-          interfaceFactory: btcflowerIdlFactory,
-        })) as typeof btcflowerActor;
-
-        if (!daoPlug || !btcflowerPlug) {
-          console.warn("couldn't create actors");
-          return;
-        }
-
-        const principal = await agent.getPrincipal();
-
-        update((prevState) => ({
-          ...prevState,
-          daoActor: daoPlug,
-          btcflowerActor: btcflowerPlug,
-          agent,
-          principal,
-          isAuthed: "plug",
-        }));
+      const hasAllowed = await window.ic?.plug.requestConnect({
+        whitelist,
+        host,
       });
+
+      if (!hasAllowed) {
+        console.warn("plug connection refused");
+        return;
+      }
+
+      // check wether agent and createActor are present
+      if (!window.ic?.plug?.agent) return;
+      if (!window.ic?.plug?.createActor) return;
+
+      // Fetch root key for certificate validation during development
+      if (process.env.NODE_ENV !== "production") {
+        window.ic.plug.agent.fetchRootKey().catch((err) => {
+          console.warn(
+            "Unable to fetch root key. Check to ensure that your local replica is running",
+          );
+          console.error(err);
+        });
+      }
+
+      const daoPlug = (await window.ic?.plug.createActor({
+        canisterId: daoCanisterId,
+        interfaceFactory: daoIdlFactory,
+      })) as typeof daoActor;
+
+      const btcflowerPlug = (await window.ic?.plug.createActor({
+        canisterId: btcflowerCanisterId,
+        interfaceFactory: btcflowerIdlFactory,
+      })) as typeof btcflowerActor;
+
+      if (!daoPlug || !btcflowerPlug) {
+        console.warn("couldn't create actors");
+        return;
+      }
+
+      const principal = await window.ic.plug.agent.getPrincipal();
+
+      update((prevState) => ({
+        ...prevState,
+        daoActor: daoPlug,
+        btcflowerActor: btcflowerPlug,
+        principal,
+        isAuthed: "plug",
+      }));
     },
     stoicConnect: () => {
       StoicIdentity.load().then(async (identity) => {
@@ -124,7 +122,6 @@ export const createStore = ({
 
         // Fetch root key for certificate validation during development
         if (process.env.NODE_ENV !== "production") {
-          console.log("moin");
           agent.fetchRootKey().catch((err) => {
             console.warn(
               "Unable to fetch root key. Check to ensure that your local replica is running",
@@ -133,13 +130,13 @@ export const createStore = ({
           });
         }
 
-        const dao = createDaoActor(daoCanisterId, {
+        const daoStoic = createDaoActor(daoCanisterId, {
           agentOptions: {
             source: agent,
           },
         });
 
-        const btcflower = createBtcflowerActor(btcflowerCanisterId, {
+        const btcflowerStoic = createBtcflowerActor(btcflowerCanisterId, {
           agentOptions: {
             source: agent,
           },
@@ -147,9 +144,8 @@ export const createStore = ({
 
         update((prevState) => ({
           ...prevState,
-          agent,
-          daoActor: dao,
-          btcflowerActor: btcflower,
+          daoActor: daoStoic,
+          btcflowerActor: btcflowerStoic,
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
         }));
@@ -198,7 +194,7 @@ declare global {
         requestConnect: (options?: {
           whitelist?: string[];
           host?: string;
-        }) => Promise<void>;
+        }) => Promise<boolean>;
         createActor: (options: {}) => Promise<
           typeof daoActor | typeof btcflowerActor
         >;
