@@ -25,6 +25,30 @@ try {
   console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
 }
 
+let btcFlowerNFTCansiterId: CanisterIds;
+
+try {
+  btcFlowerNFTCansiterId = isDev
+    ? require(path.resolve(
+        "..",
+        "btcflower-nft",
+        "btcflower-nft",
+        ".dfx",
+        "local",
+        "canister_ids.json",
+      ))
+    : require(path.resolve(
+        "..",
+        "btcflower-nft",
+        "btcflower-nft",
+        "canister_ids.json",
+      ));
+} catch (error) {
+  console.log(
+    "No local btcflower canister canister_ids.json found. Continuing production",
+  );
+}
+
 // List of all aliases for canisters
 // This will allow us to: import { canisterName } from "canisters/canisterName"
 const aliases = Object.entries(dfxJson.canisters).reduce(
@@ -49,7 +73,10 @@ const aliases = Object.entries(dfxJson.canisters).reduce(
 
 // Generate canister ids, required by the generated canister code in .dfx/local/canisters/*
 // This strange way of JSON.stringifying the value is required by vite
-const canisterDefinitions = Object.entries(canisterIds).reduce(
+const canisterDefinitions = Object.entries({
+  ...canisterIds,
+  ...btcFlowerNFTCansiterId,
+}).reduce(
   (acc, [key, val]) => ({
     ...acc,
     [`process.env.${key.toUpperCase()}_CANISTER_ID`]: isDev
