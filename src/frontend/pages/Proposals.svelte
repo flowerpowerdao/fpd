@@ -1,58 +1,32 @@
 <script lang="ts">
   import { store } from "../store";
-  import type {
-    ProposalOverview as ProposalOverviewType,
-    Result_1,
-  } from "../../declarations/dao/dao.did";
-  import { fromErr, fromOk, isOk } from "../utils";
+  import type { ProposalOverview as ProposalOverviewType } from "../../declarations/dao/dao.did";
   import { onMount } from "svelte";
   import OpenProposal from "../components/OpenProposal.svelte";
   import ClosedProposal from "../components/ClosedProposal.svelte";
-  import { fromVariantToString } from "../utils";
+  import Modal from "../components/Modal.svelte";
 
   let openProposals: ProposalOverviewType[] = [];
   let closedProposals: ProposalOverviewType[] = [];
-  let proposalReturn: Result_1;
-
-  const fetchProposals = async () => {
-    let proposals = await $store.daoActor.listProposalOverviews();
-
-    openProposals = proposals.filter(
-      (proposal) => fromVariantToString(proposal.state) === "open",
-    );
-    closedProposals = proposals.filter(
-      (proposal) => fromVariantToString(proposal.state) === "closed",
-    );
-  };
-
-  const submitProposal = async () => {
-    proposalReturn = await $store.daoActor.submitProposal(
-      "My first proposal",
-      "a great description",
-      ["fishing", "swimming", "dancing"],
-      BigInt(1),
-    );
-  };
 
   onMount(async () => {
-    await fetchProposals();
+    const proposals = await store.fetchProposals();
+    openProposals = proposals.openProposals;
+    closedProposals = proposals.closedProposals;
   });
 </script>
 
 <header class="App-header">
-  <button class="demo-button" on:click={submitProposal}>
-    Create Proposal: <br />{proposalReturn
-      ? isOk(proposalReturn)
-        ? fromOk(proposalReturn)
-        : fromErr(proposalReturn)
-      : "hi"}
-  </button>
-  <button class="demo-button" on:click={fetchProposals}>
-    List Proposals
-  </button>
+  {#if $store.error}
+    <div class="error">
+      {$store.error}
+    </div>
+  {/if}
 
+  {#if $store.isAuthed}
+    <Modal />
+  {/if}
 </header>
-
 <div class="text-4xl">Open Proposals</div>
 <div>
   {#each openProposals as proposal}
