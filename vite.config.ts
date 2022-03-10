@@ -38,7 +38,7 @@ try {
         "canister_ids.json",
       ))
     : require(path.resolve(
-        "..",
+        ".",
         "btcflower-nft",
         "btcflower-nft",
         "canister_ids.json",
