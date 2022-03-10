@@ -31,6 +31,13 @@ type State = {
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
   votingPower: number;
+  proposal: {
+    title: string;
+    description: string;
+    duration: number;
+    options: string[];
+  };
+  error: string;
 };
 
 const defaultState = {
@@ -39,6 +46,13 @@ const defaultState = {
   btcflowerActor,
   principal: null,
   votingPower: 0,
+  proposal: {
+    title: "",
+    description: "",
+    duration: 0,
+    options: [""],
+  },
+  error: "",
 };
 
 export const createStore = ({
@@ -48,10 +62,12 @@ export const createStore = ({
   whitelist?: string[];
   host?: string;
 }) => {
-  const { subscribe, update } = writable<State>(defaultState);
+  const { subscribe, update, set } = writable<State>(defaultState);
 
   return {
     subscribe,
+    set,
+    update,
     plugConnect: async () => {
       // check if plug is installed in the browser
       if (window.ic?.plug === undefined) {
@@ -182,6 +198,48 @@ export const createStore = ({
       window.ic?.plug?.deleteAgent();
       window.ic?.plug?.disconnect();
       update(() => defaultState);
+    },
+    submitProposal: async () => {
+      const daoActor = get({ subscribe }).daoActor;
+      const proposal = get({ subscribe }).proposal;
+      try {
+        //@TODO validate the proposal before submitting
+        await daoActor.submitProposal(
+          proposal.title,
+          proposal.description,
+          proposal.options,
+          BigInt(proposal.duration),
+        );
+        // reset proposal eo empty after successful submission
+        update((prevState) => {
+          return {
+            ...prevState,
+            proposal: defaultState.proposal,
+          };
+        });
+      } catch (err) {
+        console.error("ERROR", err);
+        update((prevState) => {
+          return {
+            ...prevState,
+            error: err,
+          };
+        });
+      }
+    },
+    fetchProposals: async () => {
+      let proposals = await get({ subscribe }).daoActor.listProposalOverviews();
+
+      const openProposals = proposals.filter(
+        (proposal) => fromVariantToString(proposal.state) === "open",
+      );
+      const closedProposals = proposals.filter(
+        (proposal) => fromVariantToString(proposal.state) === "closed",
+      );
+      return {
+        openProposals,
+        closedProposals,
+      };
     },
   };
 };
