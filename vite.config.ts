@@ -28,9 +28,10 @@ try {
 let btcFlowerNFTCanisterId: CanisterIds;
 
 try {
+  console.log(isDev);
   btcFlowerNFTCanisterId = isDev
     ? require(path.resolve(
-        "..",
+        ".",
         "btcflower-nft",
         "btcflower-nft",
         ".dfx",
