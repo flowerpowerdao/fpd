@@ -25,10 +25,10 @@ try {
   console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
 }
 
-let btcFlowerNFTCansiterId: CanisterIds;
+let btcFlowerNFTCanisterId: CanisterIds;
 
 try {
-  btcFlowerNFTCansiterId = isDev
+  btcFlowerNFTCanisterId = isDev
     ? require(path.resolve(
         "..",
         "btcflower-nft",
@@ -75,7 +75,7 @@ const aliases = Object.entries(dfxJson.canisters).reduce(
 // This strange way of JSON.stringifying the value is required by vite
 const canisterDefinitions = Object.entries({
   ...canisterIds,
-  ...btcFlowerNFTCansiterId,
+  ...btcFlowerNFTCanisterId,
 }).reduce(
   (acc, [key, val]) => ({
     ...acc,
