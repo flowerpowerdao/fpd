@@ -14,6 +14,11 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 
 shared(install) actor class DAO() = Self {
+  /*************
+  * CONSTANTS *
+  *************/
+  
+  let votingPeriod = 5; // in days
 
   /********************
   * STABLE VARIABLES *
@@ -47,7 +52,7 @@ shared(install) actor class DAO() = Self {
       title;
       description;
       timestamp = Time.now();
-      expiryDate = Time.now() + 86_400_000_000_000 * 5; // 5 days
+      expiryDate = Time.now() + 86_400_000_000_000 * votingPeriod; // 5 days
       proposer = caller;
       flowersVoted = List.nil();
       options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{
