@@ -1,4 +1,4 @@
-- clone the repository
+- clone the repository and run `git submodule init` and `git submodule update`
 - run `npm install` from root
 - run `dfx start --clean --background` from root
 - `cd btcflower-nft/btcflower-nft` and run `dfx deploy --argument '(principal "<your_principal>")' staging` to deploy the canister locally, make sure you are on the `local-deployment` branch
