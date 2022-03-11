@@ -62,11 +62,8 @@ module {
 
   public type ProposalState = {
     #open;
-    #closed;
-  };
-
-  public type UpdateSystemParamsPayload = {
-    proposalVoteThreshold : ?Nat;
+    #adopted;
+    #rejected;
   };
 
   public type VoteArgs = { 
