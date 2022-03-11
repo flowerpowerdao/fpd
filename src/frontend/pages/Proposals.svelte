@@ -4,7 +4,8 @@
   import { onMount } from "svelte";
   import OpenProposal from "../components/OpenProposal.svelte";
   import ClosedProposal from "../components/ClosedProposal.svelte";
-  import Modal from "../components/Modal.svelte";
+  import CreateProposal from "../components/CreateProposalModal.svelte";
+  import CreateProposalModal from "../components/CreateProposalModal.svelte";
 
   let openProposals: ProposalOverviewType[] = [];
   let closedProposals: ProposalOverviewType[] = [];
@@ -24,7 +25,7 @@
   {/if}
 
   {#if $store.isAuthed}
-    <Modal />
+    <CreateProposalModal />
   {/if}
 </header>
 <div class="text-4xl">Open Proposals</div>
