@@ -218,19 +218,36 @@ shared(install) actor class DAO() = Self {
   };
 
   func closeProposal(proposal: Types.Proposal) {
+    if (proposal.totalVotes > 1000) { // we assume that 1000 votes is the minimum threshold for adoption
       let updated = {
-          state = #closed;
-          description = proposal.description;
-          title = proposal.title;
-          options = proposal.options;
-          id = proposal.id;
-          flowersVoted = proposal.flowersVoted;
-          timestamp = proposal.timestamp;
-          expiryDate = proposal.expiryDate;
-          proposer = proposal.proposer;
-          totalVotes = proposal.totalVotes;
+        state = #adopted;
+        description = proposal.description;
+        title = proposal.title;
+        options = proposal.options;
+        id = proposal.id;
+        flowersVoted = proposal.flowersVoted;
+        timestamp = proposal.timestamp;
+        expiryDate = proposal.expiryDate;
+        proposer = proposal.proposer;
+        totalVotes = proposal.totalVotes;
       };
       putProposalInternal(proposal.id, updated);
+    } else {
+      let updated = {
+        state = #rejected;
+        description = proposal.description;
+        title = proposal.title;
+        options = proposal.options;
+        id = proposal.id;
+        flowersVoted = proposal.flowersVoted;
+        timestamp = proposal.timestamp;
+        expiryDate = proposal.expiryDate;
+        proposer = proposal.proposer;
+        totalVotes = proposal.totalVotes;
+      };
+
+      putProposalInternal(proposal.id, updated);
+    };
   };
 
   func getProposalInternal(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposalKey(id), Nat.equal);
