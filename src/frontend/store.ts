@@ -253,7 +253,7 @@ const getVotingPower = async (
   if (fromVariantToString(result) === "ok") {
     return getVariantValue(result).length;
   } else {
-    console.error("error getting voting power");
+    console.error(`error getting voting power: ${JSON.stringify(getVariantValue(result))}`);
     return 0;
   }
 };
