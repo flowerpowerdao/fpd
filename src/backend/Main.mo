@@ -14,6 +14,11 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 
 shared(install) actor class DAO() = Self {
+
+  /********************
+  * STABLE VARIABLES *
+  ********************/
+
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
   stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
   stable var nextProposalId : Nat = 0;
@@ -28,6 +33,12 @@ shared(install) actor class DAO() = Self {
 
   /// Submit a proposal
   public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Types.Result<Nat, Text> {
+
+    switch (await getFlowersFrom(caller)) {
+      case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
+      case _ {};
+    };
+
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
