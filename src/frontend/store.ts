@@ -19,6 +19,7 @@ import {
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
 } from "../canisters/btcflower";
+import type { ProposalOverview } from "../declarations/dao/dao.did";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -31,13 +32,14 @@ type State = {
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
   votingPower: number;
-  proposal: {
-    title: string;
-    description: string;
-    duration: number;
-    options: string[];
-  };
   error: string;
+  proposals: ProposalOverview[];
+};
+
+export type NewProposal = {
+  title: string;
+  description: string;
+  options: string[];
 };
 
 const defaultState = {
@@ -46,13 +48,8 @@ const defaultState = {
   btcflowerActor,
   principal: null,
   votingPower: 0,
-  proposal: {
-    title: "",
-    description: "",
-    duration: 0,
-    options: [""],
-  },
   error: "",
+  proposals: [],
 };
 
 export const createStore = ({
@@ -62,11 +59,10 @@ export const createStore = ({
   whitelist?: string[];
   host?: string;
 }) => {
-  const { subscribe, update, set } = writable<State>(defaultState);
+  const { subscribe, update } = writable<State>(defaultState);
 
   return {
     subscribe,
-    set,
     update,
     plugConnect: async () => {
       // check if plug is installed in the browser
@@ -199,24 +195,15 @@ export const createStore = ({
       window.ic?.plug?.disconnect();
       update(() => defaultState);
     },
-    submitProposal: async () => {
+    submitProposal: async (proposal: NewProposal) => {
       const daoActor = get({ subscribe }).daoActor;
-      const proposal = get({ subscribe }).proposal;
       try {
         //@TODO validate the proposal before submitting
         await daoActor.submitProposal(
           proposal.title,
           proposal.description,
           proposal.options,
-          BigInt(proposal.duration),
         );
-        // reset proposal eo empty after successful submission
-        update((prevState) => {
-          return {
-            ...prevState,
-            proposal: defaultState.proposal,
-          };
-        });
       } catch (err) {
         console.error("ERROR", err);
         update((prevState) => {
@@ -230,16 +217,12 @@ export const createStore = ({
     fetchProposals: async () => {
       let proposals = await get({ subscribe }).daoActor.listProposalOverviews();
 
-      const openProposals = proposals.filter(
-        (proposal) => fromVariantToString(proposal.state) === "open",
-      );
-      const closedProposals = proposals.filter(
-        (proposal) => fromVariantToString(proposal.state) === "closed",
-      );
-      return {
-        openProposals,
-        closedProposals,
-      };
+      update((prevState) => {
+        return {
+          ...prevState,
+          proposals,
+        };
+      });
     },
   };
 };
@@ -253,7 +236,9 @@ const getVotingPower = async (
   if (fromVariantToString(result) === "ok") {
     return getVariantValue(result).length;
   } else {
-    console.error(`error getting voting power: ${JSON.stringify(getVariantValue(result))}`);
+    console.error(
+      `error getting voting power: ${JSON.stringify(getVariantValue(result))}`,
+    );
     return 0;
   }
 };

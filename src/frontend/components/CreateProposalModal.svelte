@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
   import Form from "./Form.svelte";
-  import { store } from "../store";
+  import { NewProposal, store } from "../store";
 
+  export let proposal: NewProposal;
   let openModal = false;
   const toggleModal = () => {
     openModal = !openModal;
@@ -16,9 +17,19 @@
 
   const submitProposal = async () => {
     loading = true;
-    await store.submitProposal();
+    await store.submitProposal(proposal);
     openModal = false;
     loading = false;
+    clearProposal();
+    await store.fetchProposals();
+  };
+
+  const clearProposal = () => {
+    proposal = {
+      description: "",
+      title: "",
+      options: [""],
+    };
   };
 </script>
 
@@ -151,7 +162,7 @@
               </div>
             </div>
           </div>
-          <Form />
+          <Form {proposal} />
           <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               disabled={loading}
@@ -163,10 +174,10 @@
               >{loading ? "Submiting..." : "Submit"}</button
             >
             <button
-              on:click={toggleModal}
+              on:click={clearProposal}
               type="button"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-              >Cancel</button
+              >Clear</button
             >
           </div>
         </div>

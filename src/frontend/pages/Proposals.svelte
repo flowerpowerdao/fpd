@@ -1,19 +1,27 @@
 <script lang="ts">
-  import { store } from "../store";
+  import { NewProposal, store } from "../store";
   import type { ProposalOverview as ProposalOverviewType } from "../../declarations/dao/dao.did";
   import { onMount } from "svelte";
   import OpenProposal from "../components/OpenProposal.svelte";
   import ClosedProposal from "../components/ClosedProposal.svelte";
-  import CreateProposal from "../components/CreateProposalModal.svelte";
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
+  import { fromVariantToString } from "../utils";
 
-  let openProposals: ProposalOverviewType[] = [];
-  let closedProposals: ProposalOverviewType[] = [];
+  $: openProposals = $store.proposals.filter(
+    (proposal) => fromVariantToString(proposal.state) === "open",
+  );
+  $: closedProposals = $store.proposals.filter(
+    (proposal) => fromVariantToString(proposal.state) === "closed",
+  );
+
+  let proposal: NewProposal = {
+    title: "",
+    description: "",
+    options: [""],
+  };
 
   onMount(async () => {
-    const proposals = await store.fetchProposals();
-    openProposals = proposals.openProposals;
-    closedProposals = proposals.closedProposals;
+    await store.fetchProposals();
   });
 </script>
 
@@ -24,8 +32,8 @@
     </div>
   {/if}
 
-  {#if $store.isAuthed}
-    <CreateProposalModal />
+  {#if $store.isAuthed && $store.votingPower > 0}
+    <CreateProposalModal {proposal} />
   {/if}
 </header>
 <div class="text-4xl">Open Proposals</div>

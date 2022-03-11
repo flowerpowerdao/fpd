@@ -1,8 +1,9 @@
-<script>
-  import { store } from "../store";
+<script lang="ts">
+  import { NewProposal } from "../store";
 
+  export let proposal: NewProposal;
   const addNewOption = () => {
-    $store.proposal.options = [...$store.proposal.options, ""];
+    proposal.options = [...proposal.options, ""];
   };
 </script>
 
@@ -15,7 +16,7 @@
             >Title</label
           >
           <input
-            bind:value={$store.proposal.title}
+            bind:value={proposal.title}
             type="text"
             name="title"
             id="title"
@@ -29,7 +30,7 @@
             class="block text-sm font-medium text-gray-700">Description</label
           >
           <input
-            bind:value={$store.proposal.description}
+            bind:value={proposal.description}
             type="text"
             name="description"
             id="description"
@@ -44,7 +45,7 @@
             class="inline-flex items-center py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700"
             >+ Add new option</button
           >
-          {#each $store.proposal.options as option, index}
+          {#each proposal.options as option, index}
             <label
               for={`option-${index + 1}`}
               class="block text-sm font-medium text-gray-700"
@@ -58,18 +59,6 @@
               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
           {/each}
-        </div>
-        <div class="col-span-6">
-          <label for="duration" class="block text-sm font-medium text-gray-700"
-            >Duration (Hours)</label
-          >
-          <input
-            bind:value={$store.proposal.duration}
-            type="text"
-            name="duration"
-            id="duration"
-            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-          />
         </div>
       </div>
     </div>
