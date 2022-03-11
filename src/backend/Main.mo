@@ -14,6 +14,16 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 
 shared(install) actor class DAO() = Self {
+  /*************
+  * CONSTANTS *
+  *************/
+  
+  let votingPeriod = 5; // in days
+
+  /********************
+  * STABLE VARIABLES *
+  ********************/
+
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
   stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
   stable var nextProposalId : Nat = 0;
@@ -27,7 +37,13 @@ shared(install) actor class DAO() = Self {
   ******************/
 
   /// Submit a proposal
-  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text], duration : Nat) : async Types.Result<Nat, Text> {
+  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Types.Result<Nat, Text> {
+
+    switch (await getFlowersFrom(caller)) {
+      case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
+      case _ {};
+    };
+
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
@@ -36,7 +52,7 @@ shared(install) actor class DAO() = Self {
       title;
       description;
       timestamp = Time.now();
-      expiryDate = Time.now() + 86_400_000_000_000 * duration; // 5 days
+      expiryDate = Time.now() + 86_400_000_000_000 * votingPeriod; // 5 days
       proposer = caller;
       flowersVoted = List.nil();
       options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{
