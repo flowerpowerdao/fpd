@@ -19,6 +19,7 @@ import {
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
 } from "../canisters/btcflower";
+import type { ProposalOverview } from "../declarations/dao/dao.did";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -31,6 +32,14 @@ type State = {
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
   votingPower: number;
+  error: string;
+  proposals: ProposalOverview[];
+};
+
+export type NewProposal = {
+  title: string;
+  description: string;
+  options: string[];
 };
 
 const defaultState = {
@@ -39,6 +48,8 @@ const defaultState = {
   btcflowerActor,
   principal: null,
   votingPower: 0,
+  error: "",
+  proposals: [],
 };
 
 export const createStore = ({
@@ -52,6 +63,7 @@ export const createStore = ({
 
   return {
     subscribe,
+    update,
     plugConnect: async () => {
       // check if plug is installed in the browser
       if (window.ic?.plug === undefined) {
@@ -183,6 +195,35 @@ export const createStore = ({
       window.ic?.plug?.disconnect();
       update(() => defaultState);
     },
+    submitProposal: async (proposal: NewProposal) => {
+      const daoActor = get({ subscribe }).daoActor;
+      try {
+        //@TODO validate the proposal before submitting
+        await daoActor.submitProposal(
+          proposal.title,
+          proposal.description,
+          proposal.options,
+        );
+      } catch (err) {
+        console.error("ERROR", err);
+        update((prevState) => {
+          return {
+            ...prevState,
+            error: err,
+          };
+        });
+      }
+    },
+    fetchProposals: async () => {
+      let proposals = await get({ subscribe }).daoActor.listProposalOverviews();
+
+      update((prevState) => {
+        return {
+          ...prevState,
+          proposals,
+        };
+      });
+    },
   };
 };
 
@@ -195,7 +236,9 @@ const getVotingPower = async (
   if (fromVariantToString(result) === "ok") {
     return getVariantValue(result).length;
   } else {
-    console.error("error getting voting power");
+    console.error(
+      `error getting voting power: ${JSON.stringify(getVariantValue(result))}`,
+    );
     return 0;
   }
 };

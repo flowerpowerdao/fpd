@@ -1,0 +1,3 @@
+[submodule "btcflower-nft"]
+	path = btcflower-nft
+	url = git@github.com:letmejustputthishere/btcflower-nft.git

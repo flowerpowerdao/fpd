@@ -1,1 +1,9 @@
-If you are developing locally you will need to deploy the btc flower canister and replace dev canisterId in [index.js](./src/canisters/btcflower/index.js)
+- clone the repository and run `git submodule init` and `git submodule update`
+- run `npm install` from root
+- run `dfx start --clean --background` from root
+- `cd btcflower-nft/btcflower-nft` and run `dfx deploy --argument '(principal "<your_principal>")' staging` to deploy the canister locally, make sure you are on the `local-deployment` branch
+- now run `dfx canister call staging addAsset '(record {name = "privat";payload = record {ctype = "text/html"; data = vec {blob "hello world!"} } })'` to add an asset
+- now run `dfx canister call staging initMint '("<your_address>")'` mint NFTs to your address, preferably one that is tied to plug or stoic
+- go back to the root directory and run `npm run dev`
+
+
