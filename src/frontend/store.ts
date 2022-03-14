@@ -148,30 +148,18 @@ export const createStore = ({
           //No existing connection, lets make one!
           identity = await StoicIdentity.connect();
         }
-        const agent = new HttpAgent({
-          identity,
-          host: HOST,
-        });
-
-        // Fetch root key for certificate validation during development
-        if (process.env.NODE_ENV !== "production") {
-          agent.fetchRootKey().catch((err) => {
-            console.warn(
-              "Unable to fetch root key. Check to ensure that your local replica is running",
-            );
-            console.error(err);
-          });
-        }
 
         const daoStoic = createDaoActor(daoCanisterId, {
           agentOptions: {
-            source: agent,
+            identity,
+            host: HOST,
           },
         });
 
         const btcflowerStoic = createBtcflowerActor(btcflowerCanisterId, {
           agentOptions: {
-            source: agent,
+            identity,
+            host: HOST,
           },
         });
 
