@@ -12,14 +12,16 @@ import AccountId "mo:accountid/AccountId";
 import Hex "mo:hex/Hex";
 
 import Types "./Types";
+import Utils "./Utils";
 
-shared(install) actor class DAO() = Self {
+shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCanisterId : ?Text) = Self {
   /*************
   * CONSTANTS *
   *************/
-  
-  let votingPeriod = 5; // in days
 
+  let votingPeriod = 5; // in days
+  let votingThreshold = 1000; // we assume that 1000 votes is the minimum threshold for adoption
+  
   /********************
   * STABLE VARIABLES *
   ********************/
@@ -64,7 +66,17 @@ shared(install) actor class DAO() = Self {
         return option;
       });
       totalVotes = 0;
-      state = #open;
+      state = 
+      // for local deployment every second proposal is considered adopted
+      if (isLocalDeployment) {
+        if (proposalId % 2 == 0) {
+          #open
+        } else {
+          #adopted
+        }
+      } else {
+        #open
+      };
       voters = List.nil();
     };
     putProposalInternal(proposalId, proposal);
@@ -188,9 +200,18 @@ shared(install) actor class DAO() = Self {
   *******************/
 
   func getFlowersFrom(principal: Principal) : async ?[Nat32] {
-    let accountId = Hex.encode(AccountId.fromPrincipal(principal, null));
-    let btcflower = actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
-    
+    let accountId = Utils.toLowerString(Hex.encode(AccountId.fromPrincipal(principal, null)));
+    var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+
+    if (isLocalDeployment) {
+      switch (localDeploymentCanisterId) {
+        case null  return null;
+        case (?localDeploymentCanisterId) btcflower := actor(localDeploymentCanisterId) : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+      }
+    } else {
+      btcflower := actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+    };
+
     switch (await btcflower.tokens(accountId)) {
       case (#ok(flowers)) {
         return ?flowers
@@ -234,7 +255,7 @@ shared(install) actor class DAO() = Self {
   };
 
   func closeProposal(proposal: Types.Proposal) {
-    if (proposal.totalVotes > 1000) { // we assume that 1000 votes is the minimum threshold for adoption
+    if (proposal.totalVotes > votingThreshold) {
       let updated = {
         state = #adopted;
         description = proposal.description;

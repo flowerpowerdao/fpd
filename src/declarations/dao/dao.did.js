@@ -82,4 +82,4 @@ export const idlFactory = ({ IDL }) => {
   });
   return DAO;
 };
-export const init = ({ IDL }) => { return []; };
+export const init = ({ IDL }) => { return [IDL.Bool, IDL.Opt(IDL.Text)]; };

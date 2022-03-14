@@ -5,9 +5,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "HOST=0.0.0.0 vite preview --host",
-    "seed": "./seed.sh",
+    "seed": "./seed.zsh",
     "prebuild": "npm run copy:types",
-    "predev": "dfx deploy && npm run seed",
+    "predev": ". set-env.zsh && dfx deploy --argument '(true, opt '$BTCFLOWER_LOCAL_CANISTER_ID')' && npm run seed",
     "copy:types": "rsync -avr .dfx/$(echo ${DFX_NETWORK:-'**'})/canisters/** --exclude='assets/' --exclude='idl/' --exclude='*.wasm' --delete src/declarations",
     "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'"
   },
