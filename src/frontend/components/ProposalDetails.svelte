@@ -91,8 +91,7 @@
         </div>
         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
           <button
-            on:click={(e) => {
-              e.preventDefault();
+            on:click|preventDefault={(e) => {
               error = "";
               toggleModal();
             }}
