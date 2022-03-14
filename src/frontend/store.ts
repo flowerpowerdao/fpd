@@ -128,6 +128,7 @@ export const createStore = ({
       const principal = await window.ic.plug.agent.getPrincipal();
 
       const votingPower = await getVotingPower(principal, btcflowerPlug);
+      const proposals = await daoPlug.listProposalOverviews();
 
       update((prevState) => ({
         ...prevState,
@@ -136,6 +137,7 @@ export const createStore = ({
         principal,
         isAuthed: "plug",
         votingPower,
+        proposals,
       }));
     },
     stoicConnect: () => {
@@ -177,6 +179,7 @@ export const createStore = ({
           identity.getPrincipal(),
           btcflowerStoic,
         );
+        const proposals = await daoStoic.listProposalOverviews();
 
         update((prevState) => ({
           ...prevState,
@@ -185,6 +188,7 @@ export const createStore = ({
           principal: identity.getPrincipal(),
           isAuthed: "stoic",
           votingPower,
+          proposals,
         }));
       });
     },

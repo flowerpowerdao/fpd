@@ -11,7 +11,7 @@
     getVariantValue,
   } from "../utils";
   import { store } from "../store";
-  import OpenOption from "../components/OpenOption.svelte";
+  import ProposalDetails from "../components/ProposalDetails.svelte";
 
   // this is needed for URL params
   export let params;
@@ -24,7 +24,7 @@
   const isClosedProposal = (
     proposal: OpenProposal | ClosedProposal,
   ): proposal is ClosedProposal => {
-    if (fromVariantToString(proposal.state) === "closed") {
+    if (fromVariantToString(proposal.state) === "adopted" || fromVariantToString(proposal.state) === "rejected") {
       return true;
     } else {
       return false;
@@ -68,26 +68,7 @@
       {/each}
     </div>
   {:else}
-    <div class="flex flex-col m-5 rounded-3xl bg-green-400 text-center p-5">
-      <div class="text-2xl flex justify-between">
-        <div>#{proposal.id}</div>
-        <div>{proposal.title}</div>
-      </div>
-      <div class="">
-        Expiry Date: {fromTimestamp(proposal.expiryDate).toLocaleString()}
-      </div>
-      <div class="">
-        Total Votes Cast: {proposal.totalVotes}
-      </div>
-      <div>
-        {proposal.description}
-      </div>
-      {#each proposal.options as option}
-        <div class="flex justify-center">
-          <OpenOption {option} />
-        </div>
-      {/each}
-    </div>
+    <ProposalDetails {proposal} />
   {/if}
 {:else}
   <div>No proposal found for ID {params.id}</div>

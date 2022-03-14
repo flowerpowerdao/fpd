@@ -21,7 +21,6 @@ export interface DAO {
       arg_0: string,
       arg_1: string,
       arg_2: Array<string>,
-      arg_3: bigint,
     ) => Promise<Result_1>,
   'vote' : (arg_0: VoteArgs) => Promise<Result>,
 }
@@ -51,8 +50,9 @@ export interface ProposalOverview {
   'totalVotes' : bigint,
   'state' : ProposalState,
 }
-export type ProposalState = { 'closed' : null } |
-  { 'open' : null };
+export type ProposalState = { 'open' : null } |
+  { 'rejected' : null } |
+  { 'adopted' : null };
 export type ProposalView = { 'closed' : ClosedProposal } |
   { 'open' : OpenProposal };
 export type Result = { 'ok' : null } |
