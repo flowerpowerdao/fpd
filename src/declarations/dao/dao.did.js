@@ -2,7 +2,11 @@ export const idlFactory = ({ IDL }) => {
   const List = IDL.Rec();
   const List_1 = IDL.Rec();
   const Trie = IDL.Rec();
-  const ProposalState = IDL.Variant({ 'closed' : IDL.Null, 'open' : IDL.Null });
+  const ProposalState = IDL.Variant({
+    'open' : IDL.Null,
+    'rejected' : IDL.Null,
+    'adopted' : IDL.Null,
+  });
   List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
   const Branch = IDL.Record({
     'left' : Trie,
@@ -70,7 +74,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
     'submitProposal' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Vec(IDL.Text), IDL.Nat],
+        [IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
         [Result_1],
         [],
       ),
@@ -78,4 +82,4 @@ export const idlFactory = ({ IDL }) => {
   });
   return DAO;
 };
-export const init = ({ IDL }) => { return []; };
+export const init = ({ IDL }) => { return [IDL.Bool, IDL.Opt(IDL.Text)]; };

@@ -26,8 +26,9 @@ type ProposalView =
  };
 type ProposalState = 
  variant {
-   closed;
+   adopted;
    open;
+   rejected;
  };
 type ProposalOverview = 
  record {
@@ -86,7 +87,7 @@ type DAO =
    getProposal: (nat) -> (opt ProposalView) query;
    listProposalOverviews: () -> (vec ProposalOverview) query;
    listProposals: () -> (vec ProposalView) query;
-   submitProposal: (text, text, vec text, nat) -> (Result_1);
+   submitProposal: (text, text, vec text) -> (Result_1);
    vote: (VoteArgs) -> (Result);
  };
 type ClosedProposal = 
@@ -116,4 +117,4 @@ type AssocList =
        };
        List_1;
      };
-service : () -> DAO
+service : (bool, opt text) -> DAO
