@@ -24,7 +24,7 @@
   const isClosedProposal = (
     proposal: OpenProposal | ClosedProposal,
   ): proposal is ClosedProposal => {
-    if (fromVariantToString(proposal.state) === "closed") {
+    if (fromVariantToString(proposal.state) === "adopted" || fromVariantToString(proposal.state) === "rejected") {
       return true;
     } else {
       return false;

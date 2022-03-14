@@ -10,7 +10,9 @@
     (proposal) => fromVariantToString(proposal.state) === "open",
   );
   $: closedProposals = $store.proposals.filter(
-    (proposal) => fromVariantToString(proposal.state) === "closed",
+    (proposal) =>
+      fromVariantToString(proposal.state) === "adopted" ||
+      fromVariantToString(proposal.state) === "rejected",
   );
 
   let proposal: NewProposal = {
