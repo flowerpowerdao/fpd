@@ -29,7 +29,7 @@
       <span>
         {$store.principal.toString().slice(0, 5) +
           "..." +
-          $store.principal.toString().slice(-5)}
+          $store.principal.toString().slice(-2)}
       </span>
     </div>
     <span> {$store.votingPower + " "} Flowers </span>

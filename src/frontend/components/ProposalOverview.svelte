@@ -9,7 +9,7 @@
 <li>
   <!-- svelte-ignore a11y-missing-attribute -->
   <a
-    on:click={() => push(`/proposal/${proposal.id}`)}
+    on:click={() => push(`/proposals/${proposal.id}`)}
     class="block hover:bg-gray-50 cursor-pointer"
   >
     <div class="px-4 py-4 flex items-center sm:px-6">

@@ -16,11 +16,11 @@
       class="plug-button p-2 flex justify-between items-center"
       on:click={store.disconnect}
     >
-      <div class="flex items-center mr-4">
+      <div class="flex items-center mr-2">
         <img class="plug-logo" src={plugLogo} alt="plug-logo" />
         {$store.principal.toString().slice(0, 5) +
           "..." +
-          $store.principal.toString().slice(-5)}
+          $store.principal.toString().slice(-2)}
       </div>
       <span>{$store.votingPower + " "} Flowers</span>
     </button>
@@ -48,7 +48,7 @@
     );
     border-radius: 10px;
     color: #fff;
-    padding: 6px 32px;
+    padding: 6px 6px;
     cursor: pointer;
     transition: opacity 0.3s ease-in, transform 0.3s ease-in-out;
     transform: scale(1);
