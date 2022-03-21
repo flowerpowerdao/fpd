@@ -67,6 +67,7 @@ export const idlFactory = ({ IDL }) => {
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const DAO = IDL.Service({
     'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(ProposalView)], ['query']),
+    'getVotingHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'listProposalOverviews' : IDL.Func(
         [],
         [IDL.Vec(ProposalOverview)],

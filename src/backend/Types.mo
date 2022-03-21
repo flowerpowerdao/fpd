@@ -7,6 +7,8 @@ import Trie "mo:base/Trie";
 module {
   public type Result<T, E> = Result.Result<T, E>;
 
+  public type VotingHistories = Trie.Trie<Principal, List.List<Nat>>;
+
   public type Option = {
     text: Text; 
     votes: Nat;

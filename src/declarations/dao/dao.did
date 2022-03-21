@@ -85,6 +85,7 @@ type Hash = nat32;
 type DAO = 
  service {
    getProposal: (nat) -> (opt ProposalView) query;
+   getVotingHistory: () -> (vec nat) query;
    listProposalOverviews: () -> (vec ProposalOverview) query;
    listProposals: () -> (vec ProposalView) query;
    submitProposal: (text, text, vec text) -> (Result_1);

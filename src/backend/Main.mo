@@ -27,7 +27,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   ********************/
 
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
-  stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
+  stable var votingHistories : Types.VotingHistories = Trie.empty();
   stable var nextProposalId : Nat = 0;
 
   system func heartbeat() : async () {
@@ -195,6 +195,21 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
     };
   };
 
+  public shared query({caller}) func getVotingHistory() : async [Nat] {
+    let mappedUserVotingHistory = Iter.map(Iter.filter(
+        Trie.iter(votingHistories),
+        func (kv : (Principal, List.List<Nat>)) : Bool {
+          return kv.0 == caller;
+        }
+      ),
+      func (kv : (Principal, List.List<Nat>)) : [Nat] {
+        return List.toArray(kv.1);
+      }
+    );
+
+    Array.flatten(Iter.toArray(mappedUserVotingHistory))
+  };
+
   /*******************
   * PRIVATE METHODS *
   *******************/
@@ -294,7 +309,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   func getVotingHistoryInternal(principal : Principal) : ?List.List<Nat> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
-  
+
   func putVotingHistoryInternal(principal : Principal, votingHistory: List.List<Nat>) {
     votingHistories:= Trie.put(votingHistories, Types.accountKey(principal), Principal.equal, votingHistory).0;
   };

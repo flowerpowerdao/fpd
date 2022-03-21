@@ -15,6 +15,7 @@ export interface ClosedProposal {
 }
 export interface DAO {
   'getProposal' : (arg_0: bigint) => Promise<[] | [ProposalView]>,
+  'getVotingHistory' : () => Promise<Array<bigint>>,
   'listProposalOverviews' : () => Promise<Array<ProposalOverview>>,
   'listProposals' : () => Promise<Array<ProposalView>>,
   'submitProposal' : (
