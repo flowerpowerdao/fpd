@@ -11,7 +11,7 @@
     // Exact path
     "/proposals": Proposals,
     "/proposals/:id": Proposal,
-    "/voting_history": VotingHistory,
+    "/voting-history": VotingHistory,
 
     // Catch-all
     // This is optional, but if present it must be the last
