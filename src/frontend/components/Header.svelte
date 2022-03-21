@@ -70,7 +70,7 @@
           <!-- svelte-ignore a11y-missing-attribute -->
           <a
             class="block hover:bg-gray-50 cursor-pointer"
-            on:click={() => push(`/voting_history`)}
+            on:click={() => push(`/voting-history`)}
             >Voting History
           </a>
         </button>
