@@ -196,18 +196,10 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   public shared query({caller}) func getVotingHistory() : async [Nat] {
-    let mappedUserVotingHistory = Iter.map(Iter.filter(
-        Trie.iter(votingHistories),
-        func (kv : (Principal, List.List<Nat>)) : Bool {
-          return kv.0 == caller;
-        }
-      ),
-      func (kv : (Principal, List.List<Nat>)) : [Nat] {
-        return List.toArray(kv.1);
-      }
-    );
-
-    Array.flatten(Iter.toArray(mappedUserVotingHistory))
+    switch (getVotingHistoryInternal(caller)) {
+      case null { return [] };
+      case (?votingHistory) { return List.toArray(votingHistory) };
+    };
   };
 
   /*******************
