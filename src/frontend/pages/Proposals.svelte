@@ -26,7 +26,7 @@
   });
 </script>
 
-<header class="App-header">
+<header class="proposals">
   {#if $store.error}
     <div class="error">
       {$store.error}
@@ -37,7 +37,7 @@
     <CreateProposalModal {proposal} />
   {/if}
 </header>
-<div class="text-4xl">Open Proposals</div>
+<div class="text-xl">Open Proposals</div>
 <div>
   {#each openProposals as proposal}
     <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -48,7 +48,7 @@
   {/each}
 </div>
 
-<div class="text-4xl">Closed Proposals</div>
+<div class="text-xl">Closed Proposals</div>
 <div>
   {#each closedProposals as proposal}
     <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -60,7 +60,7 @@
 </div>
 
 <style>
-  .App-header {
+  .proposals {
     margin-top: 150px;
     display: flex;
     flex-direction: column;
