@@ -34,6 +34,7 @@ type State = {
   votingPower: number;
   error: string;
   proposals: ProposalOverview[];
+  votingHistory: bigint[];
 };
 
 export type NewProposal = {
@@ -50,6 +51,7 @@ const defaultState = {
   votingPower: 0,
   error: "",
   proposals: [],
+  votingHistory: [],
 };
 
 export const createStore = ({
@@ -213,6 +215,16 @@ export const createStore = ({
         return {
           ...prevState,
           proposals,
+        };
+      });
+    },
+    fetchVotingHistory: async () => {
+      let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
+
+      update((prevState) => {
+        return {
+          ...prevState,
+          votingHistory,
         };
       });
     },
