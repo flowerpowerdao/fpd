@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   import type {
     OpenProposal,
     ClosedProposal,
@@ -37,6 +39,11 @@
     loading = false;
     console.log("vote cast", res);
   };
+  onMount(async () => {
+    // fetch voting history to mitigate the case where user open the proposal details page directly
+    // @TODO maybe we need an init store where we fetch all state?
+    await store.fetchVotingHistory();
+  });
 </script>
 
 <div class="mt-10 sm:mt-0">

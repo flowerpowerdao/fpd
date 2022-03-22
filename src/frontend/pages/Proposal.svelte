@@ -18,7 +18,7 @@
 
   // variables
   let proposal: OpenProposal | ClosedProposal;
-  let status: string;
+  let proposalState: string;
 
   // functions
   const isClosedProposal = (
@@ -38,7 +38,9 @@
     let proposalView = await $store.daoActor.getProposal(BigInt(params.id));
     let temp = fromNullable(proposalView); // undefined or ProposalView
     if (temp) {
-      status = fromVariantToString(temp);
+      if ("closed" in temp) {
+        proposalState = fromVariantToString(temp.closed.state);
+      }
       proposal = getVariantValue(temp);
     }
   };
@@ -66,7 +68,7 @@
           100}%
       </div>
       <div class="">
-        Proposal state: {status}
+        Proposal state: <span class="text-lg">{proposalState}</span>
       </div>
       <div>
         Proposal Description {proposal.description}
@@ -81,9 +83,9 @@
             disabled
           />
           <label for={`option-${index}`}>
-            {option.text}
+            {option.text},
           </label>
-          Votes {option.votes} Voters {fromVariantToString(option.voters) ===
+          Votes {option.votes}, Voters {fromVariantToString(option.voters) ===
           "empty"
             ? "None"
             : fromVariantToString(option.voters)}
