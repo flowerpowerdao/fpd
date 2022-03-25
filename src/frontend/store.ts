@@ -130,7 +130,9 @@ export const createStore = ({
       const principal = await window.ic.plug.agent.getPrincipal();
 
       const votingPower = await getVotingPower(principal, btcflowerPlug);
-      const proposals = await daoPlug.listProposalOverviews();
+      const proposals = await daoPlug
+        .listProposalOverviews()
+        .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
 
       update((prevState) => ({
         ...prevState,
@@ -169,7 +171,9 @@ export const createStore = ({
           identity.getPrincipal(),
           btcflowerStoic,
         );
-        const proposals = await daoStoic.listProposalOverviews();
+        const proposals = await daoStoic
+          .listProposalOverviews()
+          .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
 
         update((prevState) => ({
           ...prevState,
@@ -209,7 +213,9 @@ export const createStore = ({
       }
     },
     fetchProposals: async () => {
-      let proposals = await get({ subscribe }).daoActor.listProposalOverviews();
+      const proposals = await get({ subscribe })
+        .daoActor.listProposalOverviews()
+        .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
 
       update((prevState) => {
         return {
