@@ -63,192 +63,196 @@ export const createStore = ({
 }) => {
   const { subscribe, update } = writable<State>(defaultState);
 
-  return {
-    subscribe,
-    update,
-    plugConnect: async () => {
-      // check if plug is installed in the browser
-      if (window.ic?.plug === undefined) {
-        window.open("https://plugwallet.ooo/", "_blank");
-        return;
+  const stoicConnect = () => {
+    StoicIdentity.load().then(async (identity) => {
+      if (identity !== false) {
+        //ID is a already connected wallet!
+      } else {
+        //No existing connection, lets make one!
+        identity = await StoicIdentity.connect();
       }
 
-      const connected = await window.ic?.plug?.isConnected();
-      if (!connected) {
-        const hasAllowed = await window.ic?.plug.requestConnect({
-          whitelist,
-          host,
-        });
-        if (!hasAllowed) {
-          console.warn("plug connection refused");
-          return;
-        }
-      }
+      const daoStoic = createDaoActor(daoCanisterId, {
+        agentOptions: {
+          identity,
+          host: HOST,
+        },
+      });
 
-      // check wether agent is present
-      // if not create it
-      if (!window.ic?.plug?.agent) {
-        console.warn("no agent found");
-        const result = await window.ic?.plug?.createAgent({
-          whitelist,
-          host,
-        });
-        result
-          ? console.log("agent created")
-          : console.warn("agent creation failed");
-      }
-      if (!window.ic?.plug?.createActor) {
-        console.warn("no createActor found");
-        return;
-      }
+      const btcflowerStoic = createBtcflowerActor(btcflowerCanisterId, {
+        agentOptions: {
+          identity,
+          host: HOST,
+        },
+      });
 
-      // Fetch root key for certificate validation during development
-      if (process.env.NODE_ENV !== "production") {
-        window.ic.plug.agent.fetchRootKey().catch((err) => {
-          console.warn(
-            "Unable to fetch root key. Check to ensure that your local replica is running",
-          );
-          console.error(err);
-        });
-      }
-
-      const daoPlug = (await window.ic?.plug.createActor({
-        canisterId: daoCanisterId,
-        interfaceFactory: daoIdlFactory,
-      })) as typeof daoActor;
-
-      const btcflowerPlug = (await window.ic?.plug.createActor({
-        canisterId: btcflowerCanisterId,
-        interfaceFactory: btcflowerIdlFactory,
-      })) as typeof btcflowerActor;
-
-      if (!daoPlug || !btcflowerPlug) {
+      if (!daoStoic || !btcflowerStoic) {
         console.warn("couldn't create actors");
         return;
       }
 
-      const principal = await window.ic.plug.agent.getPrincipal();
+      const principal = identity.getPrincipal();
 
-      //@TODO we need to figure out a way not to duplicate all logic here
-      // e.g initStore() ?
-      const votingPower = await getVotingPower(principal, btcflowerPlug);
-      const proposals = await daoPlug
-        .listProposalOverviews()
-        .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
+      initStore(principal, btcflowerStoic, daoStoic, "stoic");
+    });
+  };
 
-      const votingHistory = await daoPlug.getVotingHistory();
+  const plugConnect = async () => {
+    // check if plug is installed in the browser
+    if (window.ic?.plug === undefined) {
+      window.open("https://plugwallet.ooo/", "_blank");
+      return;
+    }
 
-      update((prevState) => ({
-        ...prevState,
-        daoActor: daoPlug,
-        btcflowerActor: btcflowerPlug,
-        principal,
-        isAuthed: "plug",
-        votingPower,
-        proposals,
-        votingHistory,
-      }));
-    },
-    stoicConnect: () => {
-      StoicIdentity.load().then(async (identity) => {
-        if (identity !== false) {
-          //ID is a already connected wallet!
-        } else {
-          //No existing connection, lets make one!
-          identity = await StoicIdentity.connect();
-        }
-
-        const daoStoic = createDaoActor(daoCanisterId, {
-          agentOptions: {
-            identity,
-            host: HOST,
-          },
-        });
-
-        const btcflowerStoic = createBtcflowerActor(btcflowerCanisterId, {
-          agentOptions: {
-            identity,
-            host: HOST,
-          },
-        });
-
-        const votingPower = await getVotingPower(
-          identity.getPrincipal(),
-          btcflowerStoic,
-        );
-        const proposals = await daoStoic
-          .listProposalOverviews()
-          .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
-
-        const votingHistory = await daoStoic.getVotingHistory();
-
-        update((prevState) => ({
-          ...prevState,
-          daoActor: daoStoic,
-          btcflowerActor: btcflowerStoic,
-          principal: identity.getPrincipal(),
-          isAuthed: "stoic",
-          votingPower,
-          proposals,
-          votingHistory,
-        }));
+    // check if plug is connected
+    const connected = await window.ic?.plug?.isConnected();
+    if (!connected) {
+      const hasAllowed = await window.ic?.plug.requestConnect({
+        whitelist,
+        host,
       });
-    },
-    disconnect: () => {
-      console.log("disconnected");
-      StoicIdentity.disconnect();
-      window.ic?.plug?.deleteAgent();
-      window.ic?.plug?.disconnect();
-      update(() => defaultState);
-    },
-    submitProposal: async (proposal: NewProposal) => {
-      const daoActor = get({ subscribe }).daoActor;
-      try {
-        //@TODO validate the proposal before submitting
-        await daoActor.submitProposal(
-          proposal.title,
-          proposal.description,
-          proposal.options,
-        );
-      } catch (err) {
-        console.error("ERROR", err);
-        update((prevState) => {
-          return {
-            ...prevState,
-            error: err,
-          };
-        });
+      if (!hasAllowed) {
+        console.warn("plug connection refused");
+        return;
       }
-    },
-    fetchProposals: async () => {
-      const proposals = await get({ subscribe })
-        .daoActor.listProposalOverviews()
-        .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
+    }
 
+    // check wether agent is present
+    // if not create it
+    if (!window.ic?.plug?.agent) {
+      console.warn("no agent found");
+      const result = await window.ic?.plug?.createAgent({
+        whitelist,
+        host,
+      });
+      result
+        ? console.log("agent created")
+        : console.warn("agent creation failed");
+    }
+    if (!window.ic?.plug?.createActor) {
+      console.warn("no createActor found");
+      return;
+    }
+
+    // Fetch root key for certificate validation during development
+    if (process.env.NODE_ENV !== "production") {
+      window.ic.plug.agent.fetchRootKey().catch((err) => {
+        console.warn(
+          "Unable to fetch root key. Check to ensure that your local replica is running",
+        );
+        console.error(err);
+      });
+    }
+
+    const daoPlug = (await window.ic?.plug.createActor({
+      canisterId: daoCanisterId,
+      interfaceFactory: daoIdlFactory,
+    })) as typeof daoActor;
+
+    const btcflowerPlug = (await window.ic?.plug.createActor({
+      canisterId: btcflowerCanisterId,
+      interfaceFactory: btcflowerIdlFactory,
+    })) as typeof btcflowerActor;
+
+    if (!daoPlug || !btcflowerPlug) {
+      console.warn("couldn't create actors");
+      return;
+    }
+
+    const principal = await window.ic.plug.agent.getPrincipal();
+
+    initStore(principal, btcflowerPlug, daoPlug, "plug");
+  };
+
+  const initStore = async (
+    principal: Principal,
+    btcflower: typeof btcflowerActor,
+    dao: typeof daoActor,
+    wallet: "plug" | "stoic",
+  ) => {
+    const votingPower = await getVotingPower(principal, btcflower);
+    await fetchProposals();
+    const votingHistory = await dao.getVotingHistory();
+
+    update((prevState) => ({
+      ...prevState,
+      votingPower,
+      btcflowerActor: btcflower,
+      daoActor: dao,
+      votingHistory,
+      principal,
+      isAuthed: wallet,
+    }));
+  };
+
+  const fetchProposals = async () => {
+    const proposals = await get({ subscribe })
+      .daoActor.listProposalOverviews()
+      .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
+
+    update((prevState) => {
+      return {
+        ...prevState,
+        proposals,
+      };
+    });
+  };
+
+  const fetchVotingHistory = async () => {
+    let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
+
+    update((prevState) => {
+      return {
+        ...prevState,
+        votingHistory,
+      };
+    });
+  };
+
+  const disconnect = () => {
+    console.log("disconnected");
+    StoicIdentity.disconnect();
+    window.ic?.plug?.deleteAgent();
+    window.ic?.plug?.disconnect();
+    update(() => defaultState);
+  };
+
+  const submitProposal = async (proposal: NewProposal) => {
+    const daoActor = get({ subscribe }).daoActor;
+    try {
+      //@TODO validate the proposal before submitting
+      await daoActor.submitProposal(
+        proposal.title,
+        proposal.description,
+        proposal.options,
+      );
+    } catch (err) {
+      console.error("ERROR", err);
       update((prevState) => {
         return {
           ...prevState,
-          proposals,
+          error: err,
         };
       });
-    },
-    fetchVotingHistory: async () => {
-      let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
+    }
+  };
 
-      update((prevState) => {
-        return {
-          ...prevState,
-          votingHistory,
-        };
-      });
-    },
+  return {
+    subscribe,
+    update,
+    plugConnect,
+    stoicConnect,
+    disconnect,
+    submitProposal,
+    fetchProposals,
+    fetchVotingHistory,
   };
 };
 
 const getVotingPower = async (
   principal: Principal,
   btcflower: typeof btcflowerActor,
-) => {
+): Promise<number> => {
   // if we have a principal, get the voting power
   let result = await btcflower.tokens(principalToAccountId(principal, null));
   if (fromVariantToString(result) === "ok") {
