@@ -129,10 +129,14 @@ export const createStore = ({
 
       const principal = await window.ic.plug.agent.getPrincipal();
 
+      //@TODO we need to figure out a way not to duplicate all logic here
+      // e.g initStore() ?
       const votingPower = await getVotingPower(principal, btcflowerPlug);
       const proposals = await daoPlug
         .listProposalOverviews()
         .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
+
+      const votingHistory = await daoPlug.getVotingHistory();
 
       update((prevState) => ({
         ...prevState,
@@ -142,6 +146,7 @@ export const createStore = ({
         isAuthed: "plug",
         votingPower,
         proposals,
+        votingHistory,
       }));
     },
     stoicConnect: () => {
@@ -175,6 +180,8 @@ export const createStore = ({
           .listProposalOverviews()
           .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
 
+        const votingHistory = await daoStoic.getVotingHistory();
+
         update((prevState) => ({
           ...prevState,
           daoActor: daoStoic,
@@ -183,6 +190,7 @@ export const createStore = ({
           isAuthed: "stoic",
           votingPower,
           proposals,
+          votingHistory,
         }));
       });
     },
