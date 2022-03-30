@@ -1,10 +1,9 @@
 <script lang="ts">
   import { NewProposal, store } from "../store";
   import { onDestroy, onMount } from "svelte";
-  import OpenProposal from "../components/OpenProposal.svelte";
-  import ClosedProposal from "../components/ClosedProposal.svelte";
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
   import { fromVariantToString } from "../utils";
+  import ProposalOverview from "../components/ProposalOverview.svelte";
 
   $: openProposals = $store.proposals.filter(
     (proposal) => fromVariantToString(proposal.state) === "open",
@@ -49,7 +48,7 @@
   {#each openProposals as proposal}
     <div class="bg-white shadow overflow-hidden sm:rounded-md">
       <ul class="divide-y divide-gray-200">
-        <OpenProposal {proposal} />
+        <ProposalOverview {proposal} />
       </ul>
     </div>
   {/each}
@@ -60,7 +59,7 @@
   {#each closedProposals as proposal}
     <div class="bg-white shadow overflow-hidden sm:rounded-md">
       <ul class="divide-y divide-gray-200">
-        <ClosedProposal {proposal} />
+        <ProposalOverview {proposal} />
       </ul>
     </div>
   {/each}
