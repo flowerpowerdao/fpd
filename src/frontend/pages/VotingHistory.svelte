@@ -1,15 +1,18 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { store } from "../store";
+  import { getVariantValue } from "../utils";
 
   let fetchVotingHistory = async () => {
     await store.fetchVotingHistory();
     await store.fetchProposals();
   };
 
-  $: proposals = $store.proposals.filter((proposal) => {
-    return $store.votingHistory.includes(proposal.id);
-  });
+  $: proposals = $store.proposals
+    .filter((proposal) => {
+      return $store.votingHistory.includes(getVariantValue(proposal).id);
+    })
+    .map((proposal) => getVariantValue(proposal));
 
   onMount(fetchVotingHistory);
 </script>

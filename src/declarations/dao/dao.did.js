@@ -26,7 +26,7 @@ export const idlFactory = ({ IDL }) => {
     'text' : IDL.Text,
     'voters' : Trie,
   });
-  const ClosedProposal = IDL.Record({
+  const Proposal = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
     'expiryDate' : IDL.Int,
@@ -38,42 +38,13 @@ export const idlFactory = ({ IDL }) => {
     'flowersVoted' : List,
     'options' : IDL.Vec(Option),
   });
-  const OpenOption = IDL.Record({ 'text' : IDL.Text });
-  const OpenProposal = IDL.Record({
-    'id' : IDL.Nat,
-    'title' : IDL.Text,
-    'expiryDate' : IDL.Int,
-    'totalVotes' : IDL.Nat,
-    'description' : IDL.Text,
-    'state' : ProposalState,
-    'timestamp' : IDL.Int,
-    'proposer' : IDL.Principal,
-    'flowersVoted' : List,
-    'options' : IDL.Vec(OpenOption),
-  });
-  const ProposalView = IDL.Variant({
-    'closed' : ClosedProposal,
-    'open' : OpenProposal,
-  });
-  const ProposalOverview = IDL.Record({
-    'id' : IDL.Nat,
-    'title' : IDL.Text,
-    'expiryDate' : IDL.Int,
-    'totalVotes' : IDL.Nat,
-    'state' : ProposalState,
-  });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const DAO = IDL.Service({
-    'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(ProposalView)], ['query']),
+    'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], ['query']),
     'getVotingHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
-    'listProposalOverviews' : IDL.Func(
-        [],
-        [IDL.Vec(ProposalOverview)],
-        ['query'],
-      ),
-    'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
+    'listProposals' : IDL.Func([], [IDL.Vec(Proposal)], ['query']),
     'submitProposal' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
         [Result_1],
