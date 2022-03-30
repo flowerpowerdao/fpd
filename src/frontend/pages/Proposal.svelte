@@ -1,12 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type { Proposal } from "../../declarations/dao/dao.did.d";
-  import {
-    fromTimestamp,
-    fromNullable,
-    fromVariantToString,
-    getVariantValue,
-  } from "../utils";
+  import { fromTimestamp, fromNullable, fromVariantToString } from "../utils";
   import { store } from "../store";
   import ProposalDetails from "../components/ProposalDetails.svelte";
 
@@ -27,7 +22,17 @@
   };
 
   onMount(async () => {
-    await fetchProposal();
+    // check wether the proposal is already available
+    let proposalFromStore = $store.proposals.find(
+      (p) => p.id === BigInt(params.id),
+    );
+    // if not, fetch it
+    if (!proposalFromStore) {
+      await fetchProposal();
+    } else {
+      proposal = proposalFromStore;
+      proposalState = fromVariantToString(proposal.state);
+    }
   });
 </script>
 
