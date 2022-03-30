@@ -93,7 +93,15 @@ export const createStore = ({
 
       const principal = identity.getPrincipal();
 
-      initStore(principal, btcflowerStoic, daoStoic, "stoic");
+      update((state) => ({
+        ...state,
+        daoActor: daoStoic,
+        btcflowerActor: btcflowerStoic,
+        principal,
+        isAuthed: "stoic",
+      }));
+
+      initStore(principal, btcflowerStoic, daoStoic);
     });
   };
 
@@ -160,28 +168,33 @@ export const createStore = ({
     }
 
     const principal = await window.ic.plug.agent.getPrincipal();
+    update((state) => ({
+      ...state,
+      daoActor: daoPlug,
+      btcflowerActor: btcflowerPlug,
+      principal,
+      isAuthed: "plug",
+    }));
 
-    initStore(principal, btcflowerPlug, daoPlug, "plug");
+    initStore(principal, btcflowerPlug, daoPlug);
   };
 
   const initStore = async (
     principal: Principal,
     btcflower: typeof btcflowerActor,
     dao: typeof daoActor,
-    wallet: "plug" | "stoic",
   ) => {
     const votingPower = await getVotingPower(principal, btcflower);
+    update((prevState) => ({
+      ...prevState,
+      votingPower,
+    }));
     await fetchProposals();
     const votingHistory = await dao.getVotingHistory();
 
     update((prevState) => ({
       ...prevState,
-      votingPower,
-      btcflowerActor: btcflower,
-      daoActor: dao,
       votingHistory,
-      principal,
-      isAuthed: wallet,
     }));
   };
 
