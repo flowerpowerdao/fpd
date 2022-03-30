@@ -1,0 +1,119 @@
+type VoteArgs = 
+ record {
+   option: nat;
+   proposalId: nat;
+ };
+type Trie = 
+ variant {
+   branch: Branch;
+   "empty";
+   leaf: Leaf;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type ProposalView = 
+ variant {
+   closed: ClosedProposal;
+   open: OpenProposal;
+ };
+type ProposalState = 
+ variant {
+   adopted;
+   open;
+   rejected;
+ };
+type ProposalOverview = 
+ record {
+   expiryDate: int;
+   id: nat;
+   state: ProposalState;
+   title: text;
+   totalVotes: nat;
+ };
+type Option = 
+ record {
+   "text": text;
+   voters: Trie;
+   votes: nat;
+ };
+type OpenProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowersVoted: List;
+   id: nat;
+   options: vec OpenOption;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+ };
+type OpenOption = record {"text": text;};
+type List_1 = 
+ opt record {
+       record {
+         Key;
+         nat;
+       };
+       List_1;
+     };
+type List = 
+ opt record {
+       nat32;
+       List;
+     };
+type Leaf = 
+ record {
+   keyvals: AssocList;
+   size: nat;
+ };
+type Key = 
+ record {
+   hash: Hash;
+   key: principal;
+ };
+type Hash = nat32;
+type ClosedProposal = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowersVoted: List;
+   id: nat;
+   options: vec Option;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   totalVotes: nat;
+ };
+type Branch = 
+ record {
+   left: Trie;
+   right: Trie;
+   size: nat;
+ };
+type AssocList = 
+ opt record {
+       record {
+         Key;
+         nat;
+       };
+       List_1;
+     };
+service : {
+  getProposal: (nat) -> (opt ProposalView) query;
+  getVotingHistory: () -> (vec nat) query;
+  listProposalOverviews: () -> (vec ProposalOverview) query;
+  listProposals: () -> (vec ProposalView) query;
+  submitProposal: (text, text, vec text) -> (Result_1);
+  vote: (VoteArgs) -> (Result);
+}

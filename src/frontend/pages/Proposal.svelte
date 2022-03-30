@@ -18,13 +18,16 @@
 
   // variables
   let proposal: OpenProposal | ClosedProposal;
-  let status: string;
+  let proposalState: string;
 
   // functions
   const isClosedProposal = (
     proposal: OpenProposal | ClosedProposal,
   ): proposal is ClosedProposal => {
-    if (fromVariantToString(proposal.state) === "adopted" || fromVariantToString(proposal.state) === "rejected") {
+    if (
+      fromVariantToString(proposal.state) === "adopted" ||
+      fromVariantToString(proposal.state) === "rejected"
+    ) {
       return true;
     } else {
       return false;
@@ -35,7 +38,9 @@
     let proposalView = await $store.daoActor.getProposal(BigInt(params.id));
     let temp = fromNullable(proposalView); // undefined or ProposalView
     if (temp) {
-      status = fromVariantToString(temp);
+      if ("closed" in temp) {
+        proposalState = fromVariantToString(temp.closed.state);
+      }
       proposal = getVariantValue(temp);
     }
   };
@@ -56,15 +61,35 @@
         Expiry Date: {fromTimestamp(proposal.expiryDate).toLocaleString()}
       </div>
       <div class="">
-        Total Votes Cast: {proposal.totalVotes}
+        Total Votes Cast: {proposal.totalVotes} out of 2009 with percentage {(Number(
+          proposal.totalVotes,
+        ) /
+          2099) *
+          100}%
+      </div>
+      <div class="">
+        Proposal state: <span class="text-lg">{proposalState}</span>
       </div>
       <div>
-        {proposal.description}
+        Proposal Description {proposal.description}
       </div>
-      {#each proposal.options as option}
-        <div>{option.text}</div>
-        <div>{option.votes}</div>
-        <div>{option.voters}</div>
+      {#each proposal.options as option, index}
+        <div>
+          <input
+            id={`option-${index}`}
+            name={`option-${index}`}
+            value={index}
+            type="radio"
+            disabled
+          />
+          <label for={`option-${index}`}>
+            {option.text},
+          </label>
+          Votes {option.votes}, Voters {fromVariantToString(option.voters) ===
+          "empty"
+            ? "None"
+            : fromVariantToString(option.voters)}
+        </div>
       {/each}
     </div>
   {:else}

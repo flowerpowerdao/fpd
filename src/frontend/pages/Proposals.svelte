@@ -1,6 +1,6 @@
 <script lang="ts">
   import { NewProposal, store } from "../store";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import OpenProposal from "../components/OpenProposal.svelte";
   import ClosedProposal from "../components/ClosedProposal.svelte";
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
@@ -24,6 +24,13 @@
   onMount(async () => {
     await store.fetchProposals();
   });
+
+  const interval = setInterval(async () => {
+    await store.fetchProposals();
+    // fetch every minute
+  }, 60000);
+
+  onDestroy(() => clearInterval(interval));
 </script>
 
 <header class="proposals">
