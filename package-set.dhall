@@ -7,12 +7,12 @@ let
     { name = "accountid"
     , repo = "https://github.com/stephenandrews/motoko-accountid"
     , version = "main"
-    , dependencies = [] : List Text
+    , dependencies = ["base"] : List Text
     },
     { name = "hex"
     , repo = "https://github.com/letmejustputthishere/motoko-hex"
     , version = "master"
-    , dependencies = [] : List Text
+    , dependencies = ["base"] : List Text
     }
   ] : List Package
 

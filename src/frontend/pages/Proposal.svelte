@@ -1,9 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type {
-    OpenProposal,
-    ClosedProposal,
-  } from "../../declarations/dao/dao.did.d";
+  import type { Proposal } from "../../declarations/dao/dao.did.d";
   import {
     fromTimestamp,
     fromNullable,
@@ -17,32 +14,16 @@
   export let params;
 
   // variables
-  let proposal: OpenProposal | ClosedProposal;
+  let proposal: Proposal;
   let proposalState: string;
 
   // functions
-  const isClosedProposal = (
-    proposal: OpenProposal | ClosedProposal,
-  ): proposal is ClosedProposal => {
-    if (
-      fromVariantToString(proposal.state) === "adopted" ||
-      fromVariantToString(proposal.state) === "rejected"
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
 
   const fetchProposal = async () => {
-    let proposalView = await $store.daoActor.getProposal(BigInt(params.id));
-    let temp = fromNullable(proposalView); // undefined or ProposalView
-    if (temp) {
-      if ("closed" in temp) {
-        proposalState = fromVariantToString(temp.closed.state);
-      }
-      proposal = getVariantValue(temp);
-    }
+    proposal = fromNullable(
+      await $store.daoActor.getProposal(BigInt(params.id)),
+    );
+    if (proposal) proposalState = fromVariantToString(proposal.state);
   };
 
   onMount(async () => {
@@ -51,7 +32,7 @@
 </script>
 
 {#if proposal}
-  {#if isClosedProposal(proposal)}
+  {#if proposalState === "closed"}
     <div class="flex flex-col m-5 rounded-3xl bg-slate-400 text-center p-5">
       <div class="text-2xl flex justify-between">
         <div>#{proposal.id}</div>

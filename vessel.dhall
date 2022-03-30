@@ -1,4 +1,4 @@
 {
   dependencies = [ "base", "matchers", "accountid", "hex" ],
-  compiler = None Text
+  compiler = Some "0.6.25"
 }

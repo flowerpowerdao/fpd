@@ -1,17 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import type {
-    OpenProposal,
-    ClosedProposal,
-  } from "../../declarations/dao/dao.did.d";
+  import type { Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import { fromTimestamp } from "../utils";
   import CastVoteModal from "./CastVoteModal.svelte";
 
   export let openModal = false;
   export let loading = false;
-  export let proposal: OpenProposal | ClosedProposal;
+  export let proposal: Proposal;
   export let error = "";
   let selectedOptionIndex = 0;
 

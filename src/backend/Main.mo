@@ -15,6 +15,7 @@ import Types "./Types";
 import Utils "./Utils";
 
 shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCanisterId : ?Text) = Self {
+
   /*************
   * CONSTANTS *
   *************/
@@ -45,7 +46,6 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
       case _ {};
     };
-
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
@@ -84,44 +84,28 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   /// Return the proposal with the given ID, if one exists
-  public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
+  public query func getProposal(proposal_id: Nat) : async ?Types.Proposal{
     switch (getProposalInternal(proposal_id)) {
       case(?proposal) {
         if (proposal.state == #open) {
-            return ?#open(removeVotingInformationFromProposal(proposal))
+            return ?removeVotingInformationFromProposal(proposal)
         } else {
-          return ?#closed(proposal);
+          return ?proposal;
         }
       };
       case (_) return null ;
     }
   };
 
-  /// Return the list of all proposal overviews
-  public query func listProposalOverviews() : async [Types.ProposalOverview] {
-    Iter.toArray(Iter.map(
-      Trie.iter(proposals),
-      func (kv : (Nat, Types.Proposal)) : Types.ProposalOverview{
-        return { 
-          title = kv.1.title;
-          expiryDate = kv.1.expiryDate;
-          id = kv.1.id;
-          totalVotes = kv.1.totalVotes;
-          state = kv.1.state;
-        }
-      }
-    ))
-  };
-
   /// Return the list of all proposals
-  public query func listProposals() : async [Types.ProposalView] {
+  public query func listProposals() : async [Types.Proposal] {
     Iter.toArray(Iter.map(
       Trie.iter(proposals),
-      func (kv : (Nat, Types.Proposal)) : Types.ProposalView{
+      func (kv : (Nat, Types.Proposal)) : Types.Proposal{
         if (kv.1.state == #open) {
-            return #open(removeVotingInformationFromProposal(kv.1))
+            return removeVotingInformationFromProposal(kv.1)
         } else {
-          return #closed(kv.1);
+          return kv.1;
         }
       }
     ))
@@ -236,16 +220,18 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
     }
   };
 
-  func removeVotingInformationFromProposal (proposal : Types.Proposal) : Types.OpenProposal{
-    let openProposal : Types.OpenProposal= {
+  func removeVotingInformationFromProposal (proposal : Types.Proposal) : Types.Proposal{
+    let openProposal : Types.Proposal= {
       id = proposal.id; 
       title = proposal.title;
       description = proposal.description;
-      options = Array.map<Types.Option, Types.OpenOption>(
+      options = Array.map<Types.Option, Types.Option>(
         proposal.options,
-        func (o : Types.Option) : Types.OpenOption{
+        func (o : Types.Option) : Types.Option{
           let ov = {
             text = o.text;
+            votes = 0;
+            voters = Trie.empty()
           };
           return ov;
         }
