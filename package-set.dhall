@@ -4,10 +4,30 @@ let Package =
 
 let
   additions = [
+    { name = "array"
+    , repo = "https://github.com/aviate-labs/array.mo"
+    , version = "v0.2.0"
+    , dependencies = [ "base" ]
+    },
+    { name = "encoding"
+    , repo = "https://github.com/aviate-labs/encoding.mo"
+    , version = "v0.3.2"
+    , dependencies = [ "array", "base" ]
+    },
+    { name = "hash"
+    , repo = "https://github.com/aviate-labs/hash.mo"
+    , version = "v0.1.0"
+    , dependencies = [ "array", "base" ]
+    },
     { name = "accountid"
-    , repo = "https://github.com/stephenandrews/motoko-accountid"
+    , repo = "https://github.com/aviate-labs/principal.mo"
     , version = "main"
-    , dependencies = ["base"] : List Text
+    , dependencies = [ "array", "crypto", "base", "encoding", "hash" ]
+    },
+    { name = "crypto"
+    , repo = "https://github.com/aviate-labs/crypto.mo"
+    , version = "v0.1.1"
+    , dependencies = [ "base", "encoding" ]
     },
     { name = "hex"
     , repo = "https://github.com/letmejustputthishere/motoko-hex"

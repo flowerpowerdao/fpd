@@ -8,7 +8,7 @@ import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
 
-import AccountId "mo:accountid/AccountId";
+import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Hex "mo:hex/Hex";
 
 import Types "./Types";
@@ -191,7 +191,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   *******************/
 
   func getFlowersFrom(principal: Principal) : async ?[Nat32] {
-    let accountId = Utils.toLowerString(Hex.encode(AccountId.fromPrincipal(principal, null)));
+    let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
     var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
 
     if (isLocalDeployment) {
