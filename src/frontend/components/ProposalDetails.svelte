@@ -27,6 +27,7 @@
       option: BigInt(selectedOptionIndex),
     });
     if ("ok" in res) {
+      Promise.all([store.fetchVotingHistory(), store.fetchProposals()]);
       toggleModal();
     } else if ("err" in res) {
       error = res.err;
