@@ -231,7 +231,12 @@ export const createStore = ({
     StoicIdentity.disconnect();
     window.ic?.plug?.deleteAgent();
     window.ic?.plug?.disconnect();
-    update(() => defaultState);
+    update((prevState) => {
+      return {
+        ...defaultState,
+        proposals: prevState.proposals,
+      };
+    });
   };
 
   const submitProposal = async (proposal: NewProposal) => {
