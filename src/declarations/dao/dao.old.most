@@ -6,18 +6,19 @@ type Hash = Nat32;
 type Key<K> = {hash : Hash; key : K};
 type Leaf<K, V> = {keyvals : AssocList__1<Key<K>, V>; size : Nat};
 type List<T> = ?(T, List<T>);
+type Option = {text : Text; voters : Trie<Principal, Nat>; votes : Nat};
 type Proposal =
   {
     description : Text;
     expiryDate : Int;
     flowersVoted : List<Nat32>;
     id : Nat;
-    options : [Text];
+    options : [Option];
     proposer : Principal;
     state : ProposalState;
     timestamp : Int;
     title : Text;
-    votes : Trie<Principal, (Nat, Nat)>
+    totalVotes : Nat
   };
 type ProposalState = {#adopted; #open; #rejected};
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};

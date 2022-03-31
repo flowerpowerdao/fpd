@@ -7,8 +7,8 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
-
 import AccountIdentifier "mo:accountid/AccountIdentifier";
+import Canistergeek "mo:canistergeek/canistergeek";
 import Hex "mo:hex/Hex";
 
 import Types "./Types";
@@ -22,6 +22,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
 
   let votingPeriod = 5; // in days
   let votingThreshold = 1000; // we assume that 1000 votes is the minimum threshold for adoption
+  let canistergeekMonitor = Canistergeek.Monitor();
   
   /********************
   * STABLE VARIABLES *
@@ -30,9 +31,54 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
   stable var votingHistories : Types.VotingHistories = Trie.empty();
   stable var nextProposalId : Nat = 0;
+  stable var _canistergeekMonitorUD: ? Canistergeek.UpgradeData = null;
+
+  /*****************
+  * UPGRADE HOOKS *
+  *****************/
+
+  system func preupgrade() {
+    _canistergeekMonitorUD := ? canistergeekMonitor.preupgrade();
+  };
+
+  system func postupgrade() { 
+    canistergeekMonitor.postupgrade(_canistergeekMonitorUD);
+    _canistergeekMonitorUD := null;
+  };
+
+  /*************
+  * HEARTBEAT *
+  *************/
 
   system func heartbeat() : async () {
-    await closeExpiredProposals();
+    closeExpiredProposals();
+    canistergeekMonitor.collectMetrics();
+  };
+
+  /***********************
+  * CANISTER MONITORING *
+  ***********************/
+
+  /**
+  * Returns collected data based on passed parameters.
+  * Called from browser.
+  */
+  public query ({caller}) func getCanisterMetrics(parameters: Canistergeek.GetMetricsParameters): async ?Canistergeek.CanisterMetrics {
+    validateCaller(caller);
+    canistergeekMonitor.getMetrics(parameters);
+  };
+
+  /**
+  * Force collecting the data at current time.
+  * Called from browser or any canister "update" method.
+  */
+  public shared ({caller}) func collectCanisterMetrics(): async () {
+    validateCaller(caller);
+    canistergeekMonitor.collectMetrics();
+  };
+  
+  private func validateCaller(principal: Principal) : () {
+    assert( principal == Principal.fromText("ikywv-z7xvl-xavcg-ve6kg-dbbtx-wy3gy-qbtwp-7ylai-yl4lc-lwetg-kqe")) // canistergeek principal
   };
 
   /******************
@@ -41,7 +87,6 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
 
   /// Submit a proposal
   public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Types.Result<Nat, Text> {
-
     switch (await getFlowersFrom(caller)) {
       case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
       case _ {};
@@ -208,7 +253,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   /// Remove expired proposals
-  func closeExpiredProposals() : async () {
+  func closeExpiredProposals() {
     for (kv in Trie.iter(proposals)) {
        if (Time.now() > kv.1.expiryDate) {
          closeProposal(kv.1)
