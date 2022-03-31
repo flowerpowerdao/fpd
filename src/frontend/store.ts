@@ -19,7 +19,7 @@ import {
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
 } from "../canisters/btcflower";
-import type { Proposal} from "../declarations/dao/dao.did";
+import type { ProposalView } from "../declarations/dao/dao.did";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -33,7 +33,7 @@ type State = {
   btcflowerActor: typeof btcflowerActor;
   votingPower: number;
   error: string;
-  proposals: Proposal[];
+  proposals: ProposalView[];
   votingHistory: bigint[];
 };
 
@@ -201,7 +201,11 @@ export const createStore = ({
   const fetchProposals = async () => {
     const proposals = await get({ subscribe })
       .daoActor.listProposals()
-      .then((p) => p.sort((a, b) => Number(getVariantValue(b).expiryDate - getVariantValue(a).expiryDate)));
+      .then((p) =>
+        p.sort((a, b) =>
+          Number(getVariantValue(b).expiryDate - getVariantValue(a).expiryDate),
+        ),
+      );
 
     update((prevState) => {
       return {

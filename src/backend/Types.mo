@@ -3,6 +3,7 @@ import List "mo:base/List";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Trie "mo:base/Trie";
+import Buffer "mo:base/Buffer";
 
 module {
   public type Result<T, E> = Result.Result<T, E>;
@@ -10,20 +11,27 @@ module {
   public type VotingHistories = Trie.Trie<Principal, List.List<Nat>>;
   public type Proposals = Trie.Trie<Nat, Proposal>;
 
-  public type Option = {
-    text: Text; 
-    votes: Nat;
-    voters: Trie.Trie<Principal, Nat>;
-  };
-
   public type Proposal = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
-    options : [Option]; // options that can be voted on
+    options : [Text]; // options that can be voted on
+    votes : Trie.Trie<Principal, (option: Nat, votesCast: Nat)>; // votes cast by each principal
     flowersVoted : List.List<Nat32>; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
-    totalVotes : Nat; // total votes cast on this proposal recognizing the voting power
+    timestamp : Int; // when the proposal was created
+    expiryDate : Int; // when the voting period ends
+    proposer : Principal; // principal of the creator of the proposal
+  };
+
+  public type ProposalView = {
+    id : Nat; // unique proposal id
+    title : Text; // title of the proposal
+    description : Text; // short description
+    options : [Text]; // options that can be voted on
+    votes : [(Principal, {option: Nat; votesCast: Nat})]; // votes cast by each principal
+    flowersVoted : [Nat32]; // flowers that already voted
+    state : ProposalState; // is the proposal accepting votes or not
     timestamp : Int; // when the proposal was created
     expiryDate : Int; // when the voting period ends
     proposer : Principal; // principal of the creator of the proposal

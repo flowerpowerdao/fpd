@@ -1,6 +1,6 @@
 <script lang="ts">
   import { push } from "svelte-spa-router";
-  import type { Proposal } from "../../declarations/dao/dao.did";
+  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { store } from "../store";
   import { fromTimestamp } from "../utils";
 
@@ -57,13 +57,6 @@
           </div>
         </div>
         <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
-          <div class="ml-2 flex-shrink-0 flex">
-            <p
-              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-            >
-              Total Votes Cast: {proposal.totalVotes}
-            </p>
-          </div>
           <div class="ml-2 flex-shrink-0 flex">
             <p
               class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
