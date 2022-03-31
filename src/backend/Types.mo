@@ -29,7 +29,7 @@ module {
     title : Text; // title of the proposal
     description : Text; // short description
     options : [Text]; // options that can be voted on
-    votes : [(Principal, (option: Nat, votesCast: Nat))]; // votes cast by each principal
+    votes : [(Principal, {option: Nat; votesCast: Nat})]; // votes cast by each principal
     flowersVoted : [Nat32]; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     timestamp : Int; // when the proposal was created

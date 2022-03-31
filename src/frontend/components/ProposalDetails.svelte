@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import type { Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import { fromTimestamp } from "../utils";
   import CastVoteModal from "./CastVoteModal.svelte";
@@ -42,15 +42,6 @@
     // @TODO maybe we need an init store where we fetch all state?
     await store.fetchVotingHistory();
   });
-
-  // calculate total votes casted
-  const totalVotes = () => {
-    let total = 0;
-    for (let i = 0; i < proposal.votes.length; i++) {
-      total += proposal.options[i].votes;
-    }
-    return total;
-  };
 </script>
 
 <div class="mt-10 sm:mt-0">
@@ -61,7 +52,7 @@
           <fieldset>
             <div>
               <legend class="text-base font-medium text-gray-900"
-                >Proposal No. {proposal?.id}
+                >Proposal No. {proposal.id}
               </legend>
               <p class="text-lg mt-3">
                 {proposal.title}
@@ -73,7 +64,10 @@
                 ).toLocaleString()}
               </p>
               <p class="text-xs text-gray-500">
-                Total Votes Casted: {proposal.totalVotes}
+                Total Votes Casted: {proposal.votes.reduce(
+                  (acc, cur) => acc + cur[1].votesCast,
+                  BigInt(0),
+                )}
               </p>
               <p class="text-s mt-3">
                 {proposal?.description}
@@ -97,7 +91,7 @@
                     for={`option-${index}`}
                     class="ml-3 block text-sm font-medium text-gray-700"
                   >
-                    {option.text}
+                    {option}
                   </label>
                 </div>
               {/each}
@@ -150,7 +144,7 @@
 {#if true}
   <CastVoteModal
     votingPower={$store.votingPower}
-    selectedOption={proposal.options[selectedOptionIndex].text}
+    selectedOption={proposal.options[selectedOptionIndex]}
     {toggleModal}
     {castVote}
     {openModal}

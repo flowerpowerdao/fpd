@@ -1,6 +1,6 @@
 <script lang="ts">
   import { push } from "svelte-spa-router";
-  import type { Proposal } from "../../declarations/dao/dao.did";
+  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { store } from "../store";
   import { fromTimestamp } from "../utils";
 

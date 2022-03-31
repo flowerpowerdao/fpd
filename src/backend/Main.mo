@@ -179,8 +179,8 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       proposer = proposal.proposer;
       options = proposal.options;
       state = proposal.state;
-      votes = Trie.toArray<Principal, (Nat,Nat), (Principal, (Nat,Nat))>(proposal.votes, func (kv : (Principal, (Nat,Nat))) : (Principal, (Nat,Nat)) {
-        return (kv.0, (kv.1));
+      votes = Trie.toArray<Principal, (option: Nat, votesCast: Nat), (Principal, {option: Nat; votesCast: Nat})>(proposal.votes, func (kv : (Principal, (option: Nat, votesCast: Nat))) : (Principal, {option: Nat; votesCast: Nat}) {
+        return (kv.0, {option = kv.1.0; votesCast = kv.1.1});
       });
       flowersVoted = List.toArray(proposal.flowersVoted);
     };
