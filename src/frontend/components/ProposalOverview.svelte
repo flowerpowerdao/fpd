@@ -56,15 +56,17 @@
             </div>
           </div>
         </div>
-        <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
-          <div class="ml-2 flex-shrink-0 flex">
-            <p
-              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-            >
-              Voted : {alreadyVoted}
-            </p>
+        {#if $store.isAuthed && alreadyVoted}
+          <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
+            <div class="ml-2 flex-shrink-0 flex">
+              <p
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+              >
+                Voted
+              </p>
+            </div>
           </div>
-        </div>
+        {/if}
         <div class="ml-5 flex-shrink-0">
           <!-- Heroicon name: solid/chevron-right -->
           <svg
