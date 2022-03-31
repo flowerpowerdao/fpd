@@ -9,7 +9,7 @@
 
   const routes = {
     // Exact path
-    "/proposals": Proposals,
+    "/": Proposals,
     "/proposals/:id": Proposal,
     "/voting-history": VotingHistory,
 
