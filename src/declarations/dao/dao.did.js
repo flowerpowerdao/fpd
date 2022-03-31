@@ -2,12 +2,6 @@ export const idlFactory = ({ IDL }) => {
   const List = IDL.Rec();
   const List_1 = IDL.Rec();
   const Trie = IDL.Rec();
-  const ProposalState = IDL.Variant({
-    'open' : IDL.Null,
-    'rejected' : IDL.Null,
-    'adopted' : IDL.Null,
-  });
-  List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
   const Branch = IDL.Record({
     'left' : Trie,
     'size' : IDL.Nat,
@@ -15,28 +9,33 @@ export const idlFactory = ({ IDL }) => {
   });
   const Hash = IDL.Nat32;
   const Key = IDL.Record({ 'key' : IDL.Principal, 'hash' : Hash });
-  List_1.fill(IDL.Opt(IDL.Tuple(IDL.Tuple(Key, IDL.Nat), List_1)));
-  const AssocList = IDL.Opt(IDL.Tuple(IDL.Tuple(Key, IDL.Nat), List_1));
+  List_1.fill(
+    IDL.Opt(IDL.Tuple(IDL.Tuple(Key, IDL.Tuple(IDL.Nat, IDL.Nat)), List_1))
+  );
+  const AssocList = IDL.Opt(
+    IDL.Tuple(IDL.Tuple(Key, IDL.Tuple(IDL.Nat, IDL.Nat)), List_1)
+  );
   const Leaf = IDL.Record({ 'size' : IDL.Nat, 'keyvals' : AssocList });
   Trie.fill(
     IDL.Variant({ 'branch' : Branch, 'leaf' : Leaf, 'empty' : IDL.Null })
   );
-  const Option = IDL.Record({
-    'votes' : IDL.Nat,
-    'text' : IDL.Text,
-    'voters' : Trie,
+  const ProposalState = IDL.Variant({
+    'open' : IDL.Null,
+    'rejected' : IDL.Null,
+    'adopted' : IDL.Null,
   });
+  List.fill(IDL.Opt(IDL.Tuple(IDL.Nat32, List)));
   const Proposal = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
+    'votes' : Trie,
     'expiryDate' : IDL.Int,
-    'totalVotes' : IDL.Nat,
     'description' : IDL.Text,
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
     'flowersVoted' : List,
-    'options' : IDL.Vec(Option),
+    'options' : IDL.Vec(IDL.Text),
   });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });

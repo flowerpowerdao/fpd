@@ -57,15 +57,8 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       expiryDate = Time.now() + 86_400_000_000_000 * votingPeriod; // 5 days
       proposer = caller;
       flowersVoted = List.nil();
-      options = Array.map<Text, Types.Option>(options : [Text], func (text: Text) : Types.Option{
-        let option : Types.Option = {
-          text = text;
-          votes = 0;
-          voters = Trie.empty()
-        };
-        return option;
-      });
-      totalVotes = 0;
+      options;
+      votes = Trie.empty();
       state = 
       // for local deployment every second proposal is considered adopted
       if (isLocalDeployment) {
@@ -84,13 +77,13 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   /// Return the proposal with the given ID, if one exists
-  public query func getProposal(proposal_id: Nat) : async ?Types.Proposal{
+  public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
     switch (getProposalInternal(proposal_id)) {
       case(?proposal) {
         if (proposal.state == #open) {
-            return ?removeVotingInformationFromProposal(proposal)
+            return ?toProposalView(removeVotingInformationFromProposal(proposal))
         } else {
-          return ?proposal;
+          return ?toProposalView(proposal)
         }
       };
       case (_) return null ;
@@ -98,17 +91,16 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   };
 
   /// Return the list of all proposals
-  public query func listProposals() : async [Types.Proposal] {
-    Iter.toArray(Iter.map(
-      Trie.iter(proposals),
-      func (kv : (Nat, Types.Proposal)) : Types.Proposal{
+  public query func listProposals() : async [Types.ProposalView] {
+    Trie.toArray<Nat, Types.Proposal, Types.ProposalView>(proposals,
+      func (kv : (Nat, Types.Proposal)) : Types.ProposalView {
         if (kv.1.state == #open) {
-            return removeVotingInformationFromProposal(kv.1)
+            return toProposalView(removeVotingInformationFromProposal(kv.1))
         } else {
-          return kv.1;
+          return toProposalView(kv.1)
         }
       }
-    ))
+    )
   };
 
   // Vote on an open proposal
@@ -130,36 +122,23 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
               };
             };
 
-            // make array mutable
-            let options = Array.thaw<Types.Option>(proposal.options);
-
             // get the amount of flowers and thus voting power a holder has
             let votingPower : Nat = userFlowers.size();
 
-            // calculate total votes received
-            let totalVotes = proposal.totalVotes + votingPower;
-
-            // assemble updated proposal option
-            options[args.option] := {
-              text  = proposal.options[args.option].text;
-              voters = Trie.put(proposal.options[args.option].voters, Types.accountKey(caller), Principal.equal, votingPower).0;
-              votes = proposal.options[args.option].votes + votingPower;
-            };
-            
-
+            // track flowers that were used to cast a vote
             let flowersVoted = List.append(List.fromArray<Nat32>(userFlowers), proposal.flowersVoted);
 
-            let updated_proposal = {
+            let updated_proposal : Types.Proposal = {
                 id = proposal.id;
                 description = proposal.description;
                 title = proposal.title;
-                totalVotes;
                 flowersVoted;
-                options = Array.freeze(options);
+                options = proposal.options;
                 state = proposal.state;
                 timestamp = proposal.timestamp;
                 expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
+                votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
             };
             // updated proposal in stable memory
             putProposalInternal(args.proposalId, updated_proposal);
@@ -189,6 +168,23 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
   /*******************
   * PRIVATE METHODS *
   *******************/
+
+  func toProposalView(proposal : Types.Proposal) : Types.ProposalView {
+    return {
+      id = proposal.id;
+      title = proposal.title;
+      description = proposal.description;
+      timestamp = proposal.timestamp;
+      expiryDate = proposal.expiryDate;
+      proposer = proposal.proposer;
+      options = proposal.options;
+      state = proposal.state;
+      votes = Trie.toArray<Principal, (Nat,Nat), (Principal, (Nat,Nat))>(proposal.votes, func (kv : (Principal, (Nat,Nat))) : (Principal, (Nat,Nat)) {
+        return (kv.0, (kv.1));
+      });
+      flowersVoted = List.toArray(proposal.flowersVoted);
+    };
+  };
 
   func getFlowersFrom(principal: Principal) : async ?[Nat32] {
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
@@ -225,31 +221,29 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       id = proposal.id; 
       title = proposal.title;
       description = proposal.description;
-      options = Array.map<Types.Option, Types.Option>(
-        proposal.options,
-        func (o : Types.Option) : Types.Option{
-          let ov = {
-            text = o.text;
-            votes = 0;
-            voters = Trie.empty()
-          };
-          return ov;
-        }
-      );
+      options = proposal.options;
       flowersVoted = proposal.flowersVoted;
       state = proposal.state;
-      totalVotes = proposal.totalVotes;
       timestamp = proposal.timestamp;
       expiryDate = proposal.expiryDate;
       proposer = proposal.proposer;
+      votes = Trie.empty();
     };
 
     return openProposal;
   };
 
+  func getTotalVotes(proposal : Types.Proposal) : Nat {
+    var totalVotes : Nat = 0;
+    for (kv in Trie.iter(proposal.votes)) {
+      totalVotes += kv.1.1;
+    };
+    return totalVotes;
+  };
+
   func closeProposal(proposal: Types.Proposal) {
-    if (proposal.totalVotes > votingThreshold) {
-      let updated = {
+    if (getTotalVotes(proposal) > votingThreshold) {
+      let updated : Types.Proposal = {
         state = #adopted;
         description = proposal.description;
         title = proposal.title;
@@ -259,11 +253,11 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         timestamp = proposal.timestamp;
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
-        totalVotes = proposal.totalVotes;
+        votes = proposal.votes;
       };
       putProposalInternal(proposal.id, updated);
     } else {
-      let updated = {
+      let updated : Types.Proposal = {
         state = #rejected;
         description = proposal.description;
         title = proposal.title;
@@ -273,7 +267,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         timestamp = proposal.timestamp;
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
-        totalVotes = proposal.totalVotes;
+        votes = proposal.votes;
       };
 
       putProposalInternal(proposal.id, updated);

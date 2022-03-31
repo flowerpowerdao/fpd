@@ -42,6 +42,15 @@
     // @TODO maybe we need an init store where we fetch all state?
     await store.fetchVotingHistory();
   });
+
+  // calculate total votes casted
+  const totalVotes = () => {
+    let total = 0;
+    for (let i = 0; i < proposal.votes.length; i++) {
+      total += proposal.options[i].votes;
+    }
+    return total;
+  };
 </script>
 
 <div class="mt-10 sm:mt-0">

@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { OpenOption } from "src/declarations/dao/dao.did";
   import VoteModal from "./VoteModal.svelte";
 
-  export let option: OpenOption;
+  export let option: Text;
   let showModal = false;
 </script>
 
@@ -16,5 +15,5 @@
 {/if}
 
 <div class="text-center" on:click={() => (showModal = true)}>
-  {option.text}
+  {option}
 </div>

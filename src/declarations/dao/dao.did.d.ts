@@ -1,5 +1,5 @@
 import type { Principal } from '@dfinity/principal';
-export type AssocList = [] | [[[Key, bigint], List_1]];
+export type AssocList = [] | [[[Key, [bigint, bigint]], List_1]];
 export interface Branch { 'left' : Trie, 'size' : bigint, 'right' : Trie }
 export interface DAO {
   'getProposal' : (arg_0: bigint) => Promise<[] | [Proposal]>,
@@ -16,19 +16,18 @@ export type Hash = number;
 export interface Key { 'key' : Principal, 'hash' : Hash }
 export interface Leaf { 'size' : bigint, 'keyvals' : AssocList }
 export type List = [] | [[number, List]];
-export type List_1 = [] | [[[Key, bigint], List_1]];
-export interface Option { 'votes' : bigint, 'text' : string, 'voters' : Trie }
+export type List_1 = [] | [[[Key, [bigint, bigint]], List_1]];
 export interface Proposal {
   'id' : bigint,
   'title' : string,
+  'votes' : Trie,
   'expiryDate' : bigint,
-  'totalVotes' : bigint,
   'description' : string,
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,
   'flowersVoted' : List,
-  'options' : Array<Option>,
+  'options' : Array<string>,
 }
 export type ProposalState = { 'open' : null } |
   { 'rejected' : null } |
