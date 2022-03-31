@@ -1,5 +1,6 @@
 <script lang="ts">
   import { push } from "svelte-spa-router";
+  import { store } from "../store";
 
   import PlugButton from "../components/PlugButton.svelte";
   import StoicButton from "../components/StoicButton.svelte";
@@ -22,6 +23,7 @@
     <nav class="flex space-x-10">
       <div class="relative">
         <!-- Item active: "text-gray-900", Item inactive: "text-gray-500" -->
+        {#if $store.isAuthed}
         <button
           type="button"
           class="text-gray-500 group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -34,6 +36,7 @@
             >Voting History
           </a>
         </button>
+        {/if}
       </div>
     </nav>
     <div class="flex items-center justify-end md:flex-1 lg:w-0">
