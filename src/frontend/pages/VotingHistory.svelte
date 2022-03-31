@@ -1,18 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { store } from "../store";
-  import { getVariantValue } from "../utils";
+  import ProposalOverview from "../components/ProposalOverview.svelte";
 
   let fetchVotingHistory = async () => {
-    await store.fetchVotingHistory();
     await store.fetchProposals();
+    await store.fetchVotingHistory();
   };
 
-  $: proposals = $store.proposals
-    .filter((proposal) => {
-      return $store.votingHistory.includes(getVariantValue(proposal).id);
-    })
-    .map((proposal) => getVariantValue(proposal));
+  $: proposals = $store.proposals.filter((proposal) => {
+    return $store.votingHistory.includes(proposal.id);
+  });
 
   onMount(fetchVotingHistory);
 </script>
@@ -24,22 +22,8 @@
     <div>Voting history</div>
     <div class="flow-root mt-6">
       <ul class="-my-5 divide-y divide-gray-200">
-        {#each proposals as p}
-          <li class="py-4">
-            <div class="flex items-center space-x-4">
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate">
-                  {p.title}
-                </p>
-                <p class="text-sm text-gray-500 truncate">
-                  {p.state["open"] === null ? "Open" : "Closed"}
-                </p>
-              </div>
-              <div>
-                Total votes {p.totalVotes}
-              </div>
-            </div>
-          </li>
+        {#each proposals as proposal}
+          <ProposalOverview {proposal} />
         {/each}
       </ul>
     </div>
