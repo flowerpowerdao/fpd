@@ -203,7 +203,7 @@ export const createStore = ({
       .daoActor.listProposals()
       .then((p) =>
         p.sort((a, b) =>
-          Number(getVariantValue(b).expiryDate - getVariantValue(a).expiryDate),
+          Number(b.expiryDate - a.expiryDate),
         ),
       );
 
