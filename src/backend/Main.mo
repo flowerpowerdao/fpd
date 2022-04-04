@@ -7,6 +7,7 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
+
 import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Canistergeek "mo:canistergeek/canistergeek";
 import Hex "mo:hex/Hex";
@@ -116,6 +117,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         #open
       };
       voters = List.nil();
+      totalVotesCast = 0;
     };
     putProposalInternal(proposalId, proposal);
     #ok(proposalId)
@@ -184,6 +186,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
                 expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
                 votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
+                totalVotesCast = proposal.totalVotesCast + votingPower;
             };
             // updated proposal in stable memory
             putProposalInternal(args.proposalId, updated_proposal);
@@ -228,6 +231,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         return (kv.0, {option = kv.1.0; votesCast = kv.1.1});
       });
       flowersVoted = List.toArray(proposal.flowersVoted);
+      totalVotesCast = proposal.totalVotesCast;
     };
   };
 
@@ -273,6 +277,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       expiryDate = proposal.expiryDate;
       proposer = proposal.proposer;
       votes = Trie.empty();
+      totalVotesCast = proposal.totalVotesCast;
     };
 
     return openProposal;
@@ -299,6 +304,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
+        totalVotesCast = proposal.totalVotesCast;
       };
       putProposalInternal(proposal.id, updated);
     } else {
@@ -313,6 +319,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
+        totalVotesCast = proposal.totalVotesCast;
       };
 
       putProposalInternal(proposal.id, updated);

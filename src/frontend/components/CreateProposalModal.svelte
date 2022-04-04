@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Form from "./Form.svelte";
+  import Form from "./CreateProposalForm.svelte";
   import { NewProposal, store } from "../store";
 
   export let proposal: NewProposal;

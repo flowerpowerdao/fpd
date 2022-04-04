@@ -37,6 +37,7 @@
     loading = false;
     console.log("vote cast", res);
   };
+
   onMount(async () => {
     // fetch voting history to mitigate the case where user open the proposal details page directly
     // @TODO maybe we need an init store where we fetch all state?
@@ -141,14 +142,12 @@
   </div>
 </div>
 
-{#if true}
-  <CastVoteModal
-    votingPower={$store.votingPower}
-    selectedOption={proposal.options[selectedOptionIndex]}
-    {toggleModal}
-    {castVote}
-    {openModal}
-    {loading}
-    {error}
-  />
-{/if}
+<CastVoteModal
+  votingPower={$store.votingPower}
+  selectedOption={proposal.options[selectedOptionIndex]}
+  {toggleModal}
+  {castVote}
+  {openModal}
+  {loading}
+  {error}
+/>

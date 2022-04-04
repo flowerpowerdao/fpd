@@ -22,6 +22,7 @@ module {
     timestamp : Int; // when the proposal was created
     expiryDate : Int; // when the voting period ends
     proposer : Principal; // principal of the creator of the proposal
+    totalVotesCast: Nat; // total votes cast
   };
 
   public type ProposalView = {
@@ -35,6 +36,7 @@ module {
     timestamp : Int; // when the proposal was created
     expiryDate : Int; // when the voting period ends
     proposer : Principal; // principal of the creator of the proposal
+    totalVotesCast: Nat; // total votes cast
   };
 
   public type ProposalState = {
