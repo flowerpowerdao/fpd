@@ -29,6 +29,29 @@
 
             <div class="mt-2 flex">
               <div class="flex items-center text-sm text-gray-500">
+                <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
+                  <div class="ml-2 flex-shrink-0 flex">
+                    {#if fromVariantToString(proposal.state) === "rejected"}
+                      <p
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                      >
+                        rejected
+                      </p>
+                    {:else if fromVariantToString(proposal.state) === "adopted"}
+                      <p
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                      >
+                        adopted
+                      </p>
+                    {:else if fromVariantToString(proposal.state) === "open"}
+                      <p
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
+                      >
+                        open
+                      </p>
+                    {/if}
+                  </div>
+                </div>
                 <!-- Heroicon name: solid/calendar -->
                 {#if fromVariantToString(proposal.state) === "open"}
                   <svg
@@ -55,24 +78,6 @@
                       ).toLocaleString()}</time
                     >
                   </p>
-                {:else}
-                  <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
-                    <div class="ml-2 flex-shrink-0 flex">
-                      {#if fromVariantToString(proposal.state) === "rejected"}
-                        <p
-                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                        >
-                          rejected
-                        </p>
-                      {:else}
-                        <p
-                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                        >
-                          adopted
-                        </p>
-                      {/if}
-                    </div>
-                  </div>
                 {/if}
               </div>
             </div>

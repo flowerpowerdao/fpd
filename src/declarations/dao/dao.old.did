@@ -3,12 +3,7 @@ type VoteArgs =
    option: nat;
    proposalId: nat;
  };
-type Trie = 
- variant {
-   branch: Branch;
-   "empty";
-   leaf: Leaf;
- };
+type UpdateCallsAggregatedData = vec nat64;
 type Result_1 = 
  variant {
    err: text;
@@ -19,73 +14,81 @@ type Result =
    err: text;
    ok;
  };
+type ProposalView = 
+ record {
+   description: text;
+   expiryDate: int;
+   flowersVoted: vec nat32;
+   id: nat;
+   options: vec text;
+   proposer: principal;
+   state: ProposalState;
+   timestamp: int;
+   title: text;
+   votes: vec record {
+                principal;
+                record {
+                  option: nat;
+                  votesCast: nat;
+                };
+              };
+ };
 type ProposalState = 
  variant {
    adopted;
    open;
    rejected;
  };
-type Proposal = 
+type NumericEntity = 
  record {
-   description: text;
-   expiryDate: int;
-   flowersVoted: List;
-   id: nat;
-   options: vec Option;
-   proposer: principal;
-   state: ProposalState;
-   timestamp: int;
-   title: text;
-   totalVotes: nat;
+   avg: nat64;
+   first: nat64;
+   last: nat64;
+   max: nat64;
+   min: nat64;
  };
-type Option = 
+type MetricsGranularity = 
+ variant {
+   daily;
+   hourly;
+ };
+type HourlyMetricsData = 
  record {
-   "text": text;
-   voters: Trie;
-   votes: nat;
+   canisterCycles: CanisterCyclesAggregatedData;
+   canisterHeapMemorySize: CanisterHeapMemoryAggregatedData;
+   canisterMemorySize: CanisterMemoryAggregatedData;
+   timeMillis: int;
+   updateCalls: UpdateCallsAggregatedData;
  };
-type List_1 = 
- opt record {
-       record {
-         Key;
-         nat;
-       };
-       List_1;
-     };
-type List = 
- opt record {
-       nat32;
-       List;
-     };
-type Leaf = 
+type GetMetricsParameters = 
  record {
-   keyvals: AssocList;
-   size: nat;
+   dateFromMillis: nat;
+   dateToMillis: nat;
+   granularity: MetricsGranularity;
  };
-type Key = 
+type DailyMetricsData = 
  record {
-   hash: Hash;
-   key: principal;
+   canisterCycles: NumericEntity;
+   canisterHeapMemorySize: NumericEntity;
+   canisterMemorySize: NumericEntity;
+   timeMillis: int;
+   updateCalls: nat64;
  };
-type Hash = nat32;
-type Branch = 
- record {
-   left: Trie;
-   right: Trie;
-   size: nat;
+type CanisterMetricsData = 
+ variant {
+   daily: vec DailyMetricsData;
+   hourly: vec HourlyMetricsData;
  };
-type AssocList = 
- opt record {
-       record {
-         Key;
-         nat;
-       };
-       List_1;
-     };
+type CanisterMetrics = record {data: CanisterMetricsData;};
+type CanisterMemoryAggregatedData = vec nat64;
+type CanisterHeapMemoryAggregatedData = vec nat64;
+type CanisterCyclesAggregatedData = vec nat64;
 service : {
-  getProposal: (nat) -> (opt Proposal) query;
+  collectCanisterMetrics: () -> ();
+  getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getProposal: (nat) -> (opt ProposalView) query;
   getVotingHistory: () -> (vec nat) query;
-  listProposals: () -> (vec Proposal) query;
+  listProposals: () -> (vec ProposalView) query;
   submitProposal: (text, text, vec text) -> (Result_1);
   vote: (VoteArgs) -> (Result);
 }

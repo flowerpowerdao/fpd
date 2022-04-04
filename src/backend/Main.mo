@@ -99,7 +99,7 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       title;
       description;
       timestamp = Time.now();
-      expiryDate = Time.now() + 86_400_000_000_000 * votingPeriod; // 5 days
+      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
       proposer = caller;
       flowersVoted = List.nil();
       options;
