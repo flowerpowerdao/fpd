@@ -15,7 +15,7 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 import Utils "./Utils";
 
-shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCanisterId : ?Text) = Self {
+shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
 
   /*************
   * CONSTANTS *
@@ -107,14 +107,15 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
       votes = Trie.empty();
       state = 
       // for local deployment every second proposal is considered adopted
-      if (isLocalDeployment) {
-        if (proposalId % 2 == 0) {
-          #open
-        } else {
-          #adopted
+      switch (localDeploymentCanisterId) {
+        case null #open;
+        case _ {
+          if (proposalId % 2 == 0) {
+            #open
+          } else {
+            #adopted
+          }
         }
-      } else {
-        #open
       };
       voters = List.nil();
       totalVotesCast = 0;
@@ -239,13 +240,9 @@ shared(install) actor class DAO(isLocalDeployment : Bool, localDeploymentCaniste
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
     var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
 
-    if (isLocalDeployment) {
-      switch (localDeploymentCanisterId) {
-        case null  return null;
-        case (?localDeploymentCanisterId) btcflower := actor(localDeploymentCanisterId) : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
-      }
-    } else {
-      btcflower := actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+    switch (localDeploymentCanisterId) {
+      case null btcflower := actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+      case (?localDeploymentCanisterId) btcflower := actor(localDeploymentCanisterId) : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
     };
 
     switch (await btcflower.tokens(accountId)) {
