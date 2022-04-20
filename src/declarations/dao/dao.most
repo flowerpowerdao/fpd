@@ -40,6 +40,12 @@ type UpgradeData__2 = UpgradeData;
 actor {
   stable var _canistergeekMonitorUD : ?UpgradeData__2;
   stable var nextProposalId : Nat;
+  stable var proposalHistories :
+    {
+      #branch : Branch<Principal, List<Nat>>;
+      #empty;
+      #leaf : Leaf<Principal, List<Nat>>
+    };
   stable var proposals :
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
   stable var votingHistories :
