@@ -15,7 +15,7 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 import Utils "./Utils";
 
-shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
+shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrincipals : [Principal]) = Self {
 
   /*************
   * CONSTANTS *
@@ -120,6 +120,17 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
       };
       voters = List.nil();
       totalVotesCast = 0;
+      // check if the proposal was submitted by a core team member
+      core = do {
+          var isCoreTeamMember = false;
+          label coreLoop for (corePrincipal in Iter.fromArray(coreTeamPrincipals)) {
+            if (Principal.equal(corePrincipal, caller)) {
+              isCoreTeamMember := true;
+              break coreLoop
+            }
+          };
+          isCoreTeamMember
+      };
     };
     putProposalInternal(proposalId, proposal);
     // check if there is already a proposal history available for the given caller
@@ -197,6 +208,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
                 proposer = proposal.proposer;
                 votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
                 totalVotesCast = proposal.totalVotesCast + votingPower;
+                core = proposal.core;
             };
             // updated proposal in stable memory
             putProposalInternal(args.proposalId, updated_proposal);
@@ -242,6 +254,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
       });
       flowersVoted = List.toArray(proposal.flowersVoted);
       totalVotesCast = proposal.totalVotesCast;
+      core = proposal.core;
     };
   };
 
@@ -284,6 +297,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
       proposer = proposal.proposer;
       votes = Trie.empty();
       totalVotesCast = proposal.totalVotesCast;
+      core = proposal.core;
     };
 
     return openProposal;
@@ -312,6 +326,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
         proposer = proposal.proposer;
         votes = proposal.votes;
         totalVotesCast = proposal.totalVotesCast;
+        core = proposal.core;
       };
       putProposalInternal(proposal.id, updated);
     } else {
@@ -327,6 +342,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
         proposer = proposal.proposer;
         votes = proposal.votes;
         totalVotesCast = proposal.totalVotesCast;
+        core = proposal.core;
       };
 
       // updated the proposal in stable memory

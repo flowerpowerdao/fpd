@@ -25,6 +25,13 @@
               <p class="font-medium text-indigo-600 truncate text-lg">
                 {proposal.title}
               </p>
+              {#if proposal.core}
+                <p
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800"
+                >
+                  core
+                </p>
+              {/if}
             </div>
 
             <div class="mt-2 flex">

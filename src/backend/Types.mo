@@ -18,6 +18,7 @@ module {
     expiryDate : Int; // when the voting period ends
     proposer : Principal; // principal of the creator of the proposal
     totalVotesCast: Nat; // total votes cast
+    core: Bool; // is the proposal a core proposal
   };
 
   public type ProposalView = {
@@ -32,6 +33,7 @@ module {
     expiryDate : Int; // when the voting period ends
     proposer : Principal; // principal of the creator of the proposal
     totalVotesCast: Nat; // total votes cast
+    core: Bool; // is the proposal a core proposal
   };
 
   public type ProposalState = {

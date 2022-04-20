@@ -53,6 +53,7 @@ export const idlFactory = ({ IDL }) => {
       )
     ),
     'expiryDate' : IDL.Int,
+    'core' : IDL.Bool,
     'description' : IDL.Text,
     'totalVotesCast' : IDL.Nat,
     'state' : ProposalState,
@@ -84,4 +85,6 @@ export const idlFactory = ({ IDL }) => {
   });
   return DAO;
 };
-export const init = ({ IDL }) => { return [IDL.Opt(IDL.Text)]; };
+export const init = ({ IDL }) => {
+  return [IDL.Opt(IDL.Text), IDL.Vec(IDL.Principal)];
+};
