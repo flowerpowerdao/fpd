@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { Proposal } from "../../declarations/dao/dao.did.d";
-  import { fromTimestamp, fromNullable, fromVariantToString } from "../utils";
+  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import { fromTimestamp, fromVariantToString, isOk, fromOk } from "../utils";
   import { store } from "../store";
   import ProposalDetails from "../components/ProposalDetails.svelte";
 
@@ -15,10 +15,22 @@
   // functions
 
   const fetchProposal = async () => {
-    proposal = fromNullable(
-      await $store.daoActor.getProposal(BigInt(params.id)),
-    );
-    if (proposal) proposalState = fromVariantToString(proposal.state);
+    let result = await $store.daoActor.getProposal(BigInt(params.id));
+    if (isOk(result)) {
+      proposal = fromOk(result);
+      proposalState = fromVariantToString(proposal.state);
+    }
+  };
+
+  const calculateResults = (proposal: Proposal, option: BigInt): number => {
+    let votesCastForOption = 0;
+    proposal.votes.forEach((vote) => {
+      if (vote[1].option === option) {
+        votesCastForOption += 1;
+      }
+    });
+
+    return votesCastForOption;
   };
 
   onMount(async () => {
@@ -37,7 +49,7 @@
 </script>
 
 {#if proposal}
-  {#if proposalState === "closed"}
+  {#if proposalState === "adopted" || proposalState === "rejected"}
     <div class="flex flex-col m-5 rounded-3xl bg-slate-400 text-center p-5">
       <div class="text-2xl flex justify-between">
         <div>#{proposal.id}</div>
@@ -47,8 +59,8 @@
         Expiry Date: {fromTimestamp(proposal.expiryDate).toLocaleString()}
       </div>
       <div class="">
-        Total Votes Cast: {proposal.totalVotes} out of 2009 with percentage {(Number(
-          proposal.totalVotes,
+        Total Votes Cast: {proposal.totalVotesCast} out of 2009 with percentage {(Number(
+          proposal.totalVotesCast,
         ) /
           2099) *
           100}%
@@ -69,12 +81,9 @@
             disabled
           />
           <label for={`option-${index}`}>
-            {option.text},
+            {option},
           </label>
-          Votes {option.votes}, Voters {fromVariantToString(option.voters) ===
-          "empty"
-            ? "None"
-            : fromVariantToString(option.voters)}
+          Votes {calculateResults(proposal, BigInt(index))}
         </div>
       {/each}
     </div>
