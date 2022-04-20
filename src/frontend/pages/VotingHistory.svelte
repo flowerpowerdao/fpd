@@ -4,8 +4,8 @@
   import ProposalOverview from "../components/ProposalOverview.svelte";
 
   let fetchVotingHistory = async () => {
-    await store.fetchProposals();
-    await store.fetchVotingHistory();
+    if (!$store.proposals) await store.fetchProposals();
+    if (!$store.votingHistory) await store.fetchVotingHistory();
   };
 
   $: proposals = $store.proposals.filter((proposal) => {
