@@ -90,7 +90,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   /// Submit a proposal
   public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Result.Result<Nat, Text> {
     switch (await getFlowersFrom(caller)) {
-      case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
+      case (#err(error)) return #err(error);
       case _ {};
     };
     let proposalId = nextProposalId;
@@ -133,16 +133,17 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   };
 
   /// Return the proposal with the given ID, if one exists
-  public query func getProposal(proposal_id: Nat) : async ?Types.ProposalView{
+  public query func getProposal(proposal_id: Nat) : async Result.Result<Types.ProposalView, Text> {
     switch (getProposalInternal(proposal_id)) {
       case(?proposal) {
+        // mask the current voting state if the proposal is open
         if (proposal.state == #open) {
-            return ?toProposalView(removeVotingInformationFromProposal(proposal))
+            return #ok(toProposalView(removeVotingInformationFromProposal(proposal)))
         } else {
-          return ?toProposalView(proposal)
+          return #ok(toProposalView(proposal))
         }
       };
-      case (_) return null ;
+      case (_) return #err("Proposal not found");
     }
   };
 
@@ -168,8 +169,8 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
             return #err("Proposal " # debug_show(args.proposalId) # " is not open for voting");
         };
         switch (await getFlowersFrom(caller)) {
-          case null { return #err("Caller does not own any flowers") };
-          case (?userFlowers : ?[Nat32]) {
+          case (#err(error)) { return #err(error) };
+          case (#ok(userFlowers : [Nat32])) {
 
             // check if a flower already voted
             for (userFlower in Iter.fromArray(userFlowers)) {
@@ -244,7 +245,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
     };
   };
 
-  func getFlowersFrom(principal: Principal) : async ?[Nat32] {
+  func getFlowersFrom(principal: Principal) : async Result.Result<[Nat32], Text> {
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
     var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
 
@@ -255,9 +256,9 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
 
     switch (await btcflower.tokens(accountId)) {
       case (#ok(flowers)) {
-        return ?flowers
+        return #ok(flowers);
       };
-      case _ return null;
+      case _ return #err("Account doesn't own any flowers");
     }
   };
 
@@ -297,6 +298,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   };
 
   func closeProposal(proposal: Types.Proposal) {
+    // consider the proposal adopted if we pass the threshold, else rejected
     if (getTotalVotes(proposal) > votingThreshold) {
       let updated : Types.Proposal = {
         state = #adopted;
@@ -327,6 +329,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
         totalVotesCast = proposal.totalVotesCast;
       };
 
+      // updated the proposal in stable memory
       putProposalInternal(proposal.id, updated);
     };
   };
