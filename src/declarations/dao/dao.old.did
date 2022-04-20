@@ -4,11 +4,6 @@ type VoteArgs =
    proposalId: nat;
  };
 type UpdateCallsAggregatedData = vec nat64;
-type Result_2 = 
- variant {
-   err: text;
-   ok: ProposalView;
- };
 type Result_1 = 
  variant {
    err: text;
@@ -21,7 +16,6 @@ type Result =
  };
 type ProposalView = 
  record {
-   core: bool;
    description: text;
    expiryDate: int;
    flowersVoted: vec nat32;
@@ -81,16 +75,6 @@ type DailyMetricsData =
    timeMillis: int;
    updateCalls: nat64;
  };
-type DAO = 
- service {
-   collectCanisterMetrics: () -> ();
-   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-   getProposal: (nat) -> (Result_2) query;
-   getVotingHistory: () -> (vec nat) query;
-   listProposals: () -> (vec ProposalView) query;
-   submitProposal: (text, text, vec text) -> (Result_1);
-   vote: (VoteArgs) -> (Result);
- };
 type CanisterMetricsData = 
  variant {
    daily: vec DailyMetricsData;
@@ -100,4 +84,12 @@ type CanisterMetrics = record {data: CanisterMetricsData;};
 type CanisterMemoryAggregatedData = vec nat64;
 type CanisterHeapMemoryAggregatedData = vec nat64;
 type CanisterCyclesAggregatedData = vec nat64;
-service : (opt text, vec principal) -> DAO
+service : {
+  collectCanisterMetrics: () -> ();
+  getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getProposal: (nat) -> (opt ProposalView) query;
+  getVotingHistory: () -> (vec nat) query;
+  listProposals: () -> (vec ProposalView) query;
+  submitProposal: (text, text, vec text) -> (Result_1);
+  vote: (VoteArgs) -> (Result);
+}

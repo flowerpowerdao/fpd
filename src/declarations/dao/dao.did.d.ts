@@ -56,6 +56,7 @@ export interface ProposalView {
   'title' : string,
   'votes' : Array<[Principal, { 'option' : bigint, 'votesCast' : bigint }]>,
   'expiryDate' : bigint,
+  'core' : boolean,
   'description' : string,
   'totalVotesCast' : bigint,
   'state' : ProposalState,
