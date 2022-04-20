@@ -7,7 +7,7 @@
   import StoicButton from "../components/StoicButton.svelte";
 </script>
 
-<div>
+<div class="m-1">
   <img class="sm:hidden h-auto w-full sm:h-10" src={logo} alt="fpdao logo" />
 </div>
 
