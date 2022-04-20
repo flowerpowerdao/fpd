@@ -101,7 +101,7 @@ export const createStore = ({
         isAuthed: "stoic",
       }));
 
-      initStore(principal, btcflowerStoic, daoStoic);
+      initStore(principal, btcflowerStoic);
     });
   };
 
@@ -115,12 +115,14 @@ export const createStore = ({
     // check if plug is connected
     const connected = await window.ic?.plug?.isConnected();
     if (!connected) {
-      const hasAllowed = await window.ic?.plug.requestConnect({
-        whitelist,
-        host,
-      });
-      if (!hasAllowed) {
-        console.warn("plug connection refused");
+      try {
+        await window.ic?.plug.requestConnect({
+          whitelist,
+          host,
+        });
+        console.log("connected");
+      } catch (e) {
+        console.warn(e);
         return;
       }
     }
@@ -137,6 +139,7 @@ export const createStore = ({
         ? console.log("agent created")
         : console.warn("agent creation failed");
     }
+    // check of if createActor method is available
     if (!window.ic?.plug?.createActor) {
       console.warn("no createActor found");
       return;
@@ -176,36 +179,28 @@ export const createStore = ({
       isAuthed: "plug",
     }));
 
-    initStore(principal, btcflowerPlug, daoPlug);
+    initStore(principal, btcflowerPlug);
   };
 
   const initStore = async (
     principal: Principal,
     btcflower: typeof btcflowerActor,
-    dao: typeof daoActor,
   ) => {
-    const votingPower = await getVotingPower(principal, btcflower);
+    const [proposals, votingHistory, votingPower] = await Promise.all([
+      fetchProposals(),
+      fetchVotingHistory(),
+      getVotingPower(principal, btcflower),
+    ]);
+
     update((prevState) => ({
       ...prevState,
       votingPower,
     }));
-    await fetchProposals();
-    const votingHistory = await dao.getVotingHistory();
-
-    update((prevState) => ({
-      ...prevState,
-      votingHistory,
-    }));
   };
 
   const fetchProposals = async () => {
-    const proposals = await get({ subscribe })
-      .daoActor.listProposals()
-      .then((p) =>
-        p.sort((a, b) =>
-          Number(b.expiryDate - a.expiryDate),
-        ),
-      );
+    const proposals = await get({ subscribe }).daoActor.listProposals();
+    proposals.sort((a, b) => Number(b.expiryDate - a.expiryDate));
 
     update((prevState) => {
       return {
@@ -217,7 +212,6 @@ export const createStore = ({
 
   const fetchVotingHistory = async () => {
     let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
-
     update((prevState) => {
       return {
         ...prevState,
@@ -302,7 +296,7 @@ declare global {
         requestConnect: (options?: {
           whitelist?: string[];
           host?: string;
-        }) => Promise<boolean>;
+        }) => Promise<any>;
         createActor: (options: {}) => Promise<
           typeof daoActor | typeof btcflowerActor
         >;

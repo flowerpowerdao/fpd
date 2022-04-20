@@ -4,7 +4,7 @@
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
   import ProposalOverview from "../components/ProposalOverview.svelte";
 
-  let proposal: NewProposal = {
+  let newProposal: NewProposal = {
     title: "",
     description: "",
     options: [""],
@@ -30,7 +30,7 @@
   {/if}
 
   {#if $store.isAuthed && $store.votingPower > 0}
-    <CreateProposalModal {proposal} />
+    <CreateProposalModal proposal={newProposal} />
   {/if}
 </header>
 <div>

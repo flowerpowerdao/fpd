@@ -24,18 +24,18 @@
       <div class="relative">
         <!-- Item active: "text-gray-900", Item inactive: "text-gray-500" -->
         {#if $store.isAuthed}
-        <button
-          type="button"
-          class="text-gray-500 group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          aria-expanded="false"
-        >
-          <!-- svelte-ignore a11y-missing-attribute -->
-          <a
-            class="block hover:bg-gray-50 cursor-pointer"
-            on:click={() => push(`/voting-history`)}
-            >Voting History
-          </a>
-        </button>
+          <button
+            type="button"
+            class="text-gray-500 group bg-white rounded-md inline-flex items-center text-base font-medium hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            aria-expanded="false"
+          >
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <a
+              class="block hover:bg-gray-50 cursor-pointer"
+              on:click={() => push(`/voting-history`)}
+              >Voting History
+            </a>
+          </button>
         {/if}
       </div>
     </nav>

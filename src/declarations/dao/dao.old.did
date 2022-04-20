@@ -4,6 +4,11 @@ type VoteArgs =
    proposalId: nat;
  };
 type UpdateCallsAggregatedData = vec nat64;
+type Result_2 = 
+ variant {
+   err: text;
+   ok: ProposalView;
+ };
 type Result_1 = 
  variant {
    err: text;
@@ -16,6 +21,7 @@ type Result =
  };
 type ProposalView = 
  record {
+   core: bool;
    description: text;
    expiryDate: int;
    flowersVoted: vec nat32;
@@ -87,7 +93,7 @@ type CanisterCyclesAggregatedData = vec nat64;
 service : {
   collectCanisterMetrics: () -> ();
   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-  getProposal: (nat) -> (opt ProposalView) query;
+  getProposal: (nat) -> (Result_2) query;
   getVotingHistory: () -> (vec nat) query;
   listProposals: () -> (vec ProposalView) query;
   submitProposal: (text, text, vec text) -> (Result_1);
