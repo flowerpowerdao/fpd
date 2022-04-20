@@ -13,7 +13,6 @@ export interface DAO {
   'getProposal' : (arg_0: bigint) => Promise<Result_2>,
   'getVotingHistory' : () => Promise<Array<bigint>>,
   'listProposals' : () => Promise<Array<ProposalView>>,
-  'returnCore' : () => Promise<Array<Principal>>,
   'submitProposal' : (
       arg_0: string,
       arg_1: string,

@@ -1,12 +1,17 @@
 <script lang="ts">
   import { push } from "svelte-spa-router";
   import { store } from "../store";
+  import logo from "../assets/fpd-logo.svg";
 
   import PlugButton from "../components/PlugButton.svelte";
   import StoicButton from "../components/StoicButton.svelte";
 </script>
 
-<div class="relative bg-white">
+<div>
+  <img class="sm:hidden h-auto w-full sm:h-10" src={logo} alt="fpdao logo" />
+</div>
+
+<div class="hidden sm:block relative bg-white">
   <div
     class="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10"
   >
