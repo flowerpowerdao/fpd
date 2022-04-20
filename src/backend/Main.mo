@@ -30,7 +30,8 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   ********************/
 
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
-  stable var votingHistories : Types.VotingHistories = Trie.empty();
+  stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
+  stable var proposalHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
   stable var nextProposalId : Nat = 0;
   stable var _canistergeekMonitorUD: ? Canistergeek.UpgradeData = null;
 
@@ -87,7 +88,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   ******************/
 
   /// Submit a proposal
-  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Types.Result<Nat, Text> {
+  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Result.Result<Nat, Text> {
     switch (await getFlowersFrom(caller)) {
       case null return #err("You have to own at a BTC Flower to be able to submit a proposal");
       case _ {};
@@ -121,6 +122,13 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
       totalVotesCast = 0;
     };
     putProposalInternal(proposalId, proposal);
+    // check if there is already a proposal history available for the given caller
+    switch (getProposalHistoryInternal(caller)) {
+      // if so, append the new proposal id to the list
+      case (?proposalHistory) putProposalHistoryInternal(caller, List.push(proposalId, proposalHistory));
+      // if not, create a new entry
+      case null putProposalHistoryInternal(caller, List.make(proposalId));
+    };
     #ok(proposalId)
   };
 
@@ -152,7 +160,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
   };
 
   // Vote on an open proposal
-  public shared({caller}) func vote(args: Types.VoteArgs) : async Types.Result<(), Text> {
+  public shared({caller}) func vote(args: Types.VoteArgs) : async Result.Result<(), Text> {
     switch (getProposalInternal(args.proposalId)) {
       case null { #err("No proposal with ID " # debug_show(args.proposalId) # " exists") };
       case (?proposal) {
@@ -166,7 +174,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
             // check if a flower already voted
             for (userFlower in Iter.fromArray(userFlowers)) {
               if (List.some(proposal.flowersVoted,func (e : Nat32) : Bool = e == userFlower)) {
-                  return #err("Already voted");
+                  return #err("Already voted. If you bought a new Flower that you want to use to vote, but already casted a vote, please send the new flower to a new wallet and vote there.");
               };
             };
 
@@ -333,6 +341,12 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text) = Self {
 
   func putVotingHistoryInternal(principal : Principal, votingHistory: List.List<Nat>) {
     votingHistories:= Trie.put(votingHistories, Types.accountKey(principal), Principal.equal, votingHistory).0;
+  };
+
+  func getProposalHistoryInternal(principal : Principal) : ?List.List<Nat> = Trie.get(proposalHistories, Types.accountKey(principal), Principal.equal);
+
+  func putProposalHistoryInternal(principal : Principal, proposalHistory: List.List<Nat>) {
+    proposalHistories := Trie.put(proposalHistories, Types.accountKey(principal), Principal.equal, proposalHistory).0;
   };
 
 };

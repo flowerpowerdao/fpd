@@ -1,16 +1,11 @@
+import Buffer "mo:base/Buffer";
 import Int "mo:base/Int";
 import List "mo:base/List";
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Trie "mo:base/Trie";
-import Buffer "mo:base/Buffer";
 
 module {
-  public type Result<T, E> = Result.Result<T, E>;
-
-  public type VotingHistories = Trie.Trie<Principal, List.List<Nat>>;
-  public type Proposals = Trie.Trie<Nat, Proposal>;
-
   public type Proposal = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
