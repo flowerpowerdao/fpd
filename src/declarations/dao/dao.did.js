@@ -61,6 +61,7 @@ export const idlFactory = ({ IDL }) => {
     'flowersVoted' : IDL.Vec(IDL.Nat32),
     'options' : IDL.Vec(IDL.Text),
   });
+  const Result_2 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
@@ -71,7 +72,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(CanisterMetrics)],
         ['query'],
       ),
-    'getProposal' : IDL.Func([IDL.Nat], [IDL.Opt(ProposalView)], ['query']),
+    'getProposal' : IDL.Func([IDL.Nat], [Result_2], ['query']),
     'getVotingHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
     'submitProposal' : IDL.Func(
@@ -83,4 +84,4 @@ export const idlFactory = ({ IDL }) => {
   });
   return DAO;
 };
-export const init = ({ IDL }) => { return [IDL.Bool, IDL.Opt(IDL.Text)]; };
+export const init = ({ IDL }) => { return [IDL.Opt(IDL.Text)]; };

@@ -10,7 +10,7 @@ export interface DAO {
   'getCanisterMetrics' : (arg_0: GetMetricsParameters) => Promise<
       [] | [CanisterMetrics]
     >,
-  'getProposal' : (arg_0: bigint) => Promise<[] | [ProposalView]>,
+  'getProposal' : (arg_0: bigint) => Promise<Result_2>,
   'getVotingHistory' : () => Promise<Array<bigint>>,
   'listProposals' : () => Promise<Array<ProposalView>>,
   'submitProposal' : (
@@ -67,6 +67,8 @@ export interface ProposalView {
 export type Result = { 'ok' : null } |
   { 'err' : string };
 export type Result_1 = { 'ok' : bigint } |
+  { 'err' : string };
+export type Result_2 = { 'ok' : ProposalView } |
   { 'err' : string };
 export type UpdateCallsAggregatedData = Array<bigint>;
 export interface VoteArgs { 'option' : bigint, 'proposalId' : bigint }
