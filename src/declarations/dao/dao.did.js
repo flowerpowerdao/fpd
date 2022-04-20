@@ -76,6 +76,7 @@ export const idlFactory = ({ IDL }) => {
     'getProposal' : IDL.Func([IDL.Nat], [Result_2], ['query']),
     'getVotingHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
+    'returnCore' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'submitProposal' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
         [Result_1],

@@ -127,7 +127,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             if (Principal.equal(corePrincipal, caller)) {
               isCoreTeamMember := true;
               break coreLoop
-            }
+            };
           };
           isCoreTeamMember
       };

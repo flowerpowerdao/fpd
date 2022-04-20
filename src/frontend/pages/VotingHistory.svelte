@@ -1,22 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { store } from "../store";
   import ProposalOverview from "../components/ProposalOverview.svelte";
-
-  let fetchVotingHistory = async () => {
-    if (!$store.proposals) await store.fetchProposals();
-    if (!$store.votingHistory) await store.fetchVotingHistory();
-  };
 
   $: proposals = $store.proposals.filter((proposal) => {
     return $store.votingHistory.includes(proposal.id);
   });
-
-  onMount(fetchVotingHistory);
 </script>
 
-{#if !proposals}
-  <p>Fetching voting history..</p>
+{#if !$store.isAuthed}
+  <p>You need to be logged in to see your voting history.</p>
 {:else}
   <div class="px-4">
     <div>Voting history</div>

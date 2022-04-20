@@ -186,15 +186,12 @@ export const createStore = ({
     principal: Principal,
     btcflower: typeof btcflowerActor,
   ) => {
-    const votingPowerPromise = getVotingPower(principal, btcflower);
-    const proposalsPromise = fetchProposals();
-    const votingHistoryPromise = fetchVotingHistory();
-    // await all promises in parallel
-    let [votingPower, proposals, votingHistory] = await Promise.all([
-      votingPowerPromise,
-      proposalsPromise,
-      votingHistoryPromise,
+    const [proposals, votingHistory, votingPower] = await Promise.all([
+      fetchProposals(),
+      fetchVotingHistory(),
+      getVotingPower(principal, btcflower),
     ]);
+
     update((prevState) => ({
       ...prevState,
       votingPower,
@@ -202,9 +199,8 @@ export const createStore = ({
   };
 
   const fetchProposals = async () => {
-    const proposals = await get({ subscribe })
-      .daoActor.listProposals()
-      .then((p) => p.sort((a, b) => Number(b.expiryDate - a.expiryDate)));
+    const proposals = await get({ subscribe }).daoActor.listProposals();
+    proposals.sort((a, b) => Number(b.expiryDate - a.expiryDate));
 
     update((prevState) => {
       return {
@@ -216,7 +212,6 @@ export const createStore = ({
 
   const fetchVotingHistory = async () => {
     let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
-
     update((prevState) => {
       return {
         ...prevState,
