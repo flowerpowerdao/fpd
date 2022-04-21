@@ -8,7 +8,7 @@ const config = {
   theme: {
     extend: {
       boxShadow: {
-        DEFAULT: "3px 3px 0px #000000",
+        DEFAULT: "3px 3px 0px",
       },
       fontFamily: {
         sans: ["TWK Everett", ...defaultTheme.fontFamily.sans],
