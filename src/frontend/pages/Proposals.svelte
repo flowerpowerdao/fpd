@@ -3,6 +3,7 @@
   import { onDestroy, onMount } from "svelte";
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
   import ProposalOverview from "../components/ProposalOverview.svelte";
+  import Filters from "../components/Filters.svelte";
 
   let newProposal: NewProposal = {
     title: "",
@@ -24,7 +25,7 @@
 
 <!-- mobile -->
 <header class="my-10">
-
+  <Filters />
 </header>
 
 <!-- desktop -->

@@ -8,9 +8,13 @@
 </script>
 
 <!-- mobile -->
-<div class="m-1">
+<div class="p-1">
   <a href="/#">
-    <img class="sm:hidden h-auto w-full sm:h-10" src={logo} alt="fpdao logo" />
+    <img
+      class="sm:hidden h-auto w-full sm:h-10 bg-white"
+      src={logo}
+      alt="fpdao logo"
+    />
   </a>
 </div>
 
