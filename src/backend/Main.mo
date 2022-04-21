@@ -100,7 +100,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       id = proposalId;
       title;
       description;
-      timestamp = Time.now();
       expiryDate = 
       // for local deployment every second proposal is considered adopted
       switch (localDeploymentCanisterId) {
@@ -231,7 +230,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
                 flowersVoted;
                 options = proposal.options;
                 state = proposal.state;
-                timestamp = proposal.timestamp;
                 expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
                 votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
@@ -271,7 +269,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       id = proposal.id;
       title = proposal.title;
       description = proposal.description;
-      timestamp = proposal.timestamp;
       expiryDate = proposal.expiryDate;
       proposer = proposal.proposer;
       options = proposal.options;
@@ -318,7 +315,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       options = proposal.options;
       flowersVoted = proposal.flowersVoted;
       state = proposal.state;
-      timestamp = proposal.timestamp;
       expiryDate = proposal.expiryDate;
       proposer = proposal.proposer;
       votes = Trie.empty();
@@ -346,7 +342,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         options = proposal.options;
         id = proposal.id;
         flowersVoted = proposal.flowersVoted;
-        timestamp = proposal.timestamp;
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
@@ -361,7 +356,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         options = proposal.options;
         id = proposal.id;
         flowersVoted = proposal.flowersVoted;
-        timestamp = proposal.timestamp;
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
