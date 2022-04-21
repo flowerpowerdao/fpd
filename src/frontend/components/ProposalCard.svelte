@@ -15,11 +15,12 @@
 </script>
 
 <li
-  class="flex-1 hover:shadow active:shadow dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
+  class="cursor-pointer flex-1 hover:shadow active:shadow dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
 >
-  <button
+  <div
     on:click={() => {
       push(`/proposals/${proposal.id}`);
+      // reset scroll position
       document.body.scrollTop = 0; // For Safari
       document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE
     }}
@@ -30,7 +31,7 @@
         <p>
           {#if proposal.core}
             <button
-              class="bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white leading-4 w-28 h-full rounded-3xl font-mono italic"
+              class="bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white leading-4 w-[calc(100vw*(1/3))] h-full rounded-3xl font-mono italic"
             >
               core
             </button>
@@ -41,15 +42,15 @@
           {/if}
         </p>
       </div>
-      <h1 class="font-everett-medium text-3xl">
+      <h1 class="font-everett-medium text-3xl mt-4">
         {truncate(proposal.title, 50)}
       </h1>
-      <p class="pt-4 pb-7">
+      <p class="mt-6 mb-7">
         {truncate(proposal.description, 100)}
       </p>
       <ProposalState {proposal} />
     </div>
-  </button>
+  </div>
 </li>
 
 <!-- desktop -->
