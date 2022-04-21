@@ -15,9 +15,15 @@
 </script>
 
 <li
-  class="flex-1 bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
+  class="flex-1 hover:shadow active:shadow dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
 >
-  <a href={`#/proposals/${proposal.id}`} class="">
+  <button
+    on:click={() => {
+      push(`/proposals/${proposal.id}`);
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE
+    }}
+  >
     <div class="p-2 flex flex-col">
       <div class="flex justify-between">
         <p>id: #{proposal.id}</p>
@@ -43,7 +49,7 @@
       </p>
       <ProposalState {proposal} />
     </div>
-  </a>
+  </button>
 </li>
 
 <!-- desktop -->
@@ -96,11 +102,6 @@
                         open
                       </p>
                     {/if}
-                    <p
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
-                    >
-                      votes: {proposal.totalVotesCast}
-                    </p>
                   </div>
                 </div>
                 <!-- Heroicon name: solid/calendar -->
