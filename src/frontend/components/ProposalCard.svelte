@@ -15,7 +15,7 @@
 </script>
 
 <li
-  class="flex-1 bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl m-2"
+  class="flex-1 bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
 >
   <a href={`#/proposals/${proposal.id}`} class="">
     <div class="p-2 flex flex-col">
