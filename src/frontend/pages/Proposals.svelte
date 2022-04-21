@@ -22,7 +22,15 @@
   onDestroy(() => clearInterval(interval));
 </script>
 
-<header class="proposals">
+<!-- mobile -->
+<header class="my-10">
+
+</header>
+
+<!-- desktop -->
+<header
+  class="proposals hidden sm:flex mt-36 flex-col items-center justify-center text-s"
+>
   {#if $store.error}
     <div class="error">
       {$store.error}
@@ -33,6 +41,7 @@
     <CreateProposalModal proposal={newProposal} />
   {/if}
 </header>
+
 <div>
   {#each $store.proposals as proposal}
     <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -45,11 +54,6 @@
 
 <style>
   .proposals {
-    margin-top: 150px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     font-size: calc(10px + 2vmin);
   }
 </style>

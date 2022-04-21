@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background: #f6f6f6;
+}
+
+/* needed so tailwind recognizes the fonts */
+@layer base {
+  /* import font face */
+  @font-face {
+    font-family: "TWK Everett";
+    font-style: normal;
+    font-display: swap;
+    /* unicode-range: U+000-5FF, U+2190, U+2191, U+2192, U+2193, U+2196, U+2197,
+      U+2198, U+2776, U+2777, U+2778, U+2779, U+277A, U+277B, U+E003, U+21B2; */
+    src: local("TWK Everett Regular"),
+      url("./assets/fonts/TWKEverett-Regular-web.woff2") format("woff2");
+  }
+
+  @font-face {
+    font-family: "TWK Everett";
+    font-style: medium;
+    font-display: swap;
+    /* unicode-range: U+000-5FF, U+2190, U+2191, U+2192, U+2193, U+2196, U+2197,
+      U+2198, U+2776, U+2777, U+2778, U+2779, U+277A, U+277B, U+E003, U+21B2; */
+    src: local("TWK Everett Medium"),
+      url("./assets/fonts/TWKEverett-Medium-web.woff2") format("woff2");
+  }
+
+  @font-face {
+    font-family: "Space Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("./assets/fonts/spacemono-regular.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+      U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+      U+2215, U+FEFF, U+FFFD;
+  }
+
+  @font-face {
+    font-family: "Space Mono";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("./assets/fonts/spacemono-italic.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+      U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+      U+2215, U+FEFF, U+FFFD;
+  }
+}

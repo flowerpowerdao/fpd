@@ -7,10 +7,14 @@
   import StoicButton from "../components/StoicButton.svelte";
 </script>
 
+<!-- mobile -->
 <div class="m-1">
-  <img class="sm:hidden h-auto w-full sm:h-10" src={logo} alt="fpdao logo" />
+  <a href="/#">
+    <img class="sm:hidden h-auto w-full sm:h-10" src={logo} alt="fpdao logo" />
+  </a>
 </div>
 
+<!-- desktop -->
 <div class="hidden sm:block relative bg-white">
   <div
     class="flex justify-between items-center px-4 py-6 sm:px-6 md:justify-start md:space-x-10"
