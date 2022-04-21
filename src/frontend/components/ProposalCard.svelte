@@ -19,8 +19,8 @@
 >
   <a href={`#/proposals/${proposal.id}`} class="">
     <div class="p-2 flex flex-col">
-      <div class="font-mono flex justify-between">
-        <p>ID: #{proposal.id}</p>
+      <div class="flex justify-between">
+        <p>id: #{proposal.id}</p>
         <p>
           {#if proposal.core}
             <button

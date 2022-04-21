@@ -26,6 +26,12 @@ export const HOST =
     ? "http://localhost:3000"
     : "https://ic0.app";
 
+type Filters = {
+  open: boolean;
+  adopted: boolean;
+  rejected: boolean;
+};
+
 type State = {
   isAuthed: "plug" | "stoic" | null;
   daoActor: typeof daoActor;
@@ -34,6 +40,8 @@ type State = {
   votingPower: number;
   error: string;
   proposals: ProposalView[];
+  filteredProposals: ProposalView[];
+  filters: Filters;
   votingHistory: bigint[];
 };
 
@@ -43,7 +51,7 @@ export type NewProposal = {
   options: string[];
 };
 
-const defaultState = {
+const defaultState: State = {
   isAuthed: null,
   daoActor,
   btcflowerActor,
@@ -51,6 +59,8 @@ const defaultState = {
   votingPower: 0,
   error: "",
   proposals: [],
+  filteredProposals: [],
+  filters: { open: true, adopted: false, rejected: false },
   votingHistory: [],
 };
 

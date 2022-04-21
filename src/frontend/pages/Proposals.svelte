@@ -11,13 +11,17 @@
     options: [""],
   };
 
+  let filter;
+
   onMount(async () => {
     await store.fetchProposals();
+    filter();
   });
 
+  // fetch every minute
   const interval = setInterval(async () => {
     await store.fetchProposals();
-    // fetch every minute
+    filter();
   }, 60000);
 
   onDestroy(() => clearInterval(interval));
@@ -25,7 +29,7 @@
 
 <!-- mobile -->
 <header class="my-10">
-  <Filters />
+  <Filters bind:filter />
 </header>
 
 <!-- desktop -->
@@ -44,7 +48,7 @@
 </header>
 
 <ul class="pb-14">
-  {#each $store.proposals as proposal}
+  {#each $store.filteredProposals as proposal}
     <ProposalOverview {proposal} />
   {/each}
 </ul>
