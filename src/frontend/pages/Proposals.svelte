@@ -29,8 +29,6 @@
   <Filters />
 </header>
 
-<DarkMode />
-
 <!-- desktop -->
 <header
   class="hidden sm:flex mt-36 flex-col items-center justify-center [font-size:calc(10px+2vmin)]"

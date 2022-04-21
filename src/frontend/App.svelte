@@ -6,6 +6,7 @@
   import Proposals from "./pages/Proposals.svelte";
   import NotFound from "./pages/NotFound.svelte";
   import VotingHistory from "./pages/VotingHistory.svelte";
+  import Footer from "./components/Footer.svelte";
 
   const routes = {
     // Exact path
@@ -21,3 +22,4 @@
 
 <Header />
 <Router {routes} />
+<Footer />

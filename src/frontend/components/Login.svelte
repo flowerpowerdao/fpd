@@ -6,6 +6,6 @@
 
 <button
   on:click={toggleDarkMode}
-  class="font-mono text-3xl bg-white dark:bg-black  border-black dark:border-white dark:text-white border-2 w-14 h-10 rounded-3xl"
-  >⁂</button
+  class="flex-1 font-mono text-xl bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 h-10 rounded-t-3xl"
+  >login</button
 >
