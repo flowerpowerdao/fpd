@@ -11,7 +11,6 @@ body {
   /* import font face */
   @font-face {
     font-family: "TWK Everett";
-    font-style: normal;
     font-display: swap;
     /* unicode-range: U+000-5FF, U+2190, U+2191, U+2192, U+2193, U+2196, U+2197,
       U+2198, U+2776, U+2777, U+2778, U+2779, U+277A, U+277B, U+E003, U+21B2; */
@@ -20,8 +19,7 @@ body {
   }
 
   @font-face {
-    font-family: "TWK Everett";
-    font-style: medium;
+    font-family: "TWK Everett Medium";
     font-display: swap;
     /* unicode-range: U+000-5FF, U+2190, U+2191, U+2192, U+2193, U+2196, U+2197,
       U+2198, U+2776, U+2777, U+2778, U+2779, U+277A, U+277B, U+E003, U+21B2; */

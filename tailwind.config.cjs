@@ -9,6 +9,10 @@ const config = {
       fontFamily: {
         sans: ["TWK Everett", ...defaultTheme.fontFamily.sans],
         mono: ["Space Mono", ...defaultTheme.fontFamily.mono],
+        "everett-medium": [
+          "TWK Everett Medium",
+          ...defaultTheme.fontFamily.sans,
+        ],
       },
     },
   },
