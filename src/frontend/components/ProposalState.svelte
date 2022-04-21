@@ -15,8 +15,6 @@
       }
     });
 
-    console.log(outcome);
-
     // get biggest value in outcome
     let biggest;
     try {
