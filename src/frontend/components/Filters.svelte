@@ -3,17 +3,17 @@
 
 <header class="flex flex-row">
   <button
-    class="text-xl bg-white flex-1 border-2 border-black h-10 rounded-3xl font-mono italic"
+    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-10 rounded-3xl font-mono italic"
   >
     open
   </button>
   <button
-    class="text-xl bg-white flex-1 border-2 border-black h-10 font-mono italic"
+    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-10 font-mono italic"
   >
     adapted
   </button>
   <button
-    class="text-xl bg-white flex-1 border-2 border-black h-10 rounded-t-3xl font-mono italic"
+    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-10 rounded-t-3xl font-mono italic"
   >
     rejected
   </button>

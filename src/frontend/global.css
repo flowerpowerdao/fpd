@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #f6f6f6;
-}
-
 /* needed so tailwind recognizes the fonts */
 @layer base {
   /* import font face */

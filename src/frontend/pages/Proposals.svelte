@@ -4,6 +4,7 @@
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
   import ProposalOverview from "../components/ProposalOverview.svelte";
   import Filters from "../components/Filters.svelte";
+  import DarkMode from "../components/DarkMode.svelte";
 
   let newProposal: NewProposal = {
     title: "",
@@ -28,9 +29,11 @@
   <Filters />
 </header>
 
+<DarkMode />
+
 <!-- desktop -->
 <header
-  class="proposals hidden sm:flex mt-36 flex-col items-center justify-center text-s"
+  class="hidden sm:flex mt-36 flex-col items-center justify-center [font-size:calc(10px+2vmin)]"
 >
   {#if $store.error}
     <div class="error">
@@ -52,9 +55,3 @@
     </div>
   {/each}
 </div>
-
-<style>
-  .proposals {
-    font-size: calc(10px + 2vmin);
-  }
-</style>

@@ -11,7 +11,7 @@
 <div class="p-1">
   <a href="/#">
     <img
-      class="sm:hidden h-auto w-full sm:h-10 bg-white"
+      class="sm:hidden h-auto w-full sm:h-10 bg-white dark:invert dark:border-none"
       src={logo}
       alt="fpdao logo"
     />
