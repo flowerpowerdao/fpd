@@ -6,13 +6,15 @@
     store.update((state) => ({
       ...state,
       // filter proposals according to the selected filters
-      filteredProposals: $store.proposals.filter((proposal) => {
-        return Object.keys(state.filters)
-          .filter((key) => {
-            return state.filters[key];
-          })
-          .includes(fromVariantToString(proposal.state));
-      }),
+      filteredProposals: !Object.values($store.filters).includes(true)
+        ? $store.proposals
+        : $store.proposals.filter((proposal) => {
+            return Object.keys(state.filters)
+              .filter((key) => {
+                return state.filters[key];
+              })
+              .includes(fromVariantToString(proposal.state));
+          }),
     }));
   }
 </script>

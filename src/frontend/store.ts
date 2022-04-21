@@ -60,7 +60,7 @@ const defaultState: State = {
   error: "",
   proposals: [],
   filteredProposals: [],
-  filters: { open: true, adopted: false, rejected: false },
+  filters: { open: false, adopted: false, rejected: false },
   votingHistory: [],
 };
 
