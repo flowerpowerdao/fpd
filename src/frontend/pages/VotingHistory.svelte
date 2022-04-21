@@ -1,6 +1,6 @@
 <script lang="ts">
   import { store } from "../store";
-  import ProposalOverview from "../components/ProposalOverview.svelte";
+  import ProposalOverview from "../components/ProposalCard.svelte";
 
   $: proposals = $store.proposals.filter((proposal) => {
     return $store.votingHistory.includes(proposal.id);

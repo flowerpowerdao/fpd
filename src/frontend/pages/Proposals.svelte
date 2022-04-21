@@ -2,9 +2,8 @@
   import { NewProposal, store } from "../store";
   import { onDestroy, onMount } from "svelte";
   import CreateProposalModal from "../components/CreateProposalModal.svelte";
-  import ProposalOverview from "../components/ProposalOverview.svelte";
+  import ProposalOverview from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
-  import DarkMode from "../components/DarkMode.svelte";
 
   let newProposal: NewProposal = {
     title: "",
@@ -44,12 +43,8 @@
   {/if}
 </header>
 
-<div>
+<ul class="pb-14">
   {#each $store.proposals as proposal}
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-      <ul class="divide-y divide-gray-200">
-        <ProposalOverview {proposal} />
-      </ul>
-    </div>
+    <ProposalOverview {proposal} />
   {/each}
-</div>
+</ul>

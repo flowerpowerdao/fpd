@@ -3,12 +3,51 @@
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { store } from "../store";
   import { fromTimestamp, fromVariantToString } from "../utils";
+  import ProposalState from "./ProposalState.svelte";
 
   export let proposal: Proposal;
   $: alreadyVoted = $store.votingHistory.includes(proposal.id);
+
+  // truncate string
+  function truncate(str: string, n: number) {
+    return str.length > n ? str.slice(0, n - 1) + "…" : str;
+  }
 </script>
 
-<div class="bg-white shadow overflow-hidden sm:rounded-md">
+<li
+  class="flex-1 bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl m-2"
+>
+  <a href={`#/proposals/${proposal.id}`} class="">
+    <div class="p-2 flex flex-col">
+      <div class="font-mono flex justify-between">
+        <p>ID: #{proposal.id}</p>
+        <p>
+          {#if proposal.core}
+            <button
+              class="bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white leading-4 w-28 h-full rounded-3xl font-mono italic"
+            >
+              core
+            </button>
+          {:else}
+            by {proposal.proposer.toString().slice(0, 5) +
+              "…" +
+              proposal.proposer.toString().slice(-2)}
+          {/if}
+        </p>
+      </div>
+      <h1 class="font-everett-medium text-3xl">
+        {truncate(proposal.title, 50)}
+      </h1>
+      <p class="pt-4 pb-7">
+        {truncate(proposal.description, 100)}
+      </p>
+      <ProposalState {proposal} />
+    </div>
+  </a>
+</li>
+
+<!-- desktop -->
+<div class="hidden sm:block bg-white shadow overflow-hidden sm:rounded-md">
   <li>
     <!-- svelte-ignore a11y-missing-attribute -->
     <a

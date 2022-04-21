@@ -8,12 +8,12 @@
     open
   </button>
   <button
-    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 font-mono italic"
+    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 font-mono italic"
   >
-    adapted
+    adopted
   </button>
   <button
-    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 rounded-t-3xl font-mono italic"
+    class="text-xl bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 rounded-t-3xl font-mono italic"
   >
     rejected
   </button>

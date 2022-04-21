@@ -8,7 +8,7 @@
 </script>
 
 <!-- mobile -->
-<div class="p-1">
+<div class="">
   <a href="/#">
     <img
       class="sm:hidden h-auto w-full sm:h-10 bg-white dark:invert dark:border-none"
