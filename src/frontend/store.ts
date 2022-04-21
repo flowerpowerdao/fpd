@@ -200,7 +200,7 @@ export const createStore = ({
 
   const fetchProposals = async () => {
     const proposals = await get({ subscribe }).daoActor.listProposals();
-    proposals.sort((a, b) => Number(b.expiryDate - a.expiryDate));
+    proposals.sort((a, b) => Number(b.id - a.id));
 
     update((prevState) => {
       return {
