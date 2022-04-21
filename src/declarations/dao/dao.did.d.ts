@@ -58,7 +58,6 @@ export interface ProposalView {
   'expiryDate' : bigint,
   'core' : boolean,
   'description' : string,
-  'totalVotesCast' : bigint,
   'state' : ProposalState,
   'timestamp' : bigint,
   'proposer' : Principal,

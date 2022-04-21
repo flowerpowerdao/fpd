@@ -30,7 +30,6 @@ type Proposal =
     state : ProposalState;
     timestamp : Int;
     title : Text;
-    totalVotesCast : Nat;
     votes : Trie<Principal, (Nat, Nat)>
   };
 type ProposalState = {#adopted; #open; #rejected};

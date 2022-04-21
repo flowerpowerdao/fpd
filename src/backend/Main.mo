@@ -101,25 +101,53 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       title;
       description;
       timestamp = Time.now();
-      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
-      proposer = caller;
-      flowersVoted = List.nil();
-      options;
-      votes = Trie.empty();
-      state = 
+      expiryDate = 
       // for local deployment every second proposal is considered adopted
       switch (localDeploymentCanisterId) {
-        case null #open;
+        // production
+        case null Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
+        // local
         case _ {
+          // open
           if (proposalId % 2 == 0) {
-            #open
+            Time.now() + (86_400_000_000_000 * votingPeriod) // 5 days
+          // rejected & rejected
           } else {
-            #adopted
+            Time.now()
           }
         }
       };
-      voters = List.nil();
-      totalVotesCast = 0;
+      proposer = caller;
+      flowersVoted = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9]);
+      options;
+      votes = 
+      // for local deployment every second proposal is considered adopted
+      switch (localDeploymentCanisterId) {
+        // production
+        case null Trie.empty();
+        // local
+        case _ {
+          // open
+          if (proposalId % 2 == 0) {
+            Trie.empty()
+          // adopted
+          } else if (proposalId % 3 == 0) {
+            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat)> = Trie.empty();
+            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (1, 1100)).0;
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (2, 1050)).0;
+            temp
+          // rejected
+          } else {
+            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat)> = Trie.empty();
+            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (1, 500)).0;
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (2, 500)).0;
+            temp
+          }
+        }
+      };
+      state = #open;
       // check if the proposal was submitted by a core team member
       core = do {
           var isCoreTeamMember = false;
@@ -207,7 +235,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
                 expiryDate = proposal.expiryDate;
                 proposer = proposal.proposer;
                 votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
-                totalVotesCast = proposal.totalVotesCast + votingPower;
                 core = proposal.core;
             };
             // updated proposal in stable memory
@@ -253,7 +280,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         return (kv.0, {option = kv.1.0; votesCast = kv.1.1});
       });
       flowersVoted = List.toArray(proposal.flowersVoted);
-      totalVotesCast = proposal.totalVotesCast;
       core = proposal.core;
     };
   };
@@ -296,7 +322,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       expiryDate = proposal.expiryDate;
       proposer = proposal.proposer;
       votes = Trie.empty();
-      totalVotesCast = proposal.totalVotesCast;
       core = proposal.core;
     };
 
@@ -325,7 +350,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
-        totalVotesCast = proposal.totalVotesCast;
         core = proposal.core;
       };
       putProposalInternal(proposal.id, updated);
@@ -341,7 +365,6 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
-        totalVotesCast = proposal.totalVotesCast;
         core = proposal.core;
       };
 

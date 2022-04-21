@@ -55,7 +55,6 @@ export const idlFactory = ({ IDL }) => {
     'expiryDate' : IDL.Int,
     'core' : IDL.Bool,
     'description' : IDL.Text,
-    'totalVotesCast' : IDL.Nat,
     'state' : ProposalState,
     'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,

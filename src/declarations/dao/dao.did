@@ -31,7 +31,6 @@ type ProposalView =
    state: ProposalState;
    timestamp: int;
    title: text;
-   totalVotesCast: nat;
    votes: vec record {
                 principal;
                 record {
