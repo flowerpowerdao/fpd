@@ -18,7 +18,7 @@ import {
   createActor as createBtcflowerActor,
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
-} from "../canisters/btcflower";
+} from "../declarations/btcflower";
 import type { ProposalView } from "../declarations/dao/dao.did";
 
 export const HOST =
