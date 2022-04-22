@@ -59,7 +59,6 @@ export interface ProposalView {
   'core' : boolean,
   'description' : string,
   'state' : ProposalState,
-  'timestamp' : bigint,
   'proposer' : Principal,
   'flowersVoted' : Array<number>,
   'options' : Array<string>,

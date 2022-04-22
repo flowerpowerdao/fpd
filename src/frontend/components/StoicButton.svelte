@@ -3,6 +3,7 @@
   import { StoicIdentity } from "ic-stoic-identity";
 
   import { store } from "../store";
+  import SpinningCursor from "./SpinningCursor.svelte";
 
   onMount(async () => {
     StoicIdentity.load().then(async (identity) => {
@@ -14,7 +15,7 @@
   });
 </script>
 
-{#if $store.isAuthed === "stoic"}
+<!-- {#if $store.isAuthed === "stoic"}
   <button
     class="flex items-center justify-between px-3 py-2 rounded-lg bg-white border-gray-300 border-2 hover:ring-2 hover:ring-opacity-50 hover:ring-indigo-500 hover:border-indigo-500"
     on:click={store.disconnect}
@@ -34,15 +35,10 @@
     </div>
     <span> {$store.votingPower + " "} Flowers </span>
   </button>
-{:else if !$store.isAuthed}
-  <button
-    class="flex items-center px-3 py-2 rounded-lg bg-white border-gray-300 border-2 hover:ring-2 hover:ring-opacity-50 hover:ring-indigo-500 hover:border-indigo-500"
-    on:click={store.stoicConnect}
-  >
-    <img
-      src="https://raw.githubusercontent.com/FloorLamp/cubic/main/src/ui/public/img/stoic.png"
-      class="w-4 mr-2"
-      alt="stoic logo"
-    /> Stoic
-  </button>
-{/if}
+{/if} -->
+<button
+  class="relative font-mono background-white w-full mx-2 h-10 border-2 border-black rounded-3xl flex justify-center items-center"
+  on:click={store.stoicConnect}
+>
+  stoic
+</button>

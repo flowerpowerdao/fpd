@@ -56,7 +56,6 @@ export const idlFactory = ({ IDL }) => {
     'core' : IDL.Bool,
     'description' : IDL.Text,
     'state' : ProposalState,
-    'timestamp' : IDL.Int,
     'proposer' : IDL.Principal,
     'flowersVoted' : IDL.Vec(IDL.Nat32),
     'options' : IDL.Vec(IDL.Text),

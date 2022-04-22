@@ -28,7 +28,6 @@ type Proposal =
     options : [Text];
     proposer : Principal;
     state : ProposalState;
-    timestamp : Int;
     title : Text;
     votes : Trie<Principal, (Nat, Nat)>
   };

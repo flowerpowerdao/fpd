@@ -15,7 +15,7 @@
 </script>
 
 <li
-  class="cursor-pointer flex-1 hover:shadow active:shadow dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
+  class="cursor-pointer hover:shadow active:shadow dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
 >
   <div
     on:click={() => {
