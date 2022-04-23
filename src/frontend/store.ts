@@ -43,6 +43,7 @@ type State = {
   filteredProposals: ProposalView[];
   filters: Filters;
   votingHistory: bigint[];
+  isLoading: boolean;
 };
 
 export type NewProposal = {
@@ -62,6 +63,7 @@ const defaultState: State = {
   filteredProposals: [],
   filters: { open: false, adopted: false, rejected: false },
   votingHistory: [],
+  isLoading: false,
 };
 
 export const createStore = ({
@@ -196,6 +198,10 @@ export const createStore = ({
     principal: Principal,
     btcflower: typeof btcflowerActor,
   ) => {
+    update((prevState) => ({
+      ...prevState,
+      isLoading: true,
+    }));
     const [proposals, votingHistory, votingPower] = await Promise.all([
       fetchProposals(),
       fetchVotingHistory(),
@@ -205,6 +211,7 @@ export const createStore = ({
     update((prevState) => ({
       ...prevState,
       votingPower,
+      isLoading: false,
     }));
   };
 
@@ -239,6 +246,7 @@ export const createStore = ({
       return {
         ...defaultState,
         proposals: prevState.proposals,
+        filteredProposals: prevState.filteredProposals,
       };
     });
   };

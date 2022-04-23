@@ -38,7 +38,7 @@
           {:else}
             by {proposal.proposer.toString().slice(0, 5) +
               "…" +
-              proposal.proposer.toString().slice(-2)}
+              proposal.proposer.toString().slice(-3)}
           {/if}
         </p>
       </div>

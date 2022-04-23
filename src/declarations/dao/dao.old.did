@@ -96,6 +96,7 @@ service : {
   getProposal: (nat) -> (Result_2) query;
   getVotingHistory: () -> (vec nat) query;
   listProposals: () -> (vec ProposalView) query;
+  returnCore: () -> (vec principal) query;
   submitProposal: (text, text, vec text) -> (Result_1);
   vote: (VoteArgs) -> (Result);
 }
