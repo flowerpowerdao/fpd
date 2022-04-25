@@ -110,14 +110,25 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
           // open
           if (proposalId % 2 == 0) {
             Time.now() + (86_400_000_000_000 * votingPeriod) // 5 days
-          // rejected & rejected
+          // rejected & adopted
           } else {
             Time.now()
           }
         }
       };
       proposer = caller;
-      flowersVoted = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9]);
+      flowersVoted = switch (localDeploymentCanisterId) {
+        case null List.nil();
+        case _ {
+          // open
+          if (proposalId % 2 == 0) {
+            List.nil()
+          // rejected & adopted 
+          } else {
+            List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9])
+          }
+        }
+      };
       options;
       votes = 
       // for local deployment every second proposal is considered adopted
@@ -157,6 +168,21 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             };
           };
           isCoreTeamMember
+      };
+      votesCast = switch (localDeploymentCanisterId) {
+        case null 0;
+        case _ {
+          // open
+          if (proposalId % 2 == 0) {
+            0
+          // adopted
+          } else if (proposalId % 3 == 0) {
+            1500
+          // rejected
+          } else {
+            1000
+          }
+        }
       };
     };
     putProposalInternal(proposalId, proposal);
@@ -231,6 +257,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
                 options = proposal.options;
                 state = proposal.state;
                 expiryDate = proposal.expiryDate;
+                votesCast = proposal.votesCast + votingPower;
                 proposer = proposal.proposer;
                 votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
                 core = proposal.core;
@@ -278,6 +305,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       });
       flowersVoted = List.toArray(proposal.flowersVoted);
       core = proposal.core;
+      votesCast = proposal.votesCast;
     };
   };
 
@@ -319,22 +347,15 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       proposer = proposal.proposer;
       votes = Trie.empty();
       core = proposal.core;
+      votesCast = proposal.votesCast;
     };
 
     return openProposal;
   };
 
-  func getTotalVotes(proposal : Types.Proposal) : Nat {
-    var totalVotes : Nat = 0;
-    for (kv in Trie.iter(proposal.votes)) {
-      totalVotes += kv.1.1;
-    };
-    return totalVotes;
-  };
-
   func closeProposal(proposal: Types.Proposal) {
     // consider the proposal adopted if we pass the threshold, else rejected
-    if (getTotalVotes(proposal) > votingThreshold) {
+    if (proposal.votesCast > votingThreshold) {
       let updated : Types.Proposal = {
         state = #adopted;
         description = proposal.description;
@@ -345,6 +366,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
+        votesCast = proposal.votesCast;
         core = proposal.core;
       };
       putProposalInternal(proposal.id, updated);
@@ -359,6 +381,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
         expiryDate = proposal.expiryDate;
         proposer = proposal.proposer;
         votes = proposal.votes;
+        votesCast = proposal.votesCast;
         core = proposal.core;
       };
 

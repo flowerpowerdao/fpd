@@ -3,15 +3,12 @@
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { store } from "../store";
   import { fromTimestamp, fromVariantToString } from "../utils";
+  import { truncate } from "../utils";
+
   import ProposalState from "./ProposalState.svelte";
 
   export let proposal: Proposal;
   $: alreadyVoted = $store.votingHistory.includes(proposal.id);
-
-  // truncate string
-  function truncate(str: string, n: number) {
-    return str.length > n ? str.slice(0, n - 1) + "…" : str;
-  }
 </script>
 
 <li

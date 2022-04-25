@@ -19,9 +19,7 @@
     {openMenu ? "↓" : "↑"}
   </button>
   {#if openMenu}
-    <div
-      class="flex flex-col justify-center items-center gap-1 "
-    >
+    <div class="flex flex-col justify-center items-center gap-1 ">
       <button> my proposals </button>
       <button> voting history </button>
       <button on:click={store.disconnect}> log out </button>

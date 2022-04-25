@@ -227,6 +227,23 @@ export const createStore = ({
     });
   };
 
+  const filterProposals = () => {
+    const store = get({ subscribe });
+    update((state) => ({
+      ...state,
+      // filter proposals according to the selected filters
+      filteredProposals: !Object.values(store.filters).includes(true)
+        ? store.proposals
+        : store.proposals.filter((proposal) => {
+            return Object.keys(state.filters)
+              .filter((key) => {
+                return state.filters[key];
+              })
+              .includes(fromVariantToString(proposal.state));
+          }),
+    }));
+  };
+
   const fetchVotingHistory = async () => {
     let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
     update((prevState) => {
@@ -280,6 +297,7 @@ export const createStore = ({
     submitProposal,
     fetchProposals,
     fetchVotingHistory,
+    filterProposals,
   };
 };
 

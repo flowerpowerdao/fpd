@@ -15,27 +15,6 @@
   });
 </script>
 
-<!-- {#if $store.isAuthed === "stoic"}
-  <button
-    class="flex items-center justify-between px-3 py-2 rounded-lg bg-white border-gray-300 border-2 hover:ring-2 hover:ring-opacity-50 hover:ring-indigo-500 hover:border-indigo-500"
-    on:click={store.disconnect}
-  >
-    <div class="flex items-center">
-      <img
-        src="https://raw.githubusercontent.com/FloorLamp/cubic/main/src/ui/public/img/stoic.png"
-        class="w-4 mr-2"
-        alt="stoic logo"
-      />
-
-      <span>
-        {$store.principal.toString().slice(0, 5) +
-          "..." +
-          $store.principal.toString().slice(-2)}
-      </span>
-    </div>
-    <span> {$store.votingPower + " "} Flowers </span>
-  </button>
-{/if} -->
 <button
   class="relative font-mono background-white w-full mx-2 h-10 border-2 border-black rounded-3xl flex justify-center items-center"
   on:click={store.stoicConnect}

@@ -37,6 +37,7 @@ type ProposalView =
                   votesCast: nat;
                 };
               };
+   votesCast: nat;
  };
 type ProposalState = 
  variant {

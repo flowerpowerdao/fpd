@@ -29,7 +29,8 @@ type Proposal =
     proposer : Principal;
     state : ProposalState;
     title : Text;
-    votes : Trie<Principal, (Nat, Nat)>
+    votes : Trie<Principal, (Nat, Nat)>;
+    votesCast : Nat
   };
 type ProposalState = {#adopted; #open; #rejected};
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};

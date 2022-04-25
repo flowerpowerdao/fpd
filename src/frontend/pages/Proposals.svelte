@@ -11,17 +11,15 @@
     options: [""],
   };
 
-  let filter;
-
   onMount(async () => {
     await store.fetchProposals();
-    filter();
+    store.filterProposals();
   });
 
   // fetch every minute
   const interval = setInterval(async () => {
     await store.fetchProposals();
-    filter();
+    store.filterProposals();
   }, 60000);
 
   onDestroy(() => clearInterval(interval));
@@ -29,7 +27,7 @@
 
 <!-- mobile -->
 <header class="my-10">
-  <Filters bind:filter />
+  <Filters />
 </header>
 
 <!-- desktop -->

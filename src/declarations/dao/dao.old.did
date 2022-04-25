@@ -29,9 +29,7 @@ type ProposalView =
    options: vec text;
    proposer: principal;
    state: ProposalState;
-   timestamp: int;
    title: text;
-   totalVotesCast: nat;
    votes: vec record {
                 principal;
                 record {
@@ -96,7 +94,6 @@ service : {
   getProposal: (nat) -> (Result_2) query;
   getVotingHistory: () -> (vec nat) query;
   listProposals: () -> (vec ProposalView) query;
-  returnCore: () -> (vec principal) query;
   submitProposal: (text, text, vec text) -> (Result_1);
   vote: (VoteArgs) -> (Result);
 }

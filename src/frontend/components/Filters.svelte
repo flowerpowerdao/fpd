@@ -1,22 +1,5 @@
 <script lang="ts">
   import { store } from "../store";
-  import { fromVariantToString } from "../utils";
-
-  export function filter() {
-    store.update((state) => ({
-      ...state,
-      // filter proposals according to the selected filters
-      filteredProposals: !Object.values($store.filters).includes(true)
-        ? $store.proposals
-        : $store.proposals.filter((proposal) => {
-            return Object.keys(state.filters)
-              .filter((key) => {
-                return state.filters[key];
-              })
-              .includes(fromVariantToString(proposal.state));
-          }),
-    }));
-  }
 </script>
 
 <header class="flex flex-row">
@@ -29,7 +12,7 @@
         filters: { ...state.filters, open: !state.filters.open },
       }));
       // filter the proposals according to the filter
-      filter();
+      store.filterProposals();
     }}
     class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 rounded-3xl font-mono italic"
   >
@@ -44,7 +27,7 @@
         filters: { ...state.filters, adopted: !state.filters.adopted },
       }));
       // filter the proposals according to the filter
-      filter();
+      store.filterProposals();
     }}
     class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 font-mono italic"
   >
@@ -59,7 +42,7 @@
         filters: { ...state.filters, rejected: !state.filters.rejected },
       }));
       // filter the proposals according to the filter
-      filter();
+      store.filterProposals();
     }}
     class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 rounded-t-3xl font-mono italic"
   >

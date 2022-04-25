@@ -15,6 +15,7 @@ module {
     flowersVoted : List.List<Nat32>; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     expiryDate : Int; // when the voting period ends
+    votesCast: Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
     core: Bool; // is the proposal a core proposal
   };
@@ -28,6 +29,7 @@ module {
     flowersVoted : [Nat32]; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     expiryDate : Int; // when the voting period ends
+    votesCast : Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
     core: Bool; // is the proposal a core proposal
   };

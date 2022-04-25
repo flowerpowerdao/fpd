@@ -1,34 +1,11 @@
 <script lang="ts">
-  import { fromVariantToString, fromTimestamp } from "../utils";
+  import {
+    fromVariantToString,
+    fromTimestamp,
+    getWinningOption,
+  } from "../utils";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   export let proposal: Proposal;
-
-  // get winning option
-  function getWinningOption(proposal: Proposal): string {
-    // get winning option
-    let outcome = {};
-    proposal.votes.forEach((vote) => {
-      if (Number(vote[1].option) in outcome) {
-        outcome[Number(vote[1].option)] += vote[1].votesCast;
-      } else {
-        outcome[Number(vote[1].option)] = vote[1].votesCast;
-      }
-    });
-
-    // get biggest value in outcome
-    let biggest;
-    try {
-      biggest = Object.keys(outcome).reduce((a, b) =>
-        outcome[a] > outcome[b] ? a : b,
-      );
-    } catch (error) {
-      console.log(error);
-      return "";
-    }
-
-    // return option
-    return proposal.options[biggest];
-  }
 </script>
 
 <div class="flex justify-end">
