@@ -6,6 +6,7 @@
   import ProposalState from "./ProposalState.svelte";
   import ProposalText from "./ProposalText.svelte";
   import Results from "./Results.svelte";
+  import Votes from "./Votes.svelte";
 
   export let proposal: Proposal;
 </script>
@@ -23,5 +24,6 @@
   </div>
   <ProposalText {proposal} />
   <CastVote {proposal} />
-  <Results {proposal}/>
+  <Votes {proposal} />
+  <Results {proposal} />
 </div>

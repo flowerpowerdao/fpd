@@ -146,7 +146,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
             // we need to use different principals here, otherwise the trie entry is just overwritten
             temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("rno2w-sqaaa-aaaaa-aaacq-cai")), Principal.equal, (2, 1050)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050)).0;
             temp
           // rejected
           } else {
@@ -154,7 +154,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
             // we need to use different principals here, otherwise the trie entry is just overwritten
             temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 500)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("rno2w-sqaaa-aaaaa-aaacq-cai")), Principal.equal, (2, 500)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 500)).0;
             temp
           }
         }
