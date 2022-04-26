@@ -113,3 +113,13 @@ export function getWinningOption(proposal: Proposal): string {
   // return option
   return proposal.options[biggest];
 }
+
+export function getVotesForOption(proposal: Proposal, option: number) {
+  return proposal.votes.reduce((acc, vote) => {
+    if (Number(vote[1].option) === option) {
+      return acc + Number(vote[1].votesCast);
+    } else {
+      return acc;
+    }
+  }, 0);
+}

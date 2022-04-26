@@ -1,7 +1,7 @@
 <script lang="ts">
   import ProgressBar from "./ProgressBar.svelte";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
-  import { fromVariantToString } from "../utils";
+  import { fromVariantToString, getVotesForOption } from "../utils";
 
   export let proposal: Proposal;
 </script>
@@ -13,15 +13,28 @@
     <button
       class="cursor-default active: text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono italic"
     >
-      current results:
+      {fromVariantToString(proposal.state) === "open"
+        ? "current results:"
+        : "final results:"}
     </button>
-    {#if fromVariantToString(proposal.state) === "open"}
-      <div class="pt-7">
+    <div class="pt-7 flex flex-col gap-2">
+      {#if fromVariantToString(proposal.state) === "open"}
         <ProgressBar
           votesCast={Number(proposal.votesCast)}
           title={"votes cast"}
         />
-      </div>
-    {/if}
+      {:else}
+        <ProgressBar
+          votesCast={Number(proposal.votesCast)}
+          title={"votes cast"}
+        />
+        {#each proposal.options as option, index}
+          <ProgressBar
+            votesCast={getVotesForOption(proposal, index)}
+            title={option}
+          />
+        {/each}
+      {/if}
+    </div>
   </div>
 </div>
