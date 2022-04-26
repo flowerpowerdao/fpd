@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import SvelteMarkdown from "svelte-markdown";
   import { truncate } from "../utils";
 
   export let proposal: Proposal;
@@ -35,9 +36,13 @@
     </div>
     <p class="mt-6">
       {#if showText}
-        {proposal.description}
+        <article class="prose prose-black dark:prose-invert max-w-none">
+          <SvelteMarkdown source={proposal.description} />
+        </article>
       {:else}
-        {truncate(proposal.description, 100)}
+        <article class="prose prose-black dark:prose-invert max-w-none">
+          <SvelteMarkdown source={truncate(proposal.description, 100)} />
+        </article>
       {/if}
     </p>
     {#if proposal.description.length > 100}

@@ -162,7 +162,7 @@
               </div>
             </div>
           </div>
-          <Form {proposal} />
+          <Form />
           <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               disabled={loading}
