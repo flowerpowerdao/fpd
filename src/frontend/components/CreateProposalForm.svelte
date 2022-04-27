@@ -103,12 +103,15 @@
                 required
               />
               <button
+                type="button"
+                tabindex="-1"
                 on:click|preventDefault={() => removeOption(index)}
                 class="px-2">x</button
               >
             </div>
           {/each}
           <button
+            tabindex="-1"
             class="p-2 hover:shadow shadow-black dark:shadow-white bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl my-2"
             on:click|preventDefault={addOption}
           >
