@@ -2,6 +2,7 @@
   import { NewProposal } from "../store";
   import { pop } from "svelte-spa-router";
   import { store } from "../store";
+  import { ConfettiExplosion } from "svelte-confetti-explosion";
   import spinner from "../assets/loading.gif";
   import SvelteMarkdown from "svelte-markdown";
   import Button from "../components/Button.svelte";
@@ -13,6 +14,7 @@
     options: [""],
   };
   let loading = false;
+  let confetti = false;
   let preview = false;
 
   const addOption = () => {
@@ -37,11 +39,23 @@
   const submitProposal = async () => {
     loading = true;
     await store.submitProposal(proposal);
+    confetti = false;
+    confetti = true;
     loading = false;
     clearProposal();
     store.fetchProposals();
   };
 </script>
+
+{#if confetti}
+  <div class="fixed bottom-0">
+    <ConfettiExplosion
+      particlesShape="circles"
+      colors={["#BB64D2", "#24A0F5", "#FED030", "#FC514B"]}
+      force={1}
+    />
+  </div>
+{/if}
 
 <!-- mobile -->
 <div class="pb-24">
