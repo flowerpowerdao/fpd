@@ -2,6 +2,7 @@
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
+  import Button from "./Button.svelte";
 
   let loading = false;
   let error;
@@ -51,22 +52,14 @@
         <p>voting power: {$store.votingPower}</p>
       </div>
       <div class="flex gap-3 flex-col flex-1 justify-center items-center">
-        <button
-          class="font-mono background-white w-full mx-2 h-10 border-2 border-black rounded-3xl flex justify-center items-center"
-          on:click={castVote}
-        >
+        <Button eventHandler={castVote} disabled={loading}>
           {#if loading}
             <img class="h-6" src={spinner} alt="loading animation" />
           {:else}
             submit
           {/if}
-        </button>
-        <button
-          class="font-mono background-white w-full mx-2 h-10 border-2 border-black rounded-3xl flex justify-center items-center"
-          on:click={toggleModal}
-        >
-          cancel
-        </button>
+        </Button>
+        <Button eventHandler={toggleModal}>cancel</Button>
       </div>
       <div>
         {#if error}

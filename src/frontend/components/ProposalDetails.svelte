@@ -2,6 +2,7 @@
   import { push } from "svelte-spa-router";
 
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import Button from "./Button.svelte";
   import CastVote from "./CastVote.svelte";
   import ProposalState from "./ProposalState.svelte";
   import ProposalText from "./ProposalText.svelte";
@@ -14,12 +15,7 @@
 <!-- mobile -->
 <div class="pb-24">
   <div class="my-10">
-    <button
-      class="text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 w-full rounded-3xl font-mono -mb-0.5"
-      on:click={() => push("/")}
-    >
-      ← back
-    </button>
+    <Button eventHandler={() => push("/")}>← back</Button>
     <ProposalState {proposal} />
   </div>
   <ProposalText {proposal} />
