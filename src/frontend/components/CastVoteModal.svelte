@@ -6,6 +6,7 @@
 
   let loading = false;
   let error;
+  export let confetti;
   export let selected;
   export let proposal: Proposal;
   export let toggleModal;
@@ -19,6 +20,8 @@
     if ("ok" in res) {
       await Promise.all([store.fetchVotingHistory(), store.fetchProposals()]);
       store.filterProposals();
+      confetti = false;
+      confetti = true;
       toggleModal();
     } else if ("err" in res) {
       error = res.err;
@@ -30,7 +33,7 @@
   }
 </script>
 
-<!-- modal -->
+<!-- mobile -->
 <div>
   <div
     class="fixed flex justify-center items-center z-10 inset-0 bg-opacity-10 backdrop-blur-sm"

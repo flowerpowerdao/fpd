@@ -3,11 +3,13 @@
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import { onMount } from "svelte";
+  import { ConfettiExplosion } from "svelte-confetti-explosion";
 
   import CastVoteModal from "./CastVoteModal.svelte";
   import Card from "./Card.svelte";
 
   let openModal = false;
+  let confetti = false;
   let selected;
   export let proposal: Proposal;
 
@@ -28,11 +30,19 @@
     // fetch voting history to mitigate the case where user open the proposal details page directly
     await store.fetchVotingHistory();
   });
-
-  console.log($store);
 </script>
 
 <svelte:window on:keyup={handleEscape} />
+
+{#if confetti}
+  <div class="fixed bottom-0">
+    <ConfettiExplosion
+      particlesShape="circles"
+      colors={["#BB64D2", "#24A0F5", "#FED030", "#FC514B"]}
+      force={1}
+    />
+  </div>
+{/if}
 
 {#if fromVariantToString(proposal.state) === "open"}
   <Card>
@@ -72,6 +82,6 @@
     </div>
   </Card>
   {#if openModal}
-    <CastVoteModal {selected} {proposal} {toggleModal} />
+    <CastVoteModal {selected} {proposal} {toggleModal} bind:confetti />
   {/if}
 {/if}
