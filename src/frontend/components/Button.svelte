@@ -1,16 +1,14 @@
 <script lang="ts">
-  export let title: string;
   export let eventHandler: () => void = undefined;
+  export let disabled: boolean = undefined;
+  export let styles: string = undefined;
 </script>
 
 <button
-  on:click={eventHandler}
-  class="font-mono bg-white textblack w-full 
-  text-2xl pl-8 pr-6 py-2 rounded-full cursor-pointer 
-  sm:py-1 sm:w-1/2 
-  3xl:max-w-xs 3xl:text-4xl 3xl:pl-8 3xl:pr-6"
+  class="flex items-center justify-center disabled:shadow-none hover:shadow shadow-black dark:shadow-white text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 w-full rounded-3xl font-mono -mb-0.5"
+  style={styles}
+  on:click|preventDefault={eventHandler}
+  {disabled}
 >
-  <div class="flex justify-between">
-    {title} <span class="text-right">↗</span>
-  </div>
+  <slot />
 </button>

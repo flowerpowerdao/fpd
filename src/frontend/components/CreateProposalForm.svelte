@@ -4,6 +4,7 @@
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
   import SvelteMarkdown from "svelte-markdown";
+  import Button from "../components/Button.svelte";
 
   let proposal: NewProposal = {
     title: "",
@@ -45,18 +46,8 @@
 <div class="pb-24">
   <!-- header buttons -->
   <div class="my-10">
-    <button
-      class="hover:shadow shadow-black dark:shadow-white text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 w-full rounded-3xl font-mono -mb-0.5"
-      on:click={() => push("/")}
-    >
-      ← back
-    </button>
-    <button
-      class="hover:shadow shadow-black dark:shadow-white text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 w-full rounded-3xl font-mono -mb-0.5"
-      on:click={() => (preview = !preview)}
-    >
-      preview
-    </button>
+    <Button eventHandler={() => push("/")}>← back</Button>
+    <Button eventHandler={() => (preview = !preview)}>preview</Button>
   </div>
   <!-- form -->
   <form>
@@ -124,17 +115,17 @@
           >
             add option
           </button>
-          <button
-            class="flex items-center justify-center mt-10 disabled:shadow-none hover:shadow shadow-black dark:shadow-white text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 w-full rounded-3xl font-mono -mb-0.5"
-            on:click|preventDefault={submitProposal}
+          <Button
+            eventHandler={submitProposal}
             disabled={loading}
+            styles={"margin-top: 2.5rem;"}
           >
             {#if loading}
               <img class="h-6 block" src={spinner} alt="loading animation" />
             {:else}
               submit proposal →
             {/if}
-          </button>
+          </Button>
           <p>{$store.error}</p>
         </div>
       </div>
