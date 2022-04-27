@@ -151,10 +151,10 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
           // rejected
           } else {
             var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat)> = Trie.empty();
-            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
+            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 100)).0;
             // we need to use different principals here, otherwise the trie entry is just overwritten
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 500)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 500)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50)).0;
             temp
           }
         }
@@ -182,7 +182,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             3150
           // rejected
           } else {
-            2000
+            200
           }
         }
       };
