@@ -7,9 +7,14 @@
   import Card from "./Card.svelte";
 
   import ProposalState from "./ProposalState.svelte";
+  import Voted from "./Voted.svelte";
 
   export let proposal: Proposal;
-  $: alreadyVoted = $store.votingHistory.includes(proposal.id);
+  $: alreadyVoted = $store.votingHistory
+    .map((element) => element.id)
+    .includes(proposal.id);
+
+  console.log(alreadyVoted);
 </script>
 
 <li>
@@ -46,6 +51,9 @@
           {truncate(proposal.description, 100)}
         </p>
         <ProposalState {proposal} />
+        {#if alreadyVoted}
+          <Voted />
+        {/if}
       </div>
     </div>
   </Card>
