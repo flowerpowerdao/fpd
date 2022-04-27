@@ -38,7 +38,7 @@
     await store.submitProposal(proposal);
     loading = false;
     clearProposal();
-    await store.fetchProposals();
+    store.fetchProposals();
   };
 </script>
 

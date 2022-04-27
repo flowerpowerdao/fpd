@@ -1,9 +1,12 @@
 <script>
   import { onMount } from "svelte";
   import { StoicIdentity } from "ic-stoic-identity";
-
   import { store } from "../store";
-  import SpinningCursor from "./SpinningCursor.svelte";
+
+  import Button from "./Button.svelte";
+  import spinner from "../assets/loading.gif";
+
+  export let loading;
 
   onMount(async () => {
     StoicIdentity.load().then(async (identity) => {
@@ -13,11 +16,18 @@
       }
     });
   });
+
+  async function connect() {
+    loading = "stoic";
+    await store.stoicConnect();
+    loading = undefined;
+  }
 </script>
 
-<button
-  class="relative font-mono background-white w-full mx-2 h-10 border-2 border-black rounded-3xl flex justify-center items-center"
-  on:click={store.stoicConnect}
->
-  stoic
-</button>
+<Button eventHandler={connect} disabled={loading}>
+  {#if loading === "stoic"}
+    <img class="h-6 block" src={spinner} alt="loading animation" />
+  {:else}
+    stoic
+  {/if}
+</Button>
