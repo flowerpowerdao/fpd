@@ -13,10 +13,10 @@
   <div
     class="flex flex-col bg-white dark:bg-black border-black dark:border-white border-2 rounded-xl h-1/2 w-full mx-2 pt-4 px-4"
   >
-    <div class="flex flex-row justify-between">
+    <div class="flex flex-row justify-between dark:text-white">
       <p class="font-everett-medium text-3xl">login with…</p>
       <div
-        class="cursor-pointer flex justify-center items-center font-mono text-lg rounded-full border-2 border-black w-10 h-10"
+        class="cursor-pointer flex justify-center items-center font-mono text-lg rounded-full border-2 border-black dark:border-white  w-10 h-10"
         on:click={toggleModal}
       >
         x

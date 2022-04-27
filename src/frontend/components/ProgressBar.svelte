@@ -17,7 +17,7 @@
 </div>
 <div class="flex w-full items-center">
   <div
-    class="flex-grow overflow-hidden text-xs flex rounded-full bg-white dark:bg-black h-10 border-2 border-black"
+    class="flex-grow overflow-hidden text-xs flex rounded-full bg-white dark:bg-black h-10 border-2 border-black dark:border-white"
   >
     <div
       style="width:{calculateProgress(votesCast, totalVotes)}%"
