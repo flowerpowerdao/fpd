@@ -42,7 +42,7 @@ type State = {
   proposals: ProposalView[];
   filteredProposals: ProposalView[];
   filters: Filters;
-  votingHistory: bigint[];
+  votingHistory: { id: bigint; option: bigint }[];
   isLoading: boolean;
 };
 

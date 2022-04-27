@@ -30,7 +30,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
   ********************/
 
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
-  stable var votingHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
+  stable var votingHistories : Trie.Trie<Principal, List.List<{id: Nat; option: Nat}>> = Trie.empty();
   stable var proposalHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
   stable var nextProposalId : Nat = 0;
   stable var _canistergeekMonitorUD: ? Canistergeek.UpgradeData = null;
@@ -269,10 +269,10 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
             // update voting history in stable memory
             switch (getVotingHistoryInternal(caller)) {
               case null {
-                putVotingHistoryInternal(caller, List.make<Nat>(args.proposalId));
+                putVotingHistoryInternal(caller, List.make<{id: Nat; option: Nat}>({id = args.proposalId; option = args.option}));
               };
               case (?votingHistory) {
-                putVotingHistoryInternal(caller, List.push<Nat>(args.proposalId, votingHistory ));
+                putVotingHistoryInternal(caller, List.push<{id: Nat; option: Nat}>({id = args.proposalId; option = args.option}, votingHistory ));
               };
             };
           };
@@ -282,7 +282,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
     };
   };
 
-  public shared query({caller}) func getVotingHistory() : async [Nat] {
+  public shared query({caller}) func getVotingHistory() : async [{id: Nat; option: Nat}] {
     switch (getVotingHistoryInternal(caller)) {
       case null { return [] };
       case (?votingHistory) { return List.toArray(votingHistory) };
@@ -398,9 +398,9 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
     proposals := Trie.put(proposals, Types.proposalKey(id), Nat.equal, proposal).0;
   };
 
-  func getVotingHistoryInternal(principal : Principal) : ?List.List<Nat> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
+  func getVotingHistoryInternal(principal : Principal) : ?List.List<{id: Nat; option: Nat}> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);
 
-  func putVotingHistoryInternal(principal : Principal, votingHistory: List.List<Nat>) {
+  func putVotingHistoryInternal(principal : Principal, votingHistory: List.List<{id: Nat; option: Nat}>) {
     votingHistories:= Trie.put(votingHistories, Types.accountKey(principal), Principal.equal, votingHistory).0;
   };
 

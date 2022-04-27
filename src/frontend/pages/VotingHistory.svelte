@@ -1,13 +1,16 @@
 <script lang="ts">
   import { store } from "../store";
   import { push } from "svelte-spa-router";
+  import { truncate } from "../utils";
 
-  import ProposalOverview from "../components/ProposalCard.svelte";
   import Button from "../components/Button.svelte";
   import Card from "../components/Card.svelte";
+  import { onMount } from "svelte";
 
-  $: proposals = $store.proposals.filter((proposal) => {
-    return $store.votingHistory.includes(proposal.id);
+  onMount(async () => {
+    if (!$store.proposals) {
+      await store.fetchProposals();
+    }
   });
 </script>
 
@@ -16,18 +19,47 @@
     You need to be logged in to see your voting history ¯\_(ツ)_/¯
   </p>
 {:else}
-  <Button eventHandler={() => push("/")}>← back</Button>
-  <Card>
-    <h1 class="text-2xl">voting history:</h1>
-  </Card>
-  <div class="px-4">
-    <div>Voting history</div>
-    <div class="flow-root mt-6">
-      <ul class="-my-5 divide-y divide-gray-200">
-        {#each proposals as proposal}
-          <ProposalOverview {proposal} />
-        {/each}
-      </ul>
+  <!-- mobile -->
+  <div class="pb-24">
+    <!-- header buttons -->
+    <div class="my-10">
+      <Button eventHandler={() => push("/")}>← back</Button>
     </div>
+    <!-- voting history -->
+    <Card>
+      <div class="p-2 flex flex-col">
+        <h1 class="font-everett-medium text-3xl">voting history:</h1>
+        <table class="mt-4">
+          <thead>
+            <tr class="font-mono">
+              <th class="text-left">id</th>
+              <th class="text-left">titel</th>
+              <th class="text-right">option</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each $store.votingHistory as vote}
+              {@const proposal = $store.proposals.find(
+                (element) => Number(element.id) === Number(vote.id),
+              )}
+              <!-- this is needed, otherwise votingHistory might be fetched before
+              proposals and proposal.title is undefined -->
+              {#if proposal}
+                <tr
+                  class="cursor-pointer"
+                  on:click={() => push(`/proposals/${Number(vote.id)}`)}
+                >
+                  <td>{vote.id}</td>
+                  <td>{truncate(proposal.title, 30)}</td>
+                  <td class="text-right"
+                    >{truncate(proposal.options[Number(vote.option)], 30)}</td
+                  >
+                </tr>
+              {/if}
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </Card>
   </div>
 {/if}

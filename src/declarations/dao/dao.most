@@ -50,8 +50,8 @@ actor {
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
   stable var votingHistories :
     {
-      #branch : Branch<Principal, List<Nat>>;
+      #branch : Branch<Principal, List<{id : Nat; option : Nat}>>;
       #empty;
-      #leaf : Leaf<Principal, List<Nat>>
+      #leaf : Leaf<Principal, List<{id : Nat; option : Nat}>>
     }
 };
