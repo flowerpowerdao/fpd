@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { push } from "svelte-spa-router";
+  import { pop } from "svelte-spa-router";
 
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import Button from "./Button.svelte";
@@ -15,7 +15,7 @@
 <!-- mobile -->
 <div class="pb-24">
   <div class="my-10">
-    <Button eventHandler={() => push("/")}>← back</Button>
+    <Button eventHandler={() => pop()}>← back</Button>
     <ProposalState {proposal} />
   </div>
   <ProposalText {proposal} />

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { store } from "../store";
-  import { push } from "svelte-spa-router";
+  import { pop, push } from "svelte-spa-router";
   import { truncate } from "../utils";
 
   import Button from "../components/Button.svelte";
@@ -23,7 +23,7 @@
   <div class="pb-24">
     <!-- header buttons -->
     <div class="my-10">
-      <Button eventHandler={() => push("/")}>← back</Button>
+      <Button eventHandler={() => pop()}>← back</Button>
     </div>
     <!-- voting history -->
     <Card>

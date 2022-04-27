@@ -1,6 +1,6 @@
 <script lang="ts">
   import { NewProposal } from "../store";
-  import { push } from "svelte-spa-router";
+  import { pop } from "svelte-spa-router";
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
   import SvelteMarkdown from "svelte-markdown";
@@ -47,7 +47,7 @@
 <div class="pb-24">
   <!-- header buttons -->
   <div class="my-10">
-    <Button eventHandler={() => push("/")}>← back</Button>
+    <Button eventHandler={() => pop()}>← back</Button>
     <Button eventHandler={() => (preview = !preview)}>preview</Button>
   </div>
   <!-- form -->
