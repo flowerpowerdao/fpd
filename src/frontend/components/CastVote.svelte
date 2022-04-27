@@ -47,11 +47,11 @@
             class="
               {index === selected ? 'shadow' : ''} 
               {Number(vote?.option) === index ? 'shadow' : ''}
-              text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
+              truncate px-4 text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
             on:click={() => (selected = index)}
             disabled={alreadyVoted}
           >
-            {truncate(option, 20)}
+            {option}
           </button>
         {/each}
       </div>

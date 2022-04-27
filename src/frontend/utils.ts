@@ -107,11 +107,13 @@ export function getWinningOption(proposal: Proposal): string {
     );
   } catch (error) {
     console.log(error);
-    return "";
+    return "no votes";
   }
 
   // return option
-  return proposal.options[biggest];
+  return proposal.options[biggest] === undefined
+    ? "no options"
+    : proposal.options[biggest];
 }
 
 export function getVotesForOption(proposal: Proposal, option: number) {

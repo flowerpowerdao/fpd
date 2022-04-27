@@ -3,6 +3,7 @@
     fromVariantToString,
     fromTimestamp,
     getWinningOption,
+    truncate,
   } from "../utils";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   export let proposal: Proposal;
@@ -26,7 +27,7 @@
     </button>
   {:else if fromVariantToString(proposal.state) === "adopted"}
     <button
-      class="cursor-default disabled text-xl flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 rounded-3xl font-mono italic"
+      class="truncate px-4 cursor-default disabled text-xl flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 rounded-3xl font-mono italic"
     >
       {getWinningOption(proposal)}
     </button>

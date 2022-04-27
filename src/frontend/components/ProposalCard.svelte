@@ -13,8 +13,6 @@
   $: alreadyVoted = $store.votingHistory
     .map((element) => element.id)
     .includes(proposal.id);
-
-  console.log(alreadyVoted);
 </script>
 
 <li>
