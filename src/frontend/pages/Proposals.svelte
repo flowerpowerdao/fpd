@@ -6,6 +6,7 @@
   import Filters from "../components/Filters.svelte";
   import { push } from "svelte-spa-router";
   import VotingPower from "../components/VotingPower.svelte";
+  import Button from "../components/Button.svelte";
 
   let newProposal: NewProposal = {
     title: "",
@@ -30,16 +31,9 @@
 <!-- mobile -->
 <header class="my-10">
   {#if $store.isAuthed && $store.votingPower > 0}
-    <div class="flex flex-row">
-      <button
-        on:click={() => {
-          push("/create-proposal");
-        }}
-        class="-mb-0.5 text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 rounded-3xl font-mono"
-      >
-        create proposal
-      </button>
-    </div>
+    <Button eventHandler={() => push("/create-proposal")}
+      >create proposal</Button
+    >
   {/if}
   <Filters />
 </header>
