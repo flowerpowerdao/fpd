@@ -15,7 +15,7 @@
   async function connect() {
     loading = "plug";
     await store.plugConnect();
-    loading = undefined;
+    loading = "";
   }
 </script>
 

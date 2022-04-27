@@ -4,7 +4,7 @@
 
   export let toggleModal;
 
-  let loading = undefined;
+  let loading = "";
 </script>
 
 <div

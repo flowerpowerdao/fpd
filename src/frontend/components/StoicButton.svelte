@@ -20,7 +20,7 @@
   async function connect() {
     loading = "stoic";
     await store.stoicConnect();
-    loading = undefined;
+    loading = "";
   }
 </script>
 

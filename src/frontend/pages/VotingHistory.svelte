@@ -4,7 +4,7 @@
 
   import ProposalOverview from "../components/ProposalCard.svelte";
   import Button from "../components/Button.svelte";
-import Card from "../components/Card.svelte";
+  import Card from "../components/Card.svelte";
 
   $: proposals = $store.proposals.filter((proposal) => {
     return $store.votingHistory.includes(proposal.id);
