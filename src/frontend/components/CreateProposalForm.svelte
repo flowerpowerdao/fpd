@@ -5,6 +5,7 @@
   import spinner from "../assets/loading.gif";
   import SvelteMarkdown from "svelte-markdown";
   import Button from "../components/Button.svelte";
+  import Card from "./Card.svelte";
 
   let proposal: NewProposal = {
     title: "",
@@ -51,9 +52,7 @@
   </div>
   <!-- form -->
   <form>
-    <div
-      class=" bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
-    >
+    <Card>
       <div class="p-2 flex flex-col">
         <h1 class="font-everett-medium text-3xl">create new proposal:</h1>
         <!-- title -->
@@ -129,7 +128,7 @@
           <p>{$store.error}</p>
         </div>
       </div>
-    </div>
+    </Card>
   </form>
 </div>
 

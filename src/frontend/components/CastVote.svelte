@@ -1,9 +1,11 @@
 <script lang="ts">
   import { fromVariantToString, truncate } from "../utils";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
-  import CastVoteModal from "./CastVoteModal.svelte";
   import { store } from "../store";
   import { onMount } from "svelte";
+
+  import CastVoteModal from "./CastVoteModal.svelte";
+  import Card from "./Card.svelte";
 
   let openModal = false;
   let selected;
@@ -31,9 +33,7 @@
 <svelte:window on:keyup={handleEscape} />
 
 {#if fromVariantToString(proposal.state) === "open"}
-  <div
-    class=" bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
-  >
+  <Card>
     <div class="p-2 flex flex-col justify-between min-h-[360px]">
       <h1 class="font-everett-medium text-3xl">cast your vote</h1>
       <div class="flex flex-col justify-center gap-2">
@@ -63,8 +63,7 @@
         {/if}
       </div>
     </div>
-  </div>
-
+  </Card>
   {#if openModal}
     <CastVoteModal {selected} {proposal} {toggleModal} />
   {/if}

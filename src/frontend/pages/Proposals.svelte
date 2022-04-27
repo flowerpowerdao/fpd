@@ -5,7 +5,6 @@
   import ProposalOverview from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
   import { push } from "svelte-spa-router";
-  import VotingPower from "../components/VotingPower.svelte";
   import Button from "../components/Button.svelte";
 
   let newProposal: NewProposal = {

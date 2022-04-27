@@ -2,13 +2,12 @@
   import ProgressBar from "./ProgressBar.svelte";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { fromVariantToString, getVotesForOption } from "../utils";
+  import Card from "./Card.svelte";
 
   export let proposal: Proposal;
 </script>
 
-<div
-  class=" bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-10"
->
+<Card>
   <div class="p-2 flex flex-col justify-between">
     <button
       class="cursor-default active: text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono italic"
@@ -37,4 +36,4 @@
       {/if}
     </div>
   </div>
-</div>
+</Card>

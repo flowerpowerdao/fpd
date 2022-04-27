@@ -2,6 +2,7 @@
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import SvelteMarkdown from "svelte-markdown";
   import { truncate } from "../utils";
+  import Card from "./Card.svelte";
 
   export let proposal: Proposal;
 
@@ -11,9 +12,7 @@
   };
 </script>
 
-<div
-  class=" bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-xl mx-2 my-4"
->
+<Card>
   <div class="p-2 flex flex-col">
     <h1 class="font-everett-medium text-3xl">
       {proposal.title}
@@ -54,4 +53,4 @@
       </button>
     {/if}
   </div>
-</div>
+</Card>
