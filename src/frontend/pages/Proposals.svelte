@@ -1,17 +1,10 @@
 <script lang="ts">
   import { NewProposal, store } from "../store";
   import { onDestroy, onMount } from "svelte";
-  import CreateProposalModal from "../components/CreateProposalModal.svelte";
   import ProposalOverview from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
   import { push } from "svelte-spa-router";
   import Button from "../components/Button.svelte";
-
-  let newProposal: NewProposal = {
-    title: "",
-    description: "",
-    options: [""],
-  };
 
   onMount(async () => {
     await store.fetchProposals();
