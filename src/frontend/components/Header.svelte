@@ -6,7 +6,7 @@
 <div class="">
   <a href="/#">
     <img
-      class="h-auto w-full sm:h-10 bg-white dark:invert dark:border-none"
+      class="h-auto w-full bg-white dark:invert dark:border-none"
       src={logo}
       alt="fpdao logo"
     />
