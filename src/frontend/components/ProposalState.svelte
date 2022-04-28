@@ -3,7 +3,6 @@
     fromVariantToString,
     fromTimestamp,
     getWinningOption,
-    truncate,
   } from "../utils";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   export let proposal: Proposal;

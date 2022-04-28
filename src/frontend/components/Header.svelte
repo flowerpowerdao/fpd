@@ -1,10 +1,5 @@
 <script lang="ts">
-  import { push } from "svelte-spa-router";
-  import { store } from "../store";
   import logo from "../assets/fpd-logo.svg";
-
-  import PlugButton from "../components/PlugButton.svelte";
-  import StoicButton from "../components/StoicButton.svelte";
 </script>
 
 <!-- mobile -->

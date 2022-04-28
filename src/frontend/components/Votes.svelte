@@ -7,7 +7,7 @@
 
   export let proposal: Proposal;
 
-  // Holds table sort state.  Initialized to reflect table sorted by id column ascending.
+  // Holds table sort state.  Initialized to reflect table sorted by vote column descending.
   let sortBy = { col: "votes", ascending: false };
 
   $: sort = (column) => {

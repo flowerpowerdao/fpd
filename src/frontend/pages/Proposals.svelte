@@ -37,21 +37,6 @@
   <Filters />
 </header>
 
-<!-- desktop -->
-<header
-  class="hidden sm:flex mt-36 flex-col items-center justify-center [font-size:calc(10px+2vmin)]"
->
-  {#if $store.error}
-    <div class="error">
-      {$store.error}
-    </div>
-  {/if}
-
-  {#if $store.isAuthed && $store.votingPower > 0}
-    <CreateProposalModal proposal={newProposal} />
-  {/if}
-</header>
-
 <ul class="pb-14">
   {#each $store.filteredProposals as proposal}
     <ProposalOverview {proposal} />
