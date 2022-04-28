@@ -22,10 +22,8 @@
   };
 
   function removeOption(index: number) {
-    console.log(proposal.options);
     proposal.options.splice(index, 1);
     proposal.options = proposal.options;
-    console.log(proposal.options);
   }
 
   const clearProposal = () => {

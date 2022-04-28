@@ -21,7 +21,9 @@
   </button>
   {#if openMenu}
     <div class="flex flex-col justify-center items-center gap-1 ">
-      <button> my proposals </button>
+      <button on:click={() => push("/submitted-proposals")}>
+        submitted proposals</button
+      >
       <button on:click={() => push("/voting-history")}> voting history </button>
       <button on:click={store.disconnect}> log out </button>
     </div>

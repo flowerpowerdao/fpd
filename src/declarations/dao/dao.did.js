@@ -73,6 +73,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getProposal' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'getProposalHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'getVotingHistory' : IDL.Func(
         [],
         [IDL.Vec(IDL.Record({ 'id' : IDL.Nat, 'option' : IDL.Nat }))],

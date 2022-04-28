@@ -106,7 +106,6 @@ export function getWinningOption(proposal: Proposal): string {
       outcome[a] > outcome[b] ? a : b,
     );
   } catch (error) {
-    console.log(error);
     return "no votes";
   }
 

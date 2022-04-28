@@ -10,6 +10,7 @@
   import Voted from "./Voted.svelte";
 
   export let proposal: Proposal;
+
   $: alreadyVoted = $store.votingHistory
     .map((element) => element.id)
     .includes(proposal.id);

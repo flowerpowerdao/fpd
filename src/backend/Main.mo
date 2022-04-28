@@ -7,6 +7,7 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
+import Debug "mo:base/Debug";
 
 import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Canistergeek "mo:canistergeek/canistergeek";
@@ -195,6 +196,7 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
       // if not, create a new entry
       case null putProposalHistoryInternal(caller, List.make(proposalId));
     };
+    Debug.print(debug_show(proposalHistories));
     #ok(proposalId)
   };
 
@@ -286,6 +288,13 @@ shared(install) actor class DAO(localDeploymentCanisterId : ?Text, coreTeamPrinc
     switch (getVotingHistoryInternal(caller)) {
       case null { return [] };
       case (?votingHistory) { return List.toArray(votingHistory) };
+    };
+  };
+
+  public shared query({caller}) func getProposalHistory() : async [Nat] {
+    switch (getProposalHistoryInternal(caller)) {
+      case null { return [] };
+      case (?proposalHistory) { return List.toArray(proposalHistory) };
     };
   };
 

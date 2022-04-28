@@ -1,5 +1,6 @@
 import { writable, get } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
+import { Actor } from "@dfinity/agent";
 import { HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import {
@@ -43,6 +44,7 @@ type State = {
   filteredProposals: ProposalView[];
   filters: Filters;
   votingHistory: { id: bigint; option: bigint }[];
+  proposalHistory: bigint[];
   isLoading: boolean;
 };
 
@@ -63,6 +65,7 @@ const defaultState: State = {
   filteredProposals: [],
   filters: { open: false, adopted: false, rejected: false },
   votingHistory: [],
+  proposalHistory: [],
   isLoading: false,
 };
 
@@ -191,6 +194,8 @@ export const createStore = ({
       isAuthed: "plug",
     }));
 
+    console.log("plug is authed");
+
     initStore(principal, btcflowerPlug);
   };
 
@@ -254,6 +259,20 @@ export const createStore = ({
     });
   };
 
+  const fetchProposalHistory = async () => {
+    let proposalHistory = await get({
+      subscribe,
+    }).daoActor.getProposalHistory();
+    console.log(Actor.agentOf(get({ subscribe }).daoActor));
+    console.log("store: ", proposalHistory);
+    update((prevState) => {
+      return {
+        ...prevState,
+        proposalHistory,
+      };
+    });
+  };
+
   const disconnect = () => {
     console.log("disconnected");
     StoicIdentity.disconnect();
@@ -297,6 +316,7 @@ export const createStore = ({
     submitProposal,
     fetchProposals,
     fetchVotingHistory,
+    fetchProposalHistory,
     filterProposals,
   };
 };

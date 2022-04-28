@@ -85,6 +85,7 @@ type DAO =
    collectCanisterMetrics: () -> ();
    getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
    getProposal: (nat) -> (Result_2) query;
+   getProposalHistory: () -> (vec nat) query;
    getVotingHistory: () -> (vec record {
                                   id: nat;
                                   option: nat;

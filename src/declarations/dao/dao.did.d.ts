@@ -11,6 +11,7 @@ export interface DAO {
       [] | [CanisterMetrics]
     >,
   'getProposal' : (arg_0: bigint) => Promise<Result_2>,
+  'getProposalHistory' : () => Promise<Array<bigint>>,
   'getVotingHistory' : () => Promise<
       Array<{ 'id' : bigint, 'option' : bigint }>
     >,
