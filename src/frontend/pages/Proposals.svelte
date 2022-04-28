@@ -30,7 +30,7 @@
   <Filters />
 </header>
 
-<ul class="pb-14">
+<ul class="pb-24">
   {#each $store.filteredProposals as proposal}
     <ProposalOverview {proposal} />
   {/each}
