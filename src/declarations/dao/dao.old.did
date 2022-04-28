@@ -37,6 +37,7 @@ type ProposalView =
                   votesCast: nat;
                 };
               };
+   votesCast: nat;
  };
 type ProposalState = 
  variant {
@@ -92,7 +93,11 @@ service : {
   collectCanisterMetrics: () -> ();
   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
   getProposal: (nat) -> (Result_2) query;
-  getVotingHistory: () -> (vec nat) query;
+  getProposalHistory: () -> (vec nat) query;
+  getVotingHistory: () -> (vec record {
+                                 id: nat;
+                                 option: nat;
+                               }) query;
   listProposals: () -> (vec ProposalView) query;
   submitProposal: (text, text, vec text) -> (Result_1);
   vote: (VoteArgs) -> (Result);
