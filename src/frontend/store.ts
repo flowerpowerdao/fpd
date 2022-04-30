@@ -135,7 +135,7 @@ export const createStore = ({
           whitelist,
           host,
         });
-        console.log("connected");
+        console.log("plug connected");
       } catch (e) {
         console.warn(e);
         return;
@@ -273,11 +273,14 @@ export const createStore = ({
     });
   };
 
-  const disconnect = () => {
+  const disconnect = async () => {
     console.log("disconnected");
     StoicIdentity.disconnect();
     window.ic?.plug?.deleteAgent();
     window.ic?.plug?.disconnect();
+    // wait for 500ms to ensure that the disconnection is complete
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    console.log("plug status: ", await window.ic?.plug?.isConnected());
     update((prevState) => {
       return {
         ...defaultState,

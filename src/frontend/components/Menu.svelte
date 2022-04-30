@@ -1,6 +1,5 @@
 <script lang="ts">
   import { store } from "../store";
-  import { slide } from "svelte/transition";
   import { push } from "svelte-spa-router";
 
   let openMenu = false;
@@ -25,7 +24,7 @@
         submitted proposals</button
       >
       <button on:click={() => push("/voting-history")}> voting history </button>
-      <button on:click={store.disconnect}> log out </button>
+      <button on:click={async () => await store.disconnect()}> log out </button>
     </div>
   {/if}
 </div>

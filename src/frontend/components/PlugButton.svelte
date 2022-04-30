@@ -9,7 +9,10 @@
 
   onMount(async () => {
     const connected = await window.ic?.plug?.isConnected();
-    if (connected) store.plugConnect();
+    if (connected) {
+      console.log("plug connection detected");
+      store.plugConnect();
+    }
   });
 
   async function connect() {
