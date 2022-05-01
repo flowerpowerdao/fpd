@@ -35,7 +35,7 @@
 </script>
 
 {#if proposal}
-  <ProposalDetails {proposal} />
+  <ProposalDetails {proposal} {fetchProposal} />
 {:else}
   <div>No proposal found for ID {params.id}</div>
 {/if}

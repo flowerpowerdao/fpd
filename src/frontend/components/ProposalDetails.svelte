@@ -10,6 +10,7 @@
   import Votes from "./Votes.svelte";
 
   export let proposal: Proposal;
+  export let fetchProposal;
 </script>
 
 <!-- mobile -->
@@ -19,7 +20,7 @@
     <ProposalState {proposal} />
   </div>
   <ProposalText {proposal} />
-  <CastVote {proposal} />
+  <CastVote {proposal} {fetchProposal} />
   <Votes {proposal} />
   <Results {proposal} />
 </div>

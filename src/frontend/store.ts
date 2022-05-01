@@ -203,15 +203,24 @@ export const createStore = ({
     principal: Principal,
     btcflower: typeof btcflowerActor,
   ) => {
+    console.log("init store");
+
+    // set state to loading
     update((prevState) => ({
       ...prevState,
       isLoading: true,
     }));
-    const [proposals, votingHistory, votingPower] = await Promise.all([
-      fetchProposals(),
-      fetchVotingHistory(),
-      getVotingPower(principal, btcflower),
-    ]);
+
+    const [proposals, votingHistory, proposalHistory, votingPower] =
+      await Promise.all([
+        fetchProposals(),
+        fetchVotingHistory(),
+        fetchProposalHistory(),
+        getVotingPower(principal, btcflower),
+      ]);
+
+    // we have to populate the filtered propsals bc that's what the Proposals component uses
+    filterProposals();
 
     update((prevState) => ({
       ...prevState,
@@ -221,8 +230,10 @@ export const createStore = ({
   };
 
   const fetchProposals = async () => {
-    const proposals = await get({ subscribe }).daoActor.listProposals();
+    const proposals = await daoActor.listProposals();
     proposals.sort((a, b) => Number(b.id - a.id));
+
+    console.log("proposals fetched");
 
     update((prevState) => {
       return {
@@ -234,6 +245,9 @@ export const createStore = ({
 
   const filterProposals = () => {
     const store = get({ subscribe });
+
+    console.log("proposals filtered");
+
     update((state) => ({
       ...state,
       // filter proposals according to the selected filters
@@ -251,6 +265,9 @@ export const createStore = ({
 
   const fetchVotingHistory = async () => {
     let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
+
+    console.log("voting history fetched");
+
     update((prevState) => {
       return {
         ...prevState,
@@ -263,8 +280,7 @@ export const createStore = ({
     let proposalHistory = await get({
       subscribe,
     }).daoActor.getProposalHistory();
-    console.log(Actor.agentOf(get({ subscribe }).daoActor));
-    console.log("store: ", proposalHistory);
+    console.log("proposal history fetched");
     update((prevState) => {
       return {
         ...prevState,
@@ -330,6 +346,9 @@ const getVotingPower = async (
 ): Promise<number> => {
   // if we have a principal, get the voting power
   let result = await btcflower.tokens(principalToAccountId(principal, null));
+
+  console.log("voting power fetched");
+
   if (fromVariantToString(result) === "ok") {
     return getVariantValue(result).length;
   } else {

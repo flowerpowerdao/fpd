@@ -1,23 +1,22 @@
 <script lang="ts">
-  import { NewProposal, store } from "../store";
-  import { onDestroy, onMount } from "svelte";
+  import { store } from "../store";
+  import { onMount } from "svelte";
+  import { push } from "svelte-spa-router";
+
   import ProposalOverview from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
-  import { push } from "svelte-spa-router";
   import Button from "../components/Button.svelte";
 
+  async function fetchProposals() {
+    await store.fetchProposals();
+    await store.filterProposals();
+  }
+
   onMount(async () => {
-    await store.fetchProposals();
-    store.filterProposals();
+    if ($store.proposals.length === 0) {
+      fetchProposals();
+    }
   });
-
-  // fetch every minute
-  const interval = setInterval(async () => {
-    await store.fetchProposals();
-    store.filterProposals();
-  }, 60000);
-
-  onDestroy(() => clearInterval(interval));
 </script>
 
 <!-- mobile -->

@@ -5,18 +5,6 @@
 
   import Button from "../components/Button.svelte";
   import Card from "../components/Card.svelte";
-  import { onMount } from "svelte";
-
-  let loading = false;
-
-  onMount(async () => {
-    if ($store.proposals.length === 0 || $store.votingHistory.length === 0) {
-      console.log("MOIN");
-      loading = true;
-      await Promise.all([store.fetchProposals(), store.fetchVotingHistory()]);
-      loading = false;
-    }
-  });
 </script>
 
 <!-- mobile -->
@@ -29,8 +17,10 @@
     <p class="mt-14 text-2xl">
       You need to be logged in to see your voting history ¯\_(ツ)_/¯
     </p>
-  {:else if loading}
+  {:else if $store.isLoading}
     <img src={spinner} alt="loading spinner" />
+  {:else if $store.votingHistory.length === 0}
+    <p class="mt-14 text-2xl">You haven't voted on any proposals yet 🥺</p>
   {:else}
     <!-- voting history -->
     <Card>

@@ -11,7 +11,9 @@
   let openModal = false;
   let confetti = false;
   let selected;
+
   export let proposal: Proposal;
+  export let fetchProposal;
 
   $: alreadyVoted = $store.votingHistory
     .map((element) => element.id)
@@ -82,6 +84,12 @@
     </div>
   </Card>
   {#if openModal}
-    <CastVoteModal {selected} {proposal} {toggleModal} bind:confetti />
+    <CastVoteModal
+      {selected}
+      {proposal}
+      {fetchProposal}
+      {toggleModal}
+      bind:confetti
+    />
   {/if}
 {/if}

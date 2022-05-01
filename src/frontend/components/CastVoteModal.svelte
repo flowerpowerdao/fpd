@@ -10,6 +10,7 @@
   export let selected;
   export let proposal: Proposal;
   export let toggleModal;
+  export let fetchProposal;
 
   async function castVote() {
     loading = true;
@@ -20,6 +21,7 @@
     if ("ok" in res) {
       await Promise.all([store.fetchVotingHistory(), store.fetchProposals()]);
       store.filterProposals();
+      await fetchProposal();
       confetti = false;
       confetti = true;
       toggleModal();

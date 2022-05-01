@@ -1,21 +1,10 @@
 <script lang="ts">
   import { store } from "../store";
   import { pop } from "svelte-spa-router";
-  import { onMount } from "svelte";
   import spinner from "../assets/loading.gif";
 
   import Button from "../components/Button.svelte";
   import ProposalCard from "../components/ProposalCard.svelte";
-
-  let loading = false;
-
-  onMount(async () => {
-    if ($store.proposals.length === 0 || $store.proposalHistory.length === 0) {
-      loading = true;
-      await Promise.all([store.fetchProposals(), store.fetchProposalHistory()]);
-      loading = false;
-    }
-  });
 
   // filter proposals for propsals that are in voting history
   $: proposals = $store.proposals.filter((proposal) => {
@@ -32,8 +21,10 @@
     <p class="mt-14 text-2xl">
       You need to be logged in to see your proposal history ¯\_(ツ)_/¯
     </p>
-  {:else if loading}
+  {:else if $store.isLoading}
     <img src={spinner} alt="loading animation" />
+  {:else if proposals.length === 0}
+    <p class="mt-14 text-2xl">You haven't submitted any proposals yet 🥺</p>
   {:else}
     <!-- mobile -->
     <!-- voting history -->

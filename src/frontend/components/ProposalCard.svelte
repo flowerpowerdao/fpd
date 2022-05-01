@@ -2,7 +2,6 @@
   import { push } from "svelte-spa-router";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
   import { store } from "../store";
-  import { fromTimestamp, fromVariantToString } from "../utils";
   import { truncate } from "../utils";
   import Card from "./Card.svelte";
 
