@@ -41,7 +41,8 @@
     confetti = true;
     loading = false;
     clearProposal();
-    store.fetchProposals();
+    await store.fetchProposals();
+    store.filterProposals();
   };
 </script>
 
