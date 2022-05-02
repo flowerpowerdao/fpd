@@ -14,10 +14,9 @@ module {
     votes : Trie.Trie<Principal, (option: Nat, votesCast: Nat)>; // votes cast by each principal
     flowersVoted : List.List<Nat32>; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
-    timestamp : Int; // when the proposal was created
     expiryDate : Int; // when the voting period ends
+    votesCast: Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
-    totalVotesCast: Nat; // total votes cast
     core: Bool; // is the proposal a core proposal
   };
 
@@ -29,10 +28,9 @@ module {
     votes : [(Principal, {option: Nat; votesCast: Nat})]; // votes cast by each principal
     flowersVoted : [Nat32]; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
-    timestamp : Int; // when the proposal was created
     expiryDate : Int; // when the voting period ends
+    votesCast : Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
-    totalVotesCast: Nat; // total votes cast
     core: Bool; // is the proposal a core proposal
   };
 

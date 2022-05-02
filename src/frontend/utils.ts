@@ -1,5 +1,6 @@
 import { sha224 } from "js-sha256";
 import crc32 from "crc-32";
+import type { ProposalView as Proposal } from "../declarations/dao/dao.did";
 
 // Results
 export function fromOk(result): any {
@@ -80,4 +81,46 @@ export function principalToAccountId(principal, subaccount) {
 
 export function toHexString(byteArray: number[]) {
   return Buffer.from(byteArray).toString("hex");
+}
+
+// truncate string
+export function truncate(str: string, n: number) {
+  return str.length > n ? str.slice(0, n - 1) + "…" : str;
+}
+
+// get winning option
+export function getWinningOption(proposal: Proposal): string {
+  let outcome = {};
+  proposal.votes.forEach((vote) => {
+    if (Number(vote[1].option) in outcome) {
+      outcome[Number(vote[1].option)] += vote[1].votesCast;
+    } else {
+      outcome[Number(vote[1].option)] = vote[1].votesCast;
+    }
+  });
+
+  // get biggest value in outcome
+  let biggest;
+  try {
+    biggest = Object.keys(outcome).reduce((a, b) =>
+      outcome[a] > outcome[b] ? a : b,
+    );
+  } catch (error) {
+    return "no votes";
+  }
+
+  // return option
+  return proposal.options[biggest] === undefined
+    ? "no options"
+    : proposal.options[biggest];
+}
+
+export function getVotesForOption(proposal: Proposal, option: number) {
+  return proposal.votes.reduce((acc, vote) => {
+    if (Number(vote[1].option) === option) {
+      return acc + Number(vote[1].votesCast);
+    } else {
+      return acc;
+    }
+  }, 0);
 }

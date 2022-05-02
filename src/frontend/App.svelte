@@ -6,12 +6,17 @@
   import Proposals from "./pages/Proposals.svelte";
   import NotFound from "./pages/NotFound.svelte";
   import VotingHistory from "./pages/VotingHistory.svelte";
+  import Footer from "./components/Footer.svelte";
+  import CreateProposal from "./components/CreateProposalForm.svelte";
+  import SubmittedProposals from "./pages/SubmittedProposals.svelte";
 
   const routes = {
     // Exact path
     "/": Proposals,
     "/proposals/:id": Proposal,
     "/voting-history": VotingHistory,
+    "/create-proposal": CreateProposal,
+    "/submitted-proposals": SubmittedProposals,
 
     // Catch-all
     // This is optional, but if present it must be the last
@@ -21,3 +26,4 @@
 
 <Header />
 <Router {routes} />
+<Footer />

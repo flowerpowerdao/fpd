@@ -1,5 +1,6 @@
 import { writable, get } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
+import { Actor } from "@dfinity/agent";
 import { HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import {
@@ -18,13 +19,19 @@ import {
   createActor as createBtcflowerActor,
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
-} from "../canisters/btcflower";
+} from "../declarations/btcflower";
 import type { ProposalView } from "../declarations/dao/dao.did";
 
 export const HOST =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
     : "https://ic0.app";
+
+type Filters = {
+  open: boolean;
+  adopted: boolean;
+  rejected: boolean;
+};
 
 type State = {
   isAuthed: "plug" | "stoic" | null;
@@ -34,7 +41,11 @@ type State = {
   votingPower: number;
   error: string;
   proposals: ProposalView[];
-  votingHistory: bigint[];
+  filteredProposals: ProposalView[];
+  filters: Filters;
+  votingHistory: { id: bigint; option: bigint }[];
+  proposalHistory: bigint[];
+  isLoading: boolean;
 };
 
 export type NewProposal = {
@@ -43,7 +54,7 @@ export type NewProposal = {
   options: string[];
 };
 
-const defaultState = {
+const defaultState: State = {
   isAuthed: null,
   daoActor,
   btcflowerActor,
@@ -51,7 +62,11 @@ const defaultState = {
   votingPower: 0,
   error: "",
   proposals: [],
+  filteredProposals: [],
+  filters: { open: false, adopted: false, rejected: false },
   votingHistory: [],
+  proposalHistory: [],
+  isLoading: false,
 };
 
 export const createStore = ({
@@ -120,7 +135,7 @@ export const createStore = ({
           whitelist,
           host,
         });
-        console.log("connected");
+        console.log("plug connected");
       } catch (e) {
         console.warn(e);
         return;
@@ -179,6 +194,8 @@ export const createStore = ({
       isAuthed: "plug",
     }));
 
+    console.log("plug is authed");
+
     initStore(principal, btcflowerPlug);
   };
 
@@ -186,21 +203,37 @@ export const createStore = ({
     principal: Principal,
     btcflower: typeof btcflowerActor,
   ) => {
-    const [proposals, votingHistory, votingPower] = await Promise.all([
-      fetchProposals(),
-      fetchVotingHistory(),
-      getVotingPower(principal, btcflower),
-    ]);
+    console.log("init store");
+
+    // set state to loading
+    update((prevState) => ({
+      ...prevState,
+      isLoading: true,
+    }));
+
+    const [proposals, votingHistory, proposalHistory, votingPower] =
+      await Promise.all([
+        fetchProposals(),
+        fetchVotingHistory(),
+        fetchProposalHistory(),
+        getVotingPower(principal, btcflower),
+      ]);
+
+    // we have to populate the filtered propsals bc that's what the Proposals component uses
+    filterProposals();
 
     update((prevState) => ({
       ...prevState,
       votingPower,
+      isLoading: false,
     }));
   };
 
   const fetchProposals = async () => {
-    const proposals = await get({ subscribe }).daoActor.listProposals();
-    proposals.sort((a, b) => Number(b.expiryDate - a.expiryDate));
+    const proposals = await daoActor.listProposals();
+    proposals.sort((a, b) => Number(b.id - a.id));
+
+    console.log("proposals fetched");
 
     update((prevState) => {
       return {
@@ -210,8 +243,31 @@ export const createStore = ({
     });
   };
 
+  const filterProposals = () => {
+    const store = get({ subscribe });
+
+    console.log("proposals filtered");
+
+    update((state) => ({
+      ...state,
+      // filter proposals according to the selected filters
+      filteredProposals: !Object.values(store.filters).includes(true)
+        ? store.proposals
+        : store.proposals.filter((proposal) => {
+            return Object.keys(state.filters)
+              .filter((key) => {
+                return state.filters[key];
+              })
+              .includes(fromVariantToString(proposal.state));
+          }),
+    }));
+  };
+
   const fetchVotingHistory = async () => {
     let votingHistory = await get({ subscribe }).daoActor.getVotingHistory();
+
+    console.log("voting history fetched");
+
     update((prevState) => {
       return {
         ...prevState,
@@ -220,15 +276,32 @@ export const createStore = ({
     });
   };
 
-  const disconnect = () => {
+  const fetchProposalHistory = async () => {
+    let proposalHistory = await get({
+      subscribe,
+    }).daoActor.getProposalHistory();
+    console.log("proposal history fetched");
+    update((prevState) => {
+      return {
+        ...prevState,
+        proposalHistory,
+      };
+    });
+  };
+
+  const disconnect = async () => {
     console.log("disconnected");
     StoicIdentity.disconnect();
     window.ic?.plug?.deleteAgent();
     window.ic?.plug?.disconnect();
+    // wait for 500ms to ensure that the disconnection is complete
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    console.log("plug status: ", await window.ic?.plug?.isConnected());
     update((prevState) => {
       return {
         ...defaultState,
         proposals: prevState.proposals,
+        filteredProposals: prevState.filteredProposals,
       };
     });
   };
@@ -262,6 +335,8 @@ export const createStore = ({
     submitProposal,
     fetchProposals,
     fetchVotingHistory,
+    fetchProposalHistory,
+    filterProposals,
   };
 };
 
@@ -271,6 +346,9 @@ const getVotingPower = async (
 ): Promise<number> => {
   // if we have a principal, get the voting power
   let result = await btcflower.tokens(principalToAccountId(principal, null));
+
+  console.log("voting power fetched");
+
   if (fromVariantToString(result) === "ok") {
     return getVariantValue(result).length;
   } else {

@@ -1,8 +1,12 @@
 <script>
   import { onMount } from "svelte";
   import { StoicIdentity } from "ic-stoic-identity";
-
   import { store } from "../store";
+
+  import Button from "./Button.svelte";
+  import spinner from "../assets/loading.gif";
+
+  export let loading;
 
   onMount(async () => {
     StoicIdentity.load().then(async (identity) => {
@@ -12,37 +16,18 @@
       }
     });
   });
+
+  async function connect() {
+    loading = "stoic";
+    await store.stoicConnect();
+    loading = "";
+  }
 </script>
 
-{#if $store.isAuthed === "stoic"}
-  <button
-    class="flex items-center justify-between px-3 py-2 rounded-lg bg-white border-gray-300 border-2 hover:ring-2 hover:ring-opacity-50 hover:ring-indigo-500 hover:border-indigo-500"
-    on:click={store.disconnect}
-  >
-    <div class="flex items-center">
-      <img
-        src="https://raw.githubusercontent.com/FloorLamp/cubic/main/src/ui/public/img/stoic.png"
-        class="w-4 mr-2"
-        alt="stoic logo"
-      />
-
-      <span>
-        {$store.principal.toString().slice(0, 5) +
-          "..." +
-          $store.principal.toString().slice(-2)}
-      </span>
-    </div>
-    <span> {$store.votingPower + " "} Flowers </span>
-  </button>
-{:else if !$store.isAuthed}
-  <button
-    class="flex items-center px-3 py-2 rounded-lg bg-white border-gray-300 border-2 hover:ring-2 hover:ring-opacity-50 hover:ring-indigo-500 hover:border-indigo-500"
-    on:click={store.stoicConnect}
-  >
-    <img
-      src="https://raw.githubusercontent.com/FloorLamp/cubic/main/src/ui/public/img/stoic.png"
-      class="w-4 mr-2"
-      alt="stoic logo"
-    /> Stoic
-  </button>
-{/if}
+<Button eventHandler={connect} disabled={loading}>
+  {#if loading === "stoic"}
+    <img class="h-6 block" src={spinner} alt="loading animation" />
+  {:else}
+    stoic
+  {/if}
+</Button>

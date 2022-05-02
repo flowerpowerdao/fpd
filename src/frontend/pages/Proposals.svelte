@@ -1,55 +1,36 @@
 <script lang="ts">
-  import { NewProposal, store } from "../store";
-  import { onDestroy, onMount } from "svelte";
-  import CreateProposalModal from "../components/CreateProposalModal.svelte";
-  import ProposalOverview from "../components/ProposalOverview.svelte";
+  import { store } from "../store";
+  import { onMount } from "svelte";
+  import { push } from "svelte-spa-router";
 
-  let newProposal: NewProposal = {
-    title: "",
-    description: "",
-    options: [""],
-  };
+  import ProposalOverview from "../components/ProposalCard.svelte";
+  import Filters from "../components/Filters.svelte";
+  import Button from "../components/Button.svelte";
+
+  async function fetchProposals() {
+    await store.fetchProposals();
+    await store.filterProposals();
+  }
 
   onMount(async () => {
-    await store.fetchProposals();
+    if ($store.proposals.length === 0) {
+      fetchProposals();
+    }
   });
-
-  const interval = setInterval(async () => {
-    await store.fetchProposals();
-    // fetch every minute
-  }, 60000);
-
-  onDestroy(() => clearInterval(interval));
 </script>
 
-<header class="proposals">
-  {#if $store.error}
-    <div class="error">
-      {$store.error}
-    </div>
-  {/if}
-
+<!-- mobile -->
+<header class="my-10">
   {#if $store.isAuthed && $store.votingPower > 0}
-    <CreateProposalModal proposal={newProposal} />
+    <Button eventHandler={() => push("/create-proposal")}
+      >create proposal</Button
+    >
   {/if}
+  <Filters />
 </header>
-<div>
-  {#each $store.proposals as proposal}
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-      <ul class="divide-y divide-gray-200">
-        <ProposalOverview {proposal} />
-      </ul>
-    </div>
-  {/each}
-</div>
 
-<style>
-  .proposals {
-    margin-top: 150px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-  }
-</style>
+<ul class="pb-24">
+  {#each $store.filteredProposals as proposal}
+    <ProposalOverview {proposal} />
+  {/each}
+</ul>

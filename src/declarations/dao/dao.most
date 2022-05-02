@@ -28,10 +28,9 @@ type Proposal =
     options : [Text];
     proposer : Principal;
     state : ProposalState;
-    timestamp : Int;
     title : Text;
-    totalVotesCast : Nat;
-    votes : Trie<Principal, (Nat, Nat)>
+    votes : Trie<Principal, (Nat, Nat)>;
+    votesCast : Nat
   };
 type ProposalState = {#adopted; #open; #rejected};
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
@@ -51,8 +50,8 @@ actor {
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
   stable var votingHistories :
     {
-      #branch : Branch<Principal, List<Nat>>;
+      #branch : Branch<Principal, List<{id : Nat; option : Nat}>>;
       #empty;
-      #leaf : Leaf<Principal, List<Nat>>
+      #leaf : Leaf<Principal, List<{id : Nat; option : Nat}>>
     }
 };
