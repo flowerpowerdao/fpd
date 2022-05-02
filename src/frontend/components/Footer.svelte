@@ -6,7 +6,7 @@
   import VotingPower from "./VotingPower.svelte";
 </script>
 
-<div class="fixed bottom-0 flex flex-row w-full">
+<div class="lg:hidden fixed bottom-0 flex flex-row w-full">
   <!-- we create a separate div where the item algined is end -->
   <!-- https://stackoverflow.com/questions/66019763/stretching-items-in-a-flexbox-with-a-max-height -->
   <div class="flex flex-row items-end">
