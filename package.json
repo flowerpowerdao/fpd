@@ -37,6 +37,7 @@
     "cssnano": "^5.0.17",
     "postcss": "^8.4.6",
     "postcss-load-config": "^3.1.1",
+    "seamless-scroll-polyfill": "^2.1.8",
     "svelte": "^3.42.5",
     "svelte-check": "^2.4.3",
     "svelte-preprocess": "^4.9.4",
