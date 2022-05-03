@@ -6,6 +6,7 @@
   import Card from "./Card.svelte";
 
   import ProposalState from "./ProposalState.svelte";
+  import Proposer from "./Proposer.svelte";
   import Voted from "./Voted.svelte";
 
   export let proposal: Proposal;
@@ -17,7 +18,9 @@
 
 <!-- mobile -->
 <li class="lg:hidden">
-  <Card style={"cursor-pointer hover:shadow active:shadow dark:shadow-white"}>
+  <Card
+    style={"cursor-pointer hover:shadow active:shadow dark:shadow-white mx-2 lg:mx-[10%]"}
+  >
     <div
       on:click={() => {
         push(`/proposals/${proposal.id}`);
@@ -29,19 +32,7 @@
       <div class="p-2 flex flex-col">
         <div class="flex justify-between">
           <p>id: #{proposal.id}</p>
-          <p>
-            {#if proposal.core}
-              <button
-                class="bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white leading-4 w-[calc(100vw*(1/3))] h-full rounded-3xl font-mono italic"
-              >
-                core
-              </button>
-            {:else}
-              by {proposal.proposer.toString().slice(0, 5) +
-                "…" +
-                proposal.proposer.toString().slice(-3)}
-            {/if}
-          </p>
+          <Proposer {proposal} />
         </div>
         <h1 class="font-everett-medium text-3xl mt-4">
           {truncate(proposal.title, 50)}
@@ -60,7 +51,9 @@
 
 <!-- desktop -->
 <li class="hidden lg:block ">
-  <Card style={"cursor-pointer hover:shadow active:shadow dark:shadow-white"}>
+  <Card
+    style={"cursor-pointer hover:shadow active:shadow dark:shadow-white mx-2 lg:mx-[10%]"}
+  >
     <div
       on:click={() => {
         push(`/proposals/${proposal.id}`);
@@ -73,19 +66,7 @@
         <div class="flex justify-between">
           <div class="w-1/3 flex justify-between items-center 2xl:text-xl">
             <p class="">id: #{proposal.id}</p>
-            <p>
-              {#if proposal.core}
-                <button
-                  class="cursor-default disabled bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 rounded-3xl font-mono italic"
-                >
-                  core
-                </button>
-              {:else}
-                by {proposal.proposer.toString().slice(0, 5) +
-                  "…" +
-                  proposal.proposer.toString().slice(-3)}
-              {/if}
-            </p>
+            <Proposer {proposal} />
           </div>
           <div class="w-full">
             <ProposalState {proposal} />

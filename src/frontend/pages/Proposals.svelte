@@ -43,7 +43,7 @@
   </div>
 </header>
 
-<ul class="pb-24">
+<ul class="pb-24 flex flex-col gap-4">
   {#each $store.filteredProposals as proposal}
     <ProposalOverview {proposal} />
   {/each}

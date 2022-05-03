@@ -50,7 +50,7 @@
 {#if show}
   <button
     on:click={topFunction}
-    class="fixed bottom-0 right-0 hidden lg:flex items-center justify-center hover:shadow shadow-black dark:shadow-white text-base 2x:text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-20 w-14 rounded-3xl font-mono -mb-0.5"
+    class="fixed bottom-0 right-0 hidden lg:flex items-center justify-center hover:shadow shadow-black dark:shadow-white text-base 2x:text-xl bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-[72px] w-14 rounded-[28.5px] font-mono -mb-0.5"
   >
     ↑
   </button>

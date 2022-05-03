@@ -84,7 +84,7 @@
           <p class="italic">description:</p>
           {#if preview}
             <article
-              class="prose prose-black dark:prose-invert font-sans max-w-none"
+              class="prose prose-black 2xl:prose-xl dark:prose-invert font-sans max-w-none"
             >
               <SvelteMarkdown source={proposal.description} />
             </article>
