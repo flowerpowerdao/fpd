@@ -11,10 +11,10 @@
   class="fixed flex justify-center items-center z-10 inset-0 bg-opacity-10 backdrop-blur-sm"
 >
   <div
-    class="flex flex-col bg-white dark:bg-black border-black dark:border-white border-2 rounded-xl h-1/2 w-full mx-2 pt-4 px-4"
+    class="flex flex-col bg-white dark:bg-black border-black dark:border-white border-2 rounded-xl h-1/2 lg:w-1/2 w-full mx-2 pt-4 px-4"
   >
     <div class="flex flex-row justify-between dark:text-white">
-      <p class="font-everett-medium text-3xl">login with…</p>
+      <p class="font-everett-medium text-3xl 2xl:text-4xl">login with…</p>
       <div
         class="cursor-pointer flex justify-center items-center font-mono text-lg rounded-full border-2 border-black dark:border-white  w-10 h-10"
         on:click={toggleModal}

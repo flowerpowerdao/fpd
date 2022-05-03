@@ -10,8 +10,9 @@
 </script>
 
 <div
-  class="flex-1 flex flex-col items-center justify-center font-mono -ml-0.5 lg:-mt-0.5 lg:min-w-[300px] text-xl bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 gap-1 py-1 rounded-t-3xl lg:rounded-t-none lg:rounded-b-3xl"
+  class="flex-1 flex flex-col items-center justify-center font-mono -ml-0.5 lg:-mt-0.5 lg:min-w-[300px] text-xl lg:text-base 2xl:text-xl bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 gap-1 py-1 rounded-t-3xl lg:rounded-t-none lg:rounded-b-3xl"
 >
+  <!-- on desktop the menue is upside down -->
   {#if openMenu}
     <div class="hidden lg:flex flex-col justify-center items-center gap-1 ">
       <button on:click={() => push("/submitted-proposals")}>
@@ -26,8 +27,10 @@
       "…" +
       $store.principal?.toString().slice(-3)}
     <p class="inline-block lg:hidden">{openMenu ? "↓" : "↑"}</p>
+    <!-- on desktop the arrows are reversed -->
     <p class="hidden lg:inline-block">{openMenu ? "↑" : "↓"}</p>
   </button>
+  <!-- mobile -->
   {#if openMenu}
     <div class="lg:hidden flex flex-col justify-center items-center gap-1 ">
       <button on:click={() => push("/submitted-proposals")}>
