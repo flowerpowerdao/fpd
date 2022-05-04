@@ -133,7 +133,7 @@
           <Button
             eventHandler={submitProposal}
             disabled={loading}
-            styles={"margin-top: 2.5rem;"}
+            style={"mt-10"}
           >
             {#if loading}
               <img class="h-6 block" src={spinner} alt="loading animation" />
