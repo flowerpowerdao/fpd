@@ -15,7 +15,7 @@
 </script>
 
 <Card style="mx-2">
-  <div class="p-2 flex flex-col">
+  <div class="p-2 lg:p-4 flex flex-col">
     <h1 class="font-everett-medium text-3xl 2xl:text-4xl">
       {proposal.title}
     </h1>

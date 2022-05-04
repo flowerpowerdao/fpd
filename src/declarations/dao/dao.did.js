@@ -58,7 +58,10 @@ export const idlFactory = ({ IDL }) => {
     'state' : ProposalState,
     'votesCast' : IDL.Nat,
     'proposer' : IDL.Principal,
-    'flowersVoted' : IDL.Vec(IDL.Nat32),
+    'flowersVoted' : IDL.Record({
+      'btcFlowers' : IDL.Vec(IDL.Nat32),
+      'ethFlowers' : IDL.Vec(IDL.Nat32),
+    }),
     'options' : IDL.Vec(IDL.Text),
   });
   const Result_2 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
@@ -90,5 +93,8 @@ export const idlFactory = ({ IDL }) => {
   return DAO;
 };
 export const init = ({ IDL }) => {
-  return [IDL.Opt(IDL.Text), IDL.Vec(IDL.Principal)];
+  return [
+    IDL.Opt(IDL.Record({ 'btcflower' : IDL.Text, 'ethflower' : IDL.Text })),
+    IDL.Vec(IDL.Principal),
+  ];
 };

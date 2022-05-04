@@ -64,7 +64,10 @@ export interface ProposalView {
   'state' : ProposalState,
   'votesCast' : bigint,
   'proposer' : Principal,
-  'flowersVoted' : Array<number>,
+  'flowersVoted' : {
+    'btcFlowers' : Array<number>,
+    'ethFlowers' : Array<number>,
+  },
   'options' : Array<string>,
 }
 export type Result = { 'ok' : null } |
