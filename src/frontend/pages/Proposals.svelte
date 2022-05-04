@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { push } from "svelte-spa-router";
 
-  import ProposalOverview from "../components/ProposalCard.svelte";
+  import ProposalCard from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
   import Button from "../components/Button.svelte";
 
@@ -43,8 +43,9 @@
   </div>
 </header>
 
+<!-- mobile & desktop -->
 <ul class="pb-24 flex flex-col gap-4">
   {#each $store.filteredProposals as proposal}
-    <ProposalOverview {proposal} />
+    <ProposalCard {proposal} />
   {/each}
 </ul>
