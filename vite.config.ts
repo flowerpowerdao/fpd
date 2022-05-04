@@ -36,9 +36,16 @@ try {
       )
       .toString(),
   );
-  delete Object.assign(btcFlowerNFTCanisterId, {
-    ["btcflower"]: btcFlowerNFTCanisterId["staging"],
-  })["staging"];
+  // the production key is only present in the production build
+  if (!("production" in Object.keys(btcFlowerNFTCanisterId))) {
+    delete Object.assign(btcFlowerNFTCanisterId, {
+      ["btcflower"]: btcFlowerNFTCanisterId["staging"],
+    })["staging"];
+  } else {
+    delete Object.assign(btcFlowerNFTCanisterId, {
+      ["btcflower"]: btcFlowerNFTCanisterId["production"],
+    })["production"];
+  }
 } catch (e) {
   console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
 }
@@ -54,10 +61,15 @@ try {
       )
       .toString(),
   );
-  // rename key to avoid name conflict
-  delete Object.assign(ethFlowerNFTCanisterId, {
-    ["ethflower"]: ethFlowerNFTCanisterId["staging"],
-  })["staging"];
+  if (!("production" in Object.keys(ethFlowerNFTCanisterId))) {
+    delete Object.assign(ethFlowerNFTCanisterId, {
+      ["ethflower"]: ethFlowerNFTCanisterId["staging"],
+    })["staging"];
+  } else {
+    delete Object.assign(ethFlowerNFTCanisterId, {
+      ["ethflower"]: ethFlowerNFTCanisterId["production"],
+    })["production"];
+  }
 } catch (e) {
   console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
 }
