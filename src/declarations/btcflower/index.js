@@ -4,8 +4,8 @@ import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "./btcflower.did.js";
 export { idlFactory } from "./btcflower.did.js";
 
-// CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = process.env.NODE_ENV === "production" ? process.env.PRODUCTION_CANISTER_ID : process.env.STAGING_CANISTER_ID;
+// CANISTER_ID is replaced by vite based on node environment
+export const canisterId = process.env.BTCFLOWER_CANISTER_ID;
 
 /**
  *

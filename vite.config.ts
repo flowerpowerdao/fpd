@@ -26,27 +26,40 @@ try {
 }
 
 let btcFlowerNFTCanisterId: CanisterIds;
-
 try {
-  btcFlowerNFTCanisterId = isDev
-    ? require(path.resolve(
-        ".",
-        "btcflower-nft",
-        "btcflower-nft",
-        ".dfx",
-        "local",
-        "canister_ids.json",
-      ))
-    : require(path.resolve(
-        ".",
-        "btcflower-nft",
-        "btcflower-nft",
-        "canister_ids.json",
-      ));
-} catch (error) {
-  console.log(
-    "No local btcflower canister canister_ids.json found. Continuing production",
+  btcFlowerNFTCanisterId = JSON.parse(
+    fs
+      .readFileSync(
+        isDev
+          ? "btcflower-nft/btcflower-nft/.dfx/local/canister_ids.json"
+          : "btcflower-nft/btcflower-nft/canister_ids.json",
+      )
+      .toString(),
   );
+  delete Object.assign(btcFlowerNFTCanisterId, {
+    ["btcflower"]: btcFlowerNFTCanisterId["staging"],
+  })["staging"];
+} catch (e) {
+  console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
+}
+
+let ethFlowerNFTCanisterId: CanisterIds;
+try {
+  ethFlowerNFTCanisterId = JSON.parse(
+    fs
+      .readFileSync(
+        isDev
+          ? "ethflower-nft-canister/.dfx/local/canister_ids.json"
+          : "ethflower-nft-canister/canister_ids.json",
+      )
+      .toString(),
+  );
+  // rename key to avoid name conflict
+  delete Object.assign(ethFlowerNFTCanisterId, {
+    ["ethflower"]: ethFlowerNFTCanisterId["staging"],
+  })["staging"];
+} catch (e) {
+  console.error("\n⚠️  Before starting the dev server run: dfx deploy\n\n");
 }
 
 // List of all aliases for canisters
@@ -76,6 +89,7 @@ const aliases = Object.entries(dfxJson.canisters).reduce(
 const canisterDefinitions = Object.entries({
   ...canisterIds,
   ...btcFlowerNFTCanisterId,
+  ...ethFlowerNFTCanisterId,
 }).reduce(
   (acc, [key, val]) => ({
     ...acc,
