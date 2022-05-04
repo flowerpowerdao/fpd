@@ -1,38 +1,24 @@
-<script lang="ts">
-  import { store } from "../store";
-  import { pop } from "svelte-spa-router";
-  import spinner from "../assets/loading.gif";
-
+<script>
+  import SubmittedProposalsList from "../components/SubmittedProposalsList.svelte";
   import Button from "../components/Button.svelte";
-  import ProposalCard from "../components/ProposalCard.svelte";
 
-  // filter proposals for propsals that are in voting history
-  $: proposals = $store.proposals.filter((proposal) => {
-    return $store.proposalHistory.includes(proposal.id);
-  });
+  import { pop } from "svelte-spa-router";
 </script>
 
-<div class="pb-24">
+<!-- mobile -->
+<div class="pb-24 lg:hidden">
   <!-- header buttons -->
   <div class="my-10">
     <Button eventHandler={() => pop()}>← back</Button>
   </div>
-  {#if !$store.isAuthed}
-    <p class="mt-14 text-2xl">
-      You need to be logged in to see your proposal history ¯\_(ツ)_/¯
-    </p>
-  {:else if $store.isLoading}
-    <img src={spinner} alt="loading animation" />
-  {:else if proposals.length === 0}
-    <p class="mt-14 text-2xl">You haven't submitted any proposals yet 🥺</p>
-  {:else}
-    <!-- mobile -->
-    <!-- voting history -->
+  <SubmittedProposalsList />
+</div>
 
-    <ul class="">
-      {#each proposals as proposal}
-        <ProposalCard {proposal} />
-      {/each}
-    </ul>
-  {/if}
+<!-- desktop -->
+<div class="hidden lg:flex pb-24 pt-40">
+  <Button style={"max-w-[150px]"} eventHandler={() => pop()}>← back</Button>
+  <div class="flex flex-col w-full gap-4">
+    <SubmittedProposalsList />
+  </div>
+  <div class="2xl:min-w-[430px] min-w-[350px]" />
 </div>

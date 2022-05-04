@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { push } from "svelte-spa-router";
 
-  import ProposalOverview from "../components/ProposalCard.svelte";
+  import ProposalCard from "../components/ProposalCard.svelte";
   import Filters from "../components/Filters.svelte";
   import Button from "../components/Button.svelte";
 
@@ -20,7 +20,7 @@
 </script>
 
 <!-- mobile -->
-<header class="my-10">
+<header class="lg:hidden py-10">
   {#if $store.isAuthed && $store.votingPower > 0}
     <Button eventHandler={() => push("/create-proposal")}
       >create proposal</Button
@@ -29,8 +29,23 @@
   <Filters />
 </header>
 
-<ul class="pb-24">
+<!-- desktop -->
+<header class="hidden lg:flex pt-40 pb-8 justify-between mx-[11%]">
+  <div class="flex justify-start lg:max-w-xs 2xl:max-w-md flex-1">
+    {#if $store.isAuthed && $store.votingPower > 0}
+      <Button eventHandler={() => push("/create-proposal")}
+        >create proposal</Button
+      >
+    {/if}
+  </div>
+  <div class="flex justify-end flex-1">
+    <Filters />
+  </div>
+</header>
+
+<!-- mobile & desktop -->
+<ul class="pb-24 flex flex-col gap-4">
   {#each $store.filteredProposals as proposal}
-    <ProposalOverview {proposal} />
+    <ProposalCard {proposal} />
   {/each}
 </ul>

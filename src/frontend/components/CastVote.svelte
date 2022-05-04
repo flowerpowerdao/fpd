@@ -47,19 +47,21 @@
 {/if}
 
 {#if fromVariantToString(proposal.state) === "open"}
-  <Card>
+  <Card style="mx-2">
     {@const vote = $store.votingHistory.find(
       (element) => Number(element.id) === Number(proposal.id),
     )}
-    <div class="p-2 flex flex-col justify-between min-h-[360px]">
-      <h1 class="font-everett-medium text-3xl">cast your vote</h1>
+    <div
+      class="p-2 flex flex-col justify-between min-h-[360px] text-xl lg:text-base 2xl:text-xl"
+    >
+      <h1 class="font-everett-medium text-3xl 2xl:text-4xl">cast your vote</h1>
       <div class="flex flex-col justify-center gap-2">
         {#each proposal.options as option, index}
           <button
             class="
               {index === selected ? 'shadow' : ''} 
               {Number(vote?.option) === index ? 'shadow' : ''}
-              truncate px-4 text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
+              truncate px-4 bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
             on:click={() => (selected = index)}
             disabled={alreadyVoted}
           >
@@ -67,9 +69,9 @@
           </button>
         {/each}
       </div>
-      <div>
+      <div class="flex justify-center flex-col items-center">
         <button
-          class="disabled:cursor-not-allowed active: text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
+          class="max-w-md disabled:cursor-not-allowed bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
           disabled={selected === undefined ||
             alreadyVoted ||
             $store.votingPower < 1}

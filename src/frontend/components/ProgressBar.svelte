@@ -9,19 +9,21 @@
   const totalVotes = 2009;
 </script>
 
-<div class="flex justify-between text-lg">
-  <span class="">{title}</span>
-  <span class=""
-    >{votesCast} votes, {calculateProgress(votesCast, totalVotes)}%</span
-  >
-</div>
-<div class="flex w-full items-center">
-  <div
-    class="flex-grow overflow-hidden text-xs flex rounded-full bg-white dark:bg-black h-10 border-2 border-black dark:border-white"
-  >
+<div>
+  <div class="flex justify-between text-lg lg:text-base 2xl:text-xl">
+    <span class="">{title}</span>
+    <span class=""
+      >{votesCast} votes, {calculateProgress(votesCast, totalVotes)}%</span
+    >
+  </div>
+  <div class="flex w-full items-center">
     <div
-      style="width:{calculateProgress(votesCast, totalVotes)}%"
-      class="rounded-full shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-black dark:bg-white"
-    />
+      class="flex-grow overflow-hidden text-xs flex rounded-full bg-white dark:bg-black h-10 border-2 border-black dark:border-white"
+    >
+      <div
+        style="width:{calculateProgress(votesCast, totalVotes)}%"
+        class="rounded-full shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-black dark:bg-white"
+      />
+    </div>
   </div>
 </div>

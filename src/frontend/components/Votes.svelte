@@ -4,6 +4,7 @@
   import { store } from "../store";
   import { fromVariantToString } from "../utils";
   import Card from "./Card.svelte";
+  import ShowMore from "./ShowMore.svelte";
 
   export let proposal: Proposal;
 
@@ -64,9 +65,9 @@
 </script>
 
 {#if !(fromVariantToString(proposal.state) === "open")}
-  <Card>
-    <div class="p-2 flex flex-col">
-      <h1 class="font-everett-medium text-3xl">votes:</h1>
+  <Card style="mx-2">
+    <div class="p-2 flex flex-col 2xl:text-xl">
+      <h1 class="font-everett-medium text-3xl 2xl:text-4xl ">votes:</h1>
       <p>{proposal.votesCast}</p>
       <table class="mt-4">
         <thead>
@@ -100,7 +101,7 @@
           {#each showTable ? proposal.votes : proposal.votes.slice(0, 10) as vote}
             <tr
               class="{vote[0].toString() === $store.principal?.toString()
-                ? 'border-y-2 border-black'
+                ? 'border-y-2 border-black dark:border-white'
                 : ''} "
             >
               <td
@@ -115,12 +116,7 @@
         </tbody>
         <tbody />
       </table>
-      <button
-        class="mt-4 flex-1 font-mono -ml-0.5 text-xl bg-white dark:bg-black border-black dark:border-white dark:text-white border-2 rounded-b-3xl min-h-[40px]"
-        on:click={toggleTable}
-      >
-        {showTable ? "hide ↑" : "show more ↓"}
-      </button>
+      <ShowMore show={showTable} toggle={toggleTable} />
     </div>
   </Card>
 {/if}

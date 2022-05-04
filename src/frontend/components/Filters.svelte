@@ -2,7 +2,9 @@
   import { store } from "../store";
 </script>
 
-<header class="flex flex-row">
+<header
+  class="w-full lg:max-w-xs 2xl:max-w-md flex flex-row text-xl lg:text-base 2xl:text-xl"
+>
   <button
     class:shadow={$store.filters.open}
     on:click={() => {
@@ -14,7 +16,7 @@
       // filter the proposals according to the filter
       store.filterProposals();
     }}
-    class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 rounded-3xl font-mono italic"
+    class="dark:shadow-white dark:hover:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 rounded-3xl font-mono italic"
   >
     open
   </button>
@@ -29,7 +31,7 @@
       // filter the proposals according to the filter
       store.filterProposals();
     }}
-    class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 font-mono italic"
+    class="dark:shadow-white dark:hover:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 -ml-0.5 font-mono italic"
   >
     adopted
   </button>
@@ -44,7 +46,7 @@
       // filter the proposals according to the filter
       store.filterProposals();
     }}
-    class="text-xl dark:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 -ml-0.5 rounded-t-3xl font-mono italic"
+    class="dark:shadow-white dark:hover:shadow-white bg-white dark:bg-black flex-1 border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 -ml-0.5 rounded-t-3xl font-mono italic"
   >
     rejected
   </button>

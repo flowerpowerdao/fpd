@@ -7,8 +7,11 @@
   import NotFound from "./pages/NotFound.svelte";
   import VotingHistory from "./pages/VotingHistory.svelte";
   import Footer from "./components/Footer.svelte";
-  import CreateProposal from "./components/CreateProposalForm.svelte";
+  import CreateProposal from "./pages/CreateProposal.svelte";
   import SubmittedProposals from "./pages/SubmittedProposals.svelte";
+  import { polyfill } from "seamless-scroll-polyfill";
+
+  polyfill();
 
   const routes = {
     // Exact path

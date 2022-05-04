@@ -7,10 +7,10 @@
   export let proposal: Proposal;
 </script>
 
-<Card>
+<Card style="mx-2 lg:mx-0">
   <div class="p-2 flex flex-col justify-between">
     <button
-      class="cursor-default active: text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono italic"
+      class="cursor-default text-xl lg:text-base 2xl:text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 lg:h-10 w-full font-mono italic"
     >
       {fromVariantToString(proposal.state) === "open"
         ? "current results:"
@@ -23,10 +23,12 @@
           title={"votes cast"}
         />
       {:else}
-        <ProgressBar
-          votesCast={Number(proposal.votesCast)}
-          title={"votes cast"}
-        />
+        <div class="mb-5">
+          <ProgressBar
+            votesCast={Number(proposal.votesCast)}
+            title={"votes cast"}
+          />
+        </div>
         {#each proposal.options as option, index}
           <ProgressBar
             votesCast={getVotesForOption(proposal, index)}
