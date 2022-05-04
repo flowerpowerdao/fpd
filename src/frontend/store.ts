@@ -85,6 +85,9 @@ export const createStore = ({
 }) => {
   const { subscribe, update } = writable<State>(defaultState);
 
+  console.log(ethflowerCanisterId);
+  console.log(btcflowerCanisterId);
+
   const stoicConnect = () => {
     StoicIdentity.load().then(async (identity) => {
       if (identity !== false) {
