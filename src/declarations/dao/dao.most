@@ -23,7 +23,7 @@ type Proposal =
     core : Bool;
     description : Text;
     expiryDate : Int;
-    flowersVoted : List<Nat32>;
+    flowersVoted : {btcFlowers : List<Nat32>; ethFlowers : List<Nat32>};
     id : Nat;
     options : [Text];
     proposer : Principal;

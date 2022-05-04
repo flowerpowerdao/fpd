@@ -24,7 +24,10 @@ type ProposalView =
    core: bool;
    description: text;
    expiryDate: int;
-   flowersVoted: vec nat32;
+   flowersVoted: record {
+                   btcFlowers: vec nat32;
+                   ethFlowers: vec nat32;
+                 };
    id: nat;
    options: vec text;
    proposer: principal;
@@ -103,4 +106,7 @@ type CanisterMetrics = record {data: CanisterMetricsData;};
 type CanisterMemoryAggregatedData = vec nat64;
 type CanisterHeapMemoryAggregatedData = vec nat64;
 type CanisterCyclesAggregatedData = vec nat64;
-service : (opt text, vec principal) -> DAO
+service : (opt record {
+                 btcflower: text;
+                 ethflower: text;
+               }, vec principal) -> DAO
