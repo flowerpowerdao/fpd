@@ -1,4 +1,5 @@
 import Array "mo:base/Array";
+import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import List "mo:base/List";
 import Nat "mo:base/Nat";
@@ -7,7 +8,6 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
-import Debug "mo:base/Debug";
 
 import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Canistergeek "mo:canistergeek/canistergeek";

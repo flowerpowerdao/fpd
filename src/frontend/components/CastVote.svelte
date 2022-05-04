@@ -52,7 +52,7 @@
       (element) => Number(element.id) === Number(proposal.id),
     )}
     <div
-      class="p-2 flex flex-col justify-between min-h-[360px] text-xl lg:text-base 2xl:text-xl"
+      class="p-2 lg:p-4 flex flex-col justify-between min-h-[360px] text-xl lg:text-base 2xl:text-xl"
     >
       <h1 class="font-everett-medium text-3xl 2xl:text-4xl">cast your vote</h1>
       <div class="flex flex-col justify-center gap-2">

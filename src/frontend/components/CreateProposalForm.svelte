@@ -58,7 +58,7 @@
 <!-- form -->
 <form>
   <Card style="lg:mx-2">
-    <div class="p-2 flex flex-col 2xl:text-xl">
+    <div class="p-2 lg:p-4 flex flex-col 2xl:text-xl">
       <h1 class="font-everett-medium text-3xl 2xl:text-4xl">
         create new proposal:
       </h1>
