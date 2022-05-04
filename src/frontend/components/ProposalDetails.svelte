@@ -17,7 +17,7 @@
 <div class="lg:hidden pb-24">
   <div class="my-10">
     <Button eventHandler={() => pop()}>← back</Button>
-    <ProposalState {proposal} />
+    <ProposalState {proposal} detail={true} />
   </div>
   <div class="flex flex-col gap-4">
     <ProposalText {proposal} />
@@ -36,7 +36,7 @@
     <Votes {proposal} />
   </div>
   <div class="2xl:min-w-[430px] min-w-[350px]">
-    <ProposalState {proposal} />
+    <ProposalState {proposal} detail={true} />
     <div class="mt-12">
       <Results {proposal} />
     </div>
