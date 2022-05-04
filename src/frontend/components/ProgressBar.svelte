@@ -6,7 +6,7 @@
     return Math.round((votesCast / totalVotes) * 100);
   }
 
-  const totalVotes = 2009;
+  const totalVotes = 3017;
 </script>
 
 <div>
