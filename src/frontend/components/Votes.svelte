@@ -66,8 +66,8 @@
 
 {#if !(fromVariantToString(proposal.state) === "open")}
   <Card style="mx-2">
-    <div class="p-2 flex flex-col">
-      <h1 class="font-everett-medium text-3xl">votes:</h1>
+    <div class="p-2 flex flex-col 2xl:text-xl">
+      <h1 class="font-everett-medium text-3xl 2xl:text-4xl ">votes:</h1>
       <p>{proposal.votesCast}</p>
       <table class="mt-4">
         <thead>
