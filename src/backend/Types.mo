@@ -11,13 +11,13 @@ module {
     title : Text; // title of the proposal
     description : Text; // short description
     options : [Text]; // options that can be voted on
-    votes : Trie.Trie<Principal, (option: Nat, votesCast: Nat)>; // votes cast by each principal
-    flowersVoted : List.List<Nat32>; // flowers that already voted
+    votes : Trie.Trie<Principal, (option : Nat, votesCast : Nat)>; // votes cast by each principal
+    flowersVoted : {btcFlowers : List.List<Nat32>; ethFlowers : List.List<Nat32>}; // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     expiryDate : Int; // when the voting period ends
     votesCast: Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
-    core: Bool; // is the proposal a core proposal
+    core : Bool; // is the proposal a core proposal
   };
 
   public type ProposalView = {
@@ -25,13 +25,13 @@ module {
     title : Text; // title of the proposal
     description : Text; // short description
     options : [Text]; // options that can be voted on
-    votes : [(Principal, {option: Nat; votesCast: Nat})]; // votes cast by each principal
-    flowersVoted : [Nat32]; // flowers that already voted
+    votes : [(Principal, {option : Nat; votesCast : Nat})]; // votes cast by each principal
+    flowersVoted : {btcFlowers : [Nat32]; ethFlowers : [Nat32]};  // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     expiryDate : Int; // when the voting period ends
     votesCast : Nat; // total votes cast
     proposer : Principal; // principal of the creator of the proposal
-    core: Bool; // is the proposal a core proposal
+    core : Bool; // is the proposal a core proposal
   };
 
   public type ProposalState = {
