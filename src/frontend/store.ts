@@ -20,6 +20,12 @@ import {
   canisterId as btcflowerCanisterId,
   idlFactory as btcflowerIdlFactory,
 } from "../declarations/btcflower";
+import {
+  ethflowerActor,
+  createActor as createEthflowerActor,
+  canisterId as ethflowerCanisterId,
+  idlFactory as ethflowerIdlFactory,
+} from "../declarations/ethflower";
 import type { ProposalView } from "../declarations/dao/dao.did";
 
 export const HOST =
@@ -38,6 +44,7 @@ type State = {
   daoActor: typeof daoActor;
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
+  ethflowerActor: typeof ethflowerActor;
   votingPower: number;
   error: string;
   proposals: ProposalView[];
@@ -58,6 +65,7 @@ const defaultState: State = {
   isAuthed: null,
   daoActor,
   btcflowerActor,
+  ethflowerActor,
   principal: null,
   votingPower: 0,
   error: "",
@@ -101,7 +109,14 @@ export const createStore = ({
         },
       });
 
-      if (!daoStoic || !btcflowerStoic) {
+      const ethflowerStoic = createEthflowerActor(ethflowerCanisterId, {
+        agentOptions: {
+          identity,
+          host: HOST,
+        },
+      });
+
+      if (!daoStoic || !btcflowerStoic || !ethflowerStoic) {
         console.warn("couldn't create actors");
         return;
       }
@@ -112,11 +127,12 @@ export const createStore = ({
         ...state,
         daoActor: daoStoic,
         btcflowerActor: btcflowerStoic,
+        ethflowerActor: ethflowerStoic,
         principal,
         isAuthed: "stoic",
       }));
 
-      initStore(principal, btcflowerStoic);
+      initStore(principal, btcflowerStoic, ethflowerStoic);
     });
   };
 
@@ -180,7 +196,12 @@ export const createStore = ({
       interfaceFactory: btcflowerIdlFactory,
     })) as typeof btcflowerActor;
 
-    if (!daoPlug || !btcflowerPlug) {
+    const ethflowerPlug = (await window.ic?.plug.createActor({
+      canisterId: ethflowerCanisterId,
+      interfaceFactory: ethflowerIdlFactory,
+    })) as typeof ethflowerActor;
+
+    if (!daoPlug || !btcflowerPlug || !ethflowerPlug) {
       console.warn("couldn't create actors");
       return;
     }
@@ -190,18 +211,20 @@ export const createStore = ({
       ...state,
       daoActor: daoPlug,
       btcflowerActor: btcflowerPlug,
+      ethflowerActor: ethflowerPlug,
       principal,
       isAuthed: "plug",
     }));
 
     console.log("plug is authed");
 
-    initStore(principal, btcflowerPlug);
+    initStore(principal, btcflowerPlug, ethflowerPlug);
   };
 
   const initStore = async (
     principal: Principal,
     btcflower: typeof btcflowerActor,
+    ethflower: typeof ethflowerActor,
   ) => {
     console.log("init store");
 
@@ -216,7 +239,7 @@ export const createStore = ({
         fetchProposals(),
         fetchVotingHistory(),
         fetchProposalHistory(),
-        getVotingPower(principal, btcflower),
+        getVotingPower(principal, btcflower, ethflower),
       ]);
 
     // we have to populate the filtered propsals bc that's what the Proposals component uses
@@ -343,17 +366,35 @@ export const createStore = ({
 const getVotingPower = async (
   principal: Principal,
   btcflower: typeof btcflowerActor,
+  ethflower: typeof ethflowerActor,
 ): Promise<number> => {
   // if we have a principal, get the voting power
-  let result = await btcflower.tokens(principalToAccountId(principal, null));
+  let [btcflowerResult, ethflowerResult] = await Promise.all([
+    btcflower.tokens(principalToAccountId(principal, null)),
+    ethflower.tokens(principalToAccountId(principal, null)),
+  ]);
 
   console.log("voting power fetched");
 
-  if (fromVariantToString(result) === "ok") {
-    return getVariantValue(result).length;
+  // this if statement has to come first, otherwise we miss voting power
+  if (
+    fromVariantToString(btcflowerResult) === "ok" &&
+    fromVariantToString(ethflowerResult) === "ok"
+  ) {
+    return (
+      getVariantValue(btcflowerResult).length * 2 +
+      getVariantValue(ethflowerResult).length
+    );
+  } else if (fromVariantToString(btcflowerResult) === "ok") {
+    return getVariantValue(btcflowerResult).length;
+  } else if (fromVariantToString(ethflowerResult) === "ok") {
+    return getVariantValue(ethflowerResult).length;
   } else {
     console.error(
-      `error getting voting power: ${JSON.stringify(getVariantValue(result))}`,
+      `error getting voting power: ${JSON.stringify(
+        // error message is the same for both canisters so we can just take btcflowers
+        getVariantValue(btcflowerResult),
+      )}`,
     );
     return 0;
   }
@@ -376,7 +417,7 @@ declare global {
           host?: string;
         }) => Promise<any>;
         createActor: (options: {}) => Promise<
-          typeof daoActor | typeof btcflowerActor
+          typeof daoActor | typeof btcflowerActor | typeof ethflowerActor
         >;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
