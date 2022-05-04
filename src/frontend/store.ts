@@ -1,6 +1,5 @@
 import { writable, get } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
-import { Actor } from "@dfinity/agent";
 import { HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import {
@@ -195,6 +194,8 @@ export const createStore = ({
       canisterId: btcflowerCanisterId,
       interfaceFactory: btcflowerIdlFactory,
     })) as typeof btcflowerActor;
+
+    console.log(ethflowerCanisterId);
 
     const ethflowerPlug = (await window.ic?.plug.createActor({
       canisterId: ethflowerCanisterId,
@@ -401,7 +402,7 @@ const getVotingPower = async (
 };
 
 export const store = createStore({
-  whitelist: [daoCanisterId, btcflowerCanisterId],
+  whitelist: [daoCanisterId, btcflowerCanisterId, ethflowerCanisterId],
   host: HOST,
 });
 
