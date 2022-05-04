@@ -29,7 +29,7 @@
 
 <!-- desktop -->
 <div class="hidden lg:flex pb-24 pt-40">
-  <Button styles={"max-width:150px"} eventHandler={() => pop()}>← back</Button>
+  <Button style={"max-w-[150px]"} eventHandler={() => pop()}>← back</Button>
   <div class="flex flex-col w-full gap-4">
     <ProposalText {proposal} />
     <CastVote {proposal} {fetchProposal} />

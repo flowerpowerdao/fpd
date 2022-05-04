@@ -10,7 +10,7 @@
 <Card style="mx-2 lg:mx-0">
   <div class="p-2 flex flex-col justify-between">
     <button
-      class="cursor-default text-xl lg:text-base xl:text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 lg:h-10 w-full font-mono italic"
+      class="cursor-default text-xl lg:text-base 2xl:text-xl bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 lg:h-10 w-full font-mono italic"
     >
       {fromVariantToString(proposal.state) === "open"
         ? "current results:"

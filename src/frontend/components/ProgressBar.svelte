@@ -10,7 +10,7 @@
 </script>
 
 <div>
-  <div class="flex justify-between text-lg lg:text-base xl:text-xl">
+  <div class="flex justify-between text-lg lg:text-base 2xl:text-xl">
     <span class="">{title}</span>
     <span class=""
       >{votesCast} votes, {calculateProgress(votesCast, totalVotes)}%</span

@@ -22,7 +22,11 @@
   }
 </script>
 
-<Button eventHandler={connect} disabled={loading}>
+<Button
+  eventHandler={connect}
+  disabled={loading}
+  style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
+>
   {#if loading === "plug"}
     <img class="h-6 block" src={spinner} alt="loading animation" />
   {:else}

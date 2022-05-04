@@ -37,19 +37,25 @@
 </script>
 
 <Modal title={"are you sure?"} {toggleModal}>
-  <div class="mt-2 dark:text-white">
+  <div class="mt-2 dark:text-white lg:text-3xl 2xl:text-4xl">
     <p>selected option: {proposal.options[selected]}</p>
     <p>voting power: {$store.votingPower}</p>
   </div>
   <div class="flex gap-3 flex-col flex-1 justify-center items-center">
-    <Button eventHandler={castVote} disabled={loading}>
+    <Button
+      eventHandler={castVote}
+      disabled={loading}
+      style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
+    >
       {#if loading}
         <img class="h-6" src={spinner} alt="loading animation" />
       {:else}
         submit
       {/if}
     </Button>
-    <Button eventHandler={toggleModal}>cancel</Button>
+    <Button eventHandler={toggleModal} style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
+      >cancel</Button
+    >
   </div>
   <div>
     {#if error}
