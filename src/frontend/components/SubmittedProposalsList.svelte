@@ -19,9 +19,8 @@
 {:else if proposals.length === 0}
   <p class="mt-14 text-2xl">You haven't submitted any proposals yet 🥺</p>
 {:else}
-  <!-- mobile -->
   <!-- voting history -->
-  <ul class="">
+  <ul class="pb-24 flex flex-col gap-4">
     {#each proposals as proposal}
       <ProposalCard {proposal} />
     {/each}
