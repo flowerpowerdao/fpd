@@ -6,6 +6,7 @@
   import Button from "./Button.svelte";
 
   export let loading;
+  export let toggleModal;
 
   onMount(async () => {
     const connected = await window.ic?.plug?.isConnected();
@@ -19,6 +20,7 @@
     loading = "plug";
     await store.plugConnect();
     loading = "";
+    toggleModal();
   }
 </script>
 

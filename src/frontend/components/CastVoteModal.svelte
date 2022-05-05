@@ -44,8 +44,8 @@
   <div class="flex gap-3 flex-col flex-1 justify-center items-center">
     <Button
       on:click={castVote}
-      disabled={loading}
-      style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
+      disabled={loading || $store.votingPower < 1}
+      style={"lg:h-16 2xl:h-20 lg:rounded-[55px] disabled:cursor-not-allowed"}
     >
       {#if loading}
         <img class="h-6" src={spinner} alt="loading animation" />

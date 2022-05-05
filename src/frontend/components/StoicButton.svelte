@@ -7,6 +7,7 @@
   import spinner from "../assets/loading.gif";
 
   export let loading;
+  export let toggleModal;
 
   onMount(async () => {
     StoicIdentity.load().then(async (identity) => {
@@ -21,6 +22,7 @@
     loading = "stoic";
     await store.stoicConnect();
     loading = "";
+    toggleModal();
   }
 </script>
 
