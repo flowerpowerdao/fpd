@@ -23,7 +23,7 @@
   const schema = object({
     title: string()
       .required("Title is required")
-      .min(10, "Title must be at least 10 characters")
+      .min(20, "Title must be at least 20 characters")
       .max(100, "Title must be less than 100 characters"),
     description: string()
       .required("Description is required")
