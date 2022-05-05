@@ -23,7 +23,7 @@
 </script>
 
 <Button
-  eventHandler={connect}
+  on:click={connect}
   disabled={loading}
   style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
 >

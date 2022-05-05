@@ -15,6 +15,7 @@ import Hex "mo:hex/Hex";
 
 import Types "./Types";
 import Utils "./Utils";
+import Validation "./Validation";
 
 shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text; ethflower : Text}, coreTeamPrincipals : [Principal]) = Self {
 
@@ -89,18 +90,24 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   ******************/
 
   /// Submit a proposal
-  public shared({caller}) func submitProposal(title: Text, description: Text, options: [Text]) : async Result.Result<Nat, Text> {
+  public shared({caller}) func submitProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
     switch (await getFlowersFrom(caller)) {
+      case (#err(error)) return #err([error]);
+      case _ {};
+    };
+
+    switch(Validation.validateProposal(newProposal)) {
       case (#err(error)) return #err(error);
       case _ {};
     };
+
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
     let proposal : Types.Proposal = {
       id = proposalId;
-      title;
-      description;
+      title = newProposal.title;
+      description = newProposal.description;
       expiryDate = 
       // for local deployment every second proposal is considered adopted
       switch (localDeploymentCanisterIds) {
@@ -141,7 +148,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
           }
         }
       };
-      options;
+      options = newProposal.options;
       votes = 
       // for local deployment every second proposal is considered adopted
       switch (localDeploymentCanisterIds) {
@@ -246,6 +253,9 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
       case (?proposal) {
         if (proposal.state != #open) {
             return #err("Proposal " # debug_show(args.proposalId) # " is not open for voting");
+        };
+        if (args.option >= proposal.options.size()) {
+            return #err("Proposal " # debug_show(args.proposalId) # " does not have an option " # debug_show(args.option));
         };
         switch (await getFlowersFrom(caller)) {
           case (#err(error)) { return #err(error) };

@@ -16,7 +16,7 @@
 <!-- mobile -->
 <div class="lg:hidden pb-24">
   <div class="my-10">
-    <Button eventHandler={() => pop()}>← back</Button>
+    <Button on:click={() => pop()}>← back</Button>
     <ProposalState {proposal} detail={true} />
   </div>
   <div class="flex flex-col gap-4">
@@ -29,7 +29,7 @@
 
 <!-- desktop -->
 <div class="hidden lg:flex pb-24 pt-40">
-  <Button style={"max-w-[150px]"} eventHandler={() => pop()}>← back</Button>
+  <Button style={"max-w-[150px]"} on:click={() => pop()}>← back</Button>
   <div class="flex flex-col w-full gap-4">
     <ProposalText {proposal} />
     <CastVote {proposal} {fetchProposal} />

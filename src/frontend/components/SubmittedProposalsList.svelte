@@ -2,7 +2,6 @@
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
 
-  import Button from "../components/Button.svelte";
   import ProposalCard from "../components/ProposalCard.svelte";
 
   // filter proposals for propsals that are in voting history
@@ -20,9 +19,8 @@
 {:else if proposals.length === 0}
   <p class="mt-14 text-2xl">You haven't submitted any proposals yet 🥺</p>
 {:else}
-  <!-- mobile -->
   <!-- voting history -->
-  <ul class="">
+  <ul class="pb-24 flex flex-col gap-4">
     {#each proposals as proposal}
       <ProposalCard {proposal} />
     {/each}

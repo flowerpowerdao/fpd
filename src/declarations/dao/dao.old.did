@@ -89,20 +89,6 @@ type DailyMetricsData =
    timeMillis: int;
    updateCalls: nat64;
  };
-type DAO = 
- service {
-   collectCanisterMetrics: () -> ();
-   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-   getProposal: (nat) -> (Result_2) query;
-   getProposalHistory: () -> (vec nat) query;
-   getVotingHistory: () -> (vec record {
-                                  id: nat;
-                                  option: nat;
-                                }) query;
-   listProposals: () -> (vec ProposalView) query;
-   submitProposal: (ProposalPublic) -> (Result_1);
-   vote: (VoteArgs) -> (Result);
- };
 type CanisterMetricsData = 
  variant {
    daily: vec DailyMetricsData;
@@ -112,7 +98,16 @@ type CanisterMetrics = record {data: CanisterMetricsData;};
 type CanisterMemoryAggregatedData = vec nat64;
 type CanisterHeapMemoryAggregatedData = vec nat64;
 type CanisterCyclesAggregatedData = vec nat64;
-service : (opt record {
-                 btcflower: text;
-                 ethflower: text;
-               }, vec principal) -> DAO
+service : {
+  collectCanisterMetrics: () -> ();
+  getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getProposal: (nat) -> (Result_2) query;
+  getProposalHistory: () -> (vec nat) query;
+  getVotingHistory: () -> (vec record {
+                                 id: nat;
+                                 option: nat;
+                               }) query;
+  listProposals: () -> (vec ProposalView) query;
+  submitProposal: (ProposalPublic) -> (Result_1);
+  vote: (VoteArgs) -> (Result);
+}

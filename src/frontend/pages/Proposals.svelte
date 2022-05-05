@@ -22,7 +22,7 @@
 <!-- mobile -->
 <header class="lg:hidden py-10">
   {#if $store.isAuthed && $store.votingPower > 0}
-    <Button eventHandler={() => push("/create-proposal")}
+    <Button on:click={() => push("/create-proposal")}
       >create proposal</Button
     >
   {/if}
@@ -33,7 +33,7 @@
 <header class="hidden lg:flex pt-40 pb-8 justify-between mx-[11%]">
   <div class="flex justify-start lg:max-w-xs 2xl:max-w-md flex-1">
     {#if $store.isAuthed && $store.votingPower > 0}
-      <Button eventHandler={() => push("/create-proposal")}
+      <Button on:click={() => push("/create-proposal")}
         >create proposal</Button
       >
     {/if}

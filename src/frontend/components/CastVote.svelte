@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fromVariantToString, truncate } from "../utils";
+  import { fromVariantToString } from "../utils";
   import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import { onMount } from "svelte";
@@ -54,7 +54,9 @@
     <div
       class="p-2 lg:p-4 flex flex-col justify-between min-h-[360px] text-xl lg:text-base 2xl:text-xl"
     >
-      <h1 class="font-everett-medium text-3xl 2xl:text-4xl">cast your vote</h1>
+      <h1 class="font-everett-medium text-3xl 2xl:text-4xl mb-12">
+        cast your vote
+      </h1>
       <div class="flex flex-col justify-center gap-2">
         {#each proposal.options as option, index}
           <button
@@ -69,7 +71,7 @@
           </button>
         {/each}
       </div>
-      <div class="flex justify-center flex-col items-center">
+      <div class="flex justify-center flex-col items-center mt-12">
         <button
           class="max-w-md disabled:cursor-not-allowed bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
           disabled={selected === undefined ||
