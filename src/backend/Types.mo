@@ -34,6 +34,12 @@ module {
     core : Bool; // is the proposal a core proposal
   };
 
+  public type ProposalPublic = {
+    title: Text;
+    description: Text;
+    options: [Text]
+  };
+
   public type ProposalState = {
     #open;
     #adopted;
@@ -44,6 +50,8 @@ module {
     option: Nat; 
     proposalId : Nat 
   };
+
+  public type ValidationErrors = [Text];
 
   public func proposalKey(t: Nat) : Trie.Key<Nat> = { key = t; hash = Int.hash t };
 
