@@ -16,11 +16,7 @@ export interface DAO {
       Array<{ 'id' : bigint, 'option' : bigint }>
     >,
   'listProposals' : () => Promise<Array<ProposalView>>,
-  'submitProposal' : (
-      arg_0: string,
-      arg_1: string,
-      arg_2: Array<string>,
-    ) => Promise<Result_1>,
+  'submitProposal' : (arg_0: ProposalPublic) => Promise<Result_1>,
   'vote' : (arg_0: VoteArgs) => Promise<Result>,
 }
 export interface DailyMetricsData {
@@ -51,6 +47,11 @@ export interface NumericEntity {
   'first' : bigint,
   'last' : bigint,
 }
+export interface ProposalPublic {
+  'title' : string,
+  'description' : string,
+  'options' : Array<string>,
+}
 export type ProposalState = { 'open' : null } |
   { 'rejected' : null } |
   { 'adopted' : null };
@@ -73,7 +74,7 @@ export interface ProposalView {
 export type Result = { 'ok' : null } |
   { 'err' : string };
 export type Result_1 = { 'ok' : bigint } |
-  { 'err' : string };
+  { 'err' : Array<string> };
 export type Result_2 = { 'ok' : ProposalView } |
   { 'err' : string };
 export type UpdateCallsAggregatedData = Array<bigint>;

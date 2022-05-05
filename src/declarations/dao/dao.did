@@ -11,7 +11,7 @@ type Result_2 =
  };
 type Result_1 = 
  variant {
-   err: text;
+   err: vec text;
    ok: nat;
  };
 type Result = 
@@ -47,6 +47,12 @@ type ProposalState =
    adopted;
    open;
    rejected;
+ };
+type ProposalPublic = 
+ record {
+   description: text;
+   options: vec text;
+   title: text;
  };
 type NumericEntity = 
  record {
@@ -94,7 +100,7 @@ type DAO =
                                   option: nat;
                                 }) query;
    listProposals: () -> (vec ProposalView) query;
-   submitProposal: (text, text, vec text) -> (Result_1);
+   submitProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);
  };
 type CanisterMetricsData = 

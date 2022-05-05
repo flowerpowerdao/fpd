@@ -65,7 +65,12 @@ export const idlFactory = ({ IDL }) => {
     'options' : IDL.Vec(IDL.Text),
   });
   const Result_2 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
-  const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
+  const ProposalPublic = IDL.Record({
+    'title' : IDL.Text,
+    'description' : IDL.Text,
+    'options' : IDL.Vec(IDL.Text),
+  });
+  const Result_1 = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Vec(IDL.Text) });
   const VoteArgs = IDL.Record({ 'option' : IDL.Nat, 'proposalId' : IDL.Nat });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const DAO = IDL.Service({
@@ -83,11 +88,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
-    'submitProposal' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Vec(IDL.Text)],
-        [Result_1],
-        [],
-      ),
+    'submitProposal' : IDL.Func([ProposalPublic], [Result_1], []),
     'vote' : IDL.Func([VoteArgs], [Result], []),
   });
   return DAO;
