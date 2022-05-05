@@ -43,7 +43,7 @@
   </div>
   <div class="flex gap-3 flex-col flex-1 justify-center items-center">
     <Button
-      eventHandler={castVote}
+      on:click={castVote}
       disabled={loading}
       style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
     >
@@ -53,7 +53,7 @@
         submit
       {/if}
     </Button>
-    <Button eventHandler={toggleModal} style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
+    <Button on:click={toggleModal} style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
       >cancel</Button
     >
   </div>

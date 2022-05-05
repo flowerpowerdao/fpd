@@ -2,7 +2,6 @@
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
 
-  import Button from "../components/Button.svelte";
   import ProposalCard from "../components/ProposalCard.svelte";
 
   // filter proposals for propsals that are in voting history
