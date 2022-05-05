@@ -334,11 +334,7 @@ export const createStore = ({
     const daoActor = get({ subscribe }).daoActor;
     try {
       //@TODO validate the proposal before submitting
-      await daoActor.submitProposal(
-        proposal.title,
-        proposal.description,
-        proposal.options,
-      );
+      await daoActor.submitProposal(proposal);
     } catch (err) {
       console.error("ERROR", err);
       update((prevState) => {

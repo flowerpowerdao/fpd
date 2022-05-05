@@ -254,7 +254,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
         if (proposal.state != #open) {
             return #err("Proposal " # debug_show(args.proposalId) # " is not open for voting");
         };
-        if (not (proposal.options.size() < args.option)) {
+        if (args.option >= proposal.options.size()) {
             return #err("Proposal " # debug_show(args.proposalId) # " does not have an option " # debug_show(args.option));
         };
         switch (await getFlowersFrom(caller)) {
