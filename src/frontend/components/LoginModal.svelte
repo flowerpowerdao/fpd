@@ -10,7 +10,7 @@
 
 <Modal title={"login with …"} {toggleModal}>
   <div class="flex gap-3 flex-col flex-1 justify-center items-center">
-    <PlugButton bind:loading />
-    <StoicButton bind:loading />
+    <PlugButton bind:loading {toggleModal}/>
+    <StoicButton bind:loading {toggleModal}/>
   </div>
 </Modal>

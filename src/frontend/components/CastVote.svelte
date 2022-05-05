@@ -7,8 +7,10 @@
 
   import CastVoteModal from "./CastVoteModal.svelte";
   import Card from "./Card.svelte";
+  import LoginModal from "./LoginModal.svelte";
 
   let openModal = false;
+  let openLogin = false;
   let confetti = false;
   let selected;
 
@@ -22,6 +24,11 @@
   function toggleModal() {
     openModal = !openModal;
   }
+
+  function toggleLogin() {
+    openLogin = !openLogin;
+  }
+
   function handleEscape({ key }) {
     if (key === "Escape") {
       openModal = false;
@@ -74,10 +81,8 @@
       <div class="flex justify-center flex-col items-center mt-12">
         <button
           class="max-w-md disabled:cursor-not-allowed bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white rounded-3xl h-12 w-full font-mono"
-          disabled={selected === undefined ||
-            alreadyVoted ||
-            $store.votingPower < 1}
-          on:click={toggleModal}
+          disabled={selected === undefined || alreadyVoted}
+          on:click={$store.isAuthed ? toggleModal : toggleLogin}
         >
           submit vote →
         </button>
@@ -95,5 +100,8 @@
       {toggleModal}
       bind:confetti
     />
+  {/if}
+  {#if openLogin}
+    <LoginModal toggleModal={toggleLogin} />
   {/if}
 {/if}
