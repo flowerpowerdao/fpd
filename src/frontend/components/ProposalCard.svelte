@@ -62,7 +62,7 @@
         document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE
       }}
     >
-      <div class="p-2 flex flex-col">
+      <div class="p-4 flex flex-col">
         <div class="flex justify-between">
           <div class="w-1/3 flex justify-between items-center 2xl:text-xl">
             <p class="">id: #{proposal.id}</p>
