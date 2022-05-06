@@ -127,6 +127,7 @@ export default defineConfig({
       ...aliases,
     },
   },
+  publicDir: "./src/frontend/public",
   server: {
     host: true,
     fs: {

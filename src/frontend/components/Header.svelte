@@ -1,18 +1,20 @@
 <script lang="ts">
-  import logo from "../assets/fpd-logo.svg";
   import { store } from "../store";
   import DarkMode from "./DarkMode.svelte";
   import Login from "./Login.svelte";
   import Menu from "./Menu.svelte";
   import VotingPower from "./VotingPower.svelte";
+
+  // get random number between 1 and 18
+  let randomLogo = Math.floor(Math.random() * 18) + 1;
 </script>
 
 <!-- mobile -->
 <div class="lg:hidden">
   <a href="/#">
     <img
-      class="h-auto w-full bg-white dark:invert dark:border-none"
-      src={logo}
+      class="h-auto w-full dark:invert dark:border-none"
+      src={`/BP_FPDAO_Logo_BlackOnWhite_sRGB_${randomLogo}.svg`}
       alt="fpdao logo"
     />
   </a>
@@ -26,8 +28,8 @@
 >
   <a href="/#">
     <img
-      class="h-auto max-h-28 w-full bg-white dark:invert dark:border-none"
-      src={logo}
+      class="h-auto max-h-28 w-full dark:invert dark:border-none"
+      src={`/BP_FPDAO_Logo_BlackOnWhite_sRGB_${randomLogo}.svg`}
       alt="fpdao logo"
     />
   </a>
