@@ -11,7 +11,7 @@ type Result_2 =
  };
 type Result_1 = 
  variant {
-   err: vec text;
+   err: text;
    ok: nat;
  };
 type Result = 
@@ -47,12 +47,6 @@ type ProposalState =
    adopted;
    open;
    rejected;
- };
-type ProposalPublic = 
- record {
-   description: text;
-   options: vec text;
-   title: text;
  };
 type NumericEntity = 
  record {
@@ -108,6 +102,6 @@ service : {
                                  option: nat;
                                }) query;
   listProposals: () -> (vec ProposalView) query;
-  submitProposal: (ProposalPublic) -> (Result_1);
+  submitProposal: (text, text, vec text) -> (Result_1);
   vote: (VoteArgs) -> (Result);
 }

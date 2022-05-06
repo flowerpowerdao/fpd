@@ -23,7 +23,7 @@
         <thead>
           <tr class="font-mono">
             <th class="text-left">id</th>
-            <th class="text-left">titel</th>
+            <th class="text-left">title</th>
             <th class="text-right">option</th>
           </tr>
         </thead>
