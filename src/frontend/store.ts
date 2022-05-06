@@ -383,7 +383,7 @@ const getVotingPower = async (
       getVariantValue(ethflowerResult).length
     );
   } else if (fromVariantToString(btcflowerResult) === "ok") {
-    return getVariantValue(btcflowerResult).length;
+    return getVariantValue(btcflowerResult).length * 2;
   } else if (fromVariantToString(ethflowerResult) === "ok") {
     return getVariantValue(ethflowerResult).length;
   } else {
