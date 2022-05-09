@@ -30,7 +30,7 @@
       }}
     >
       <div class="p-2 flex flex-col">
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center">
           <p>id: #{proposal.id}</p>
           <Proposer {proposal} />
         </div>
