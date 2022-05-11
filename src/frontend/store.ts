@@ -63,8 +63,12 @@ export type NewProposal = {
 const defaultState: State = {
   isAuthed: null,
   daoActor,
-  btcflowerActor,
-  ethflowerActor,
+  btcflowerActor: createBtcflowerActor(btcflowerCanisterId, {
+    agentOptions: { host: HOST },
+  }),
+  ethflowerActor: createEthflowerActor(ethflowerCanisterId, {
+    agentOptions: { host: HOST },
+  }),
   principal: null,
   votingPower: 0,
   error: "",
