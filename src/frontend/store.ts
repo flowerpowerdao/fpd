@@ -62,7 +62,7 @@ export type NewProposal = {
 
 const defaultState: State = {
   isAuthed: null,
-  daoActor,
+  daoActor: createDaoActor(daoCanisterId, { agentOptions: { host: HOST } }),
   btcflowerActor: createBtcflowerActor(btcflowerCanisterId, {
     agentOptions: { host: HOST },
   }),
@@ -258,7 +258,11 @@ export const createStore = ({
   };
 
   const fetchProposals = async () => {
-    const proposals = await daoActor.listProposals();
+    // we need to recreate the actor here so the service working runs, the HOST is important in production
+    // https://forum.dfinity.org/t/icfront-bug-with-actors-making-calls/12854
+    const proposals = await createDaoActor(daoCanisterId, {
+      agentOptions: { host: HOST },
+    }).listProposals();
     proposals.sort((a, b) => Number(b.id - a.id));
 
     console.log("proposals fetched");
