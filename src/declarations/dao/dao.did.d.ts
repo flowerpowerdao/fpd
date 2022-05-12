@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export type CanisterCyclesAggregatedData = Array<bigint>;
 export type CanisterHeapMemoryAggregatedData = Array<bigint>;
 export type CanisterMemoryAggregatedData = Array<bigint>;
@@ -6,18 +8,20 @@ export interface CanisterMetrics { 'data' : CanisterMetricsData }
 export type CanisterMetricsData = { 'hourly' : Array<HourlyMetricsData> } |
   { 'daily' : Array<DailyMetricsData> };
 export interface DAO {
-  'collectCanisterMetrics' : () => Promise<undefined>,
-  'getCanisterMetrics' : (arg_0: GetMetricsParameters) => Promise<
-      [] | [CanisterMetrics]
-    >,
-  'getProposal' : (arg_0: bigint) => Promise<Result_2>,
-  'getProposalHistory' : () => Promise<Array<bigint>>,
-  'getVotingHistory' : () => Promise<
-      Array<{ 'id' : bigint, 'option' : bigint }>
-    >,
-  'listProposals' : () => Promise<Array<ProposalView>>,
-  'submitProposal' : (arg_0: ProposalPublic) => Promise<Result_1>,
-  'vote' : (arg_0: VoteArgs) => Promise<Result>,
+  'collectCanisterMetrics' : ActorMethod<[], undefined>,
+  'getCanisterMetrics' : ActorMethod<
+    [GetMetricsParameters],
+    [] | [CanisterMetrics],
+  >,
+  'getProposal' : ActorMethod<[bigint], Result_2>,
+  'getProposalHistory' : ActorMethod<[], Array<bigint>>,
+  'getVotingHistory' : ActorMethod<
+    [],
+    Array<{ 'id' : bigint, 'option' : bigint }>,
+  >,
+  'listProposals' : ActorMethod<[], Array<ProposalView>>,
+  'submitProposal' : ActorMethod<[ProposalPublic], Result_1>,
+  'vote' : ActorMethod<[VoteArgs], Result>,
 }
 export interface DailyMetricsData {
   'updateCalls' : bigint,
