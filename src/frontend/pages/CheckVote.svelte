@@ -1,15 +1,17 @@
 <script lang="ts">
-  import { dao } from "../../declarations/dao";
+  import { createActor, canisterId } from "../../declarations/dao";
   import Card from "../components/Card.svelte";
   import spinner from "../assets/loading.gif";
   import Button from "../components/Button.svelte";
   import { isOk, getVariantValue } from "../utils";
+  import { HOST } from "../store";
 
   let loading = false;
   let mintNumber: number;
   let collection: "ethflower" | "btcflower";
   let proposalId: number;
   let answer: string = "";
+  let dao = createActor(canisterId, { agentOptions: { host: HOST } });
 
   async function checkVotingStatus() {
     let collectionVariant: { btcflower: null } | { ethflower: null };
