@@ -16,7 +16,7 @@
   <p class="mt-14 text-2xl">You haven't voted on any proposals yet 🥺</p>
 {:else}
   <!-- voting history -->
-  <Card style="lg:mx-2">
+  <Card style="mx-2 lg:mx-[10%]">
     <div class="p-2 lg:p-4 flex flex-col lg:text-xl">
       <h1 class="font-everett-medium text-3xl 2xl:text-4xl">voting history:</h1>
       <table class="mt-4">

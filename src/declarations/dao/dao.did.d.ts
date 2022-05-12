@@ -13,11 +13,15 @@ export interface DAO {
     [GetMetricsParameters],
     [] | [CanisterMetrics],
   >,
-  'getProposal' : ActorMethod<[bigint], Result_2>,
+  'getProposal' : ActorMethod<[bigint], Result_3>,
   'getProposalHistory' : ActorMethod<[], Array<bigint>>,
   'getVotingHistory' : ActorMethod<
     [],
     Array<{ 'id' : bigint, 'option' : bigint }>,
+  >,
+  'hasVoted' : ActorMethod<
+    [number, { 'btcflower' : null } | { 'ethflower' : null }, bigint],
+    Result_2,
   >,
   'listProposals' : ActorMethod<[], Array<ProposalView>>,
   'submitProposal' : ActorMethod<[ProposalPublic], Result_1>,
@@ -79,7 +83,9 @@ export type Result = { 'ok' : null } |
   { 'err' : string };
 export type Result_1 = { 'ok' : bigint } |
   { 'err' : Array<string> };
-export type Result_2 = { 'ok' : ProposalView } |
+export type Result_2 = { 'ok' : boolean } |
+  { 'err' : string };
+export type Result_3 = { 'ok' : ProposalView } |
   { 'err' : string };
 export type UpdateCallsAggregatedData = Array<bigint>;
 export interface VoteArgs { 'option' : bigint, 'proposalId' : bigint }

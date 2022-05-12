@@ -4,10 +4,15 @@ type VoteArgs =
    proposalId: nat;
  };
 type UpdateCallsAggregatedData = vec nat64;
-type Result_2 = 
+type Result_3 = 
  variant {
    err: text;
    ok: ProposalView;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: bool;
  };
 type Result_1 = 
  variant {
@@ -93,12 +98,16 @@ type DAO =
  service {
    collectCanisterMetrics: () -> ();
    getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-   getProposal: (nat) -> (Result_2) query;
+   getProposal: (nat) -> (Result_3) query;
    getProposalHistory: () -> (vec nat) query;
    getVotingHistory: () -> (vec record {
                                   id: nat;
                                   option: nat;
                                 }) query;
+   hasVoted: (nat32, variant {
+                       btcflower;
+                       ethflower;
+                     }, nat) -> (Result_2) query;
    listProposals: () -> (vec ProposalView) query;
    submitProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);

@@ -64,7 +64,8 @@ export const idlFactory = ({ IDL }) => {
     }),
     'options' : IDL.Vec(IDL.Text),
   });
-  const Result_2 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
+  const Result_3 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
+  const Result_2 = IDL.Variant({ 'ok' : IDL.Bool, 'err' : IDL.Text });
   const ProposalPublic = IDL.Record({
     'title' : IDL.Text,
     'description' : IDL.Text,
@@ -80,11 +81,20 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(CanisterMetrics)],
         ['query'],
       ),
-    'getProposal' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'getProposal' : IDL.Func([IDL.Nat], [Result_3], ['query']),
     'getProposalHistory' : IDL.Func([], [IDL.Vec(IDL.Nat)], ['query']),
     'getVotingHistory' : IDL.Func(
         [],
         [IDL.Vec(IDL.Record({ 'id' : IDL.Nat, 'option' : IDL.Nat }))],
+        ['query'],
+      ),
+    'hasVoted' : IDL.Func(
+        [
+          IDL.Nat32,
+          IDL.Variant({ 'btcflower' : IDL.Null, 'ethflower' : IDL.Null }),
+          IDL.Nat,
+        ],
+        [Result_2],
         ['query'],
       ),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),

@@ -12,8 +12,8 @@
 
 <div class="flex justify-end lg:text-base 2xl:text-xl text-xl">
   {#if fromVariantToString(proposal.state) === "open"}
-    <button
-      class="cursor-default disabled flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 lg:max-w-xs rounded-3xl font-mono italic"
+    <div
+      class="flex items-center justify-center flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 lg:max-w-xs rounded-3xl font-mono italic"
     >
       {#if detail}
         ends: {fromTimestamp(proposal.expiryDate).toLocaleDateString(
@@ -41,28 +41,28 @@
           },
         )}
       {/if}
-    </button>
-    <button
-      class="cursor-default disabled bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 rounded-3xl font-mono italic"
+    </div>
+    <div
+      class="flex items-center justify-center bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 rounded-3xl font-mono italic"
     >
       open
-    </button>
+    </div>
   {:else if fromVariantToString(proposal.state) === "adopted"}
-    <button
-      class="truncate px-4 cursor-default disabled flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 lg:max-w-xs rounded-3xl font-mono italic"
+    <div
+      class="flex items-center justify-center truncate px-4 disabled flex-1 bg-white dark:bg-black  border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 lg:max-w-xs rounded-3xl font-mono italic"
     >
       {getWinningOption(proposal)}
-    </button>
-    <button
-      class="cursor-default disabled bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 font-mono italic"
+    </div>
+    <div
+      class="flex items-center justify-center bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 font-mono italic"
     >
       adopted
-    </button>
+    </div>
   {:else}
-    <button
-      class="cursor-default disabled bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 rounded-t-3xl font-mono italic"
+    <div
+      class="flex items-center justify-center bg-white dark:bg-black border-2 border-black dark:border-white dark:text-white h-12 lg:h-10 w-[calc(100vw*(1/3))] lg:w-40 -ml-0.5 rounded-t-3xl font-mono italic"
     >
       rejected
-    </button>
+    </div>
   {/if}
 </div>
