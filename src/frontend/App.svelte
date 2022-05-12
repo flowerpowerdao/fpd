@@ -9,6 +9,7 @@
   import Footer from "./components/Footer.svelte";
   import CreateProposal from "./pages/CreateProposal.svelte";
   import SubmittedProposals from "./pages/SubmittedProposals.svelte";
+  import CheckVote from "./pages/CheckVote.svelte";
   import { polyfill } from "seamless-scroll-polyfill";
 
   polyfill();
@@ -20,6 +21,7 @@
     "/voting-history": VotingHistory,
     "/create-proposal": CreateProposal,
     "/submitted-proposals": SubmittedProposals,
+    "/check-vote": CheckVote,
 
     // Catch-all
     // This is optional, but if present it must be the last

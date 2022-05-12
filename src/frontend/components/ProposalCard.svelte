@@ -64,7 +64,7 @@
     >
       <div class="p-4 flex flex-col">
         <div class="flex justify-between">
-          <div class="w-1/3 flex justify-between items-center 2xl:text-xl">
+          <div class="w-1/2 flex justify-between items-center 2xl:text-xl">
             <p class="">id: #{proposal.id}</p>
             <Proposer {proposal} />
           </div>

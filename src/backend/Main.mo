@@ -328,6 +328,23 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
     };
   };
 
+  public query func hasVoted(flowerId: Nat32, collection: {#btcflower; #ethflower}, proposalId: Nat) : async Result.Result<Bool, Text> {
+    switch (getProposalInternal(proposalId)) {
+      case null { #err("No proposal with ID " # debug_show(proposalId) # " exists") };
+      case (?proposal) {
+        switch collection {
+          case (#btcflower) {
+            return #ok(List.some(proposal.flowersVoted.btcFlowers,func (e : Nat32) : Bool = e == flowerId));
+          };
+          case (#ethflower) {
+            return #ok(List.some(proposal.flowersVoted.ethFlowers,func (e : Nat32) : Bool = e == flowerId));
+          }
+        }
+      };
+    }
+  };
+
+
   /*******************
   * PRIVATE METHODS *
   *******************/
