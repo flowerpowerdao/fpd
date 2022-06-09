@@ -199,8 +199,6 @@ export const createStore = ({
       interfaceFactory: btcflowerIdlFactory,
     })) as typeof btcflowerActor;
 
-    console.log(ethflowerCanisterId);
-
     const ethflowerPlug = (await window.ic?.plug.createActor({
       canisterId: ethflowerCanisterId,
       interfaceFactory: ethflowerIdlFactory,
@@ -324,7 +322,6 @@ export const createStore = ({
   const disconnect = async () => {
     console.log("disconnected");
     StoicIdentity.disconnect();
-    window.ic?.plug?.deleteAgent();
     window.ic?.plug?.disconnect();
     // wait for 500ms to ensure that the disconnection is complete
     await new Promise((resolve) => setTimeout(resolve, 500));
