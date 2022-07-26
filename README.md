@@ -1,3 +1,8 @@
+# migration
+- deploy this version
+- call `initV2`
+- remove `initV2` (and `proposals`)
+
 # development 👷‍♀️
 
 - install dfx versions `0.8.5`, `0.9.2` and `0.9.3` (`DFX_VERSION=<version> sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"`)
