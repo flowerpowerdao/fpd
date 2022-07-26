@@ -7,7 +7,7 @@ type UpdateCallsAggregatedData = vec nat64;
 type Result_3 = 
  variant {
    err: text;
-   ok: ProposalView;
+   ok: ProposalViewV2;
  };
 type Result_2 = 
  variant {
@@ -24,7 +24,7 @@ type Result =
    err: text;
    ok;
  };
-type ProposalView = 
+type ProposalViewV2 = 
  record {
    core: bool;
    description: text;
@@ -38,13 +38,17 @@ type ProposalView =
    proposer: principal;
    state: ProposalState;
    title: text;
-   votes: vec record {
-                principal;
-                record {
-                  option: nat;
-                  votesCast: nat;
-                };
-              };
+   votes:
+    vec
+     record {
+       principal;
+       record {
+         btcFlowers: nat;
+         ethFlowers: nat;
+         option: nat;
+         votesCast: nat;
+       };
+     };
    votesCast: nat;
  };
 type ProposalState = 
@@ -108,7 +112,7 @@ type DAO =
                        btcflower;
                        ethflower;
                      }, nat) -> (Result_2) query;
-   listProposals: () -> (vec ProposalView) query;
+   listProposals: () -> (vec ProposalViewV2) query;
    submitProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);
  };

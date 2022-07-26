@@ -33,6 +33,20 @@ type Proposal =
     votesCast : Nat
   };
 type ProposalState = {#adopted; #open; #rejected};
+type ProposalV2 =
+  {
+    core : Bool;
+    description : Text;
+    expiryDate : Int;
+    flowersVoted : {btcFlowers : List<Nat32>; ethFlowers : List<Nat32>};
+    id : Nat;
+    options : [Text];
+    proposer : Principal;
+    state : ProposalState;
+    title : Text;
+    votes : Trie<Principal, (Nat, Nat, Nat, Nat)>;
+    votesCast : Nat
+  };
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type UpgradeData = {#v1 : {dayData : [UpgradeDataDayTuple]}};
 type UpgradeDataDayTuple = (DayDataId, DayData);
@@ -48,6 +62,12 @@ actor {
     };
   stable var proposals :
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
+  stable var proposalsV2 :
+    {
+      #branch : Branch<Nat, ProposalV2>;
+      #empty;
+      #leaf : Leaf<Nat, ProposalV2>
+    };
   stable var votingHistories :
     {
       #branch : Branch<Principal, List<{id : Nat; option : Nat}>>;

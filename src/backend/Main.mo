@@ -32,6 +32,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   ********************/
 
   stable var proposals : Trie.Trie<Nat, Types.Proposal> = Trie.empty();
+  stable var proposalsV2 : Trie.Trie<Nat, Types.ProposalV2> = Trie.empty();
   stable var votingHistories : Trie.Trie<Principal, List.List<{id: Nat; option: Nat}>> = Trie.empty();
   stable var proposalHistories : Trie.Trie<Principal, List.List<Nat>> = Trie.empty();
   stable var nextProposalId : Nat = 0;
@@ -88,6 +89,25 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   /******************
   * PUBLIC METHODS *
   ******************/
+  public shared({caller}) func initV2() : async () {
+    for (proposal in Trie.iter(proposals)) {
+      putProposalV2Internal(proposal.0, {
+        id = proposal.1.id;
+        title =  proposal.1.title;
+        description = proposal.1.description;
+        options = proposal.1.options;
+        votes = Trie.mapFilter<Principal, (option : Nat, votesCast : Nat), (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)>(proposal.1.votes, func (k : Principal, v : (option : Nat, votesCast : Nat)) {
+          return ?(v.0, v.1, 0, 0);
+        });
+        flowersVoted = proposal.1.flowersVoted;
+        state = proposal.1.state;
+        expiryDate = proposal.1.expiryDate;
+        votesCast = proposal.1.votesCast;
+        proposer = proposal.1.proposer;
+        core = proposal.1.core;
+        })
+    }
+  };
 
   /// Submit a proposal
   public shared({caller}) func submitProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
@@ -104,7 +124,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
-    let proposal : Types.Proposal = {
+    let proposal : Types.ProposalV2 = {
       id = proposalId;
       title = newProposal.title;
       description = newProposal.description;
@@ -161,19 +181,19 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
             Trie.empty()
           // adopted
           } else if (proposalId % 3 == 0) {
-            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat)> = Trie.empty();
-            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 1000)).0;
+            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 1000, 400, 200)).0;
             // we need to use different principals here, otherwise the trie entry is just overwritten
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100, 110, 20)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050, 500, 50)).0;
             temp
           // rejected
           } else {
-            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat)> = Trie.empty();
-            temp := Trie.put<Principal, (option: Nat, votesCast: Nat)>(temp, Types.accountKey(caller), Principal.equal, (0, 100)).0;
+            var temp : Trie.Trie<Principal, (option: Nat, votesCast: Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
+            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 100, 40, 20)).0;
             // we need to use different principals here, otherwise the trie entry is just overwritten
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50, 20, 10)).0;
+            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50, 20, 10)).0;
             temp
           }
         }
@@ -206,7 +226,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
         }
       };
     };
-    putProposalInternal(proposalId, proposal);
+    putProposalV2Internal(proposalId, proposal);
     // check if there is already a proposal history available for the given caller
     switch (getProposalHistoryInternal(caller)) {
       // if so, append the new proposal id to the list
@@ -219,8 +239,8 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   };
 
   /// Return the proposal with the given ID, if one exists
-  public query func getProposal(proposal_id: Nat) : async Result.Result<Types.ProposalView, Text> {
-    switch (getProposalInternal(proposal_id)) {
+  public query func getProposal(proposal_id: Nat) : async Result.Result<Types.ProposalViewV2, Text> {
+    switch (getProposalV2Internal(proposal_id)) {
       case(?proposal) {
         // mask the current voting state if the proposal is open
         if (proposal.state == #open) {
@@ -234,9 +254,9 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   };
 
   /// Return the list of all proposals
-  public query func listProposals() : async [Types.ProposalView] {
-    Trie.toArray<Nat, Types.Proposal, Types.ProposalView>(proposals,
-      func (kv : (Nat, Types.Proposal)) : Types.ProposalView {
+  public query func listProposals() : async [Types.ProposalViewV2] {
+    Trie.toArray<Nat, Types.ProposalV2, Types.ProposalViewV2>(proposalsV2,
+      func (kv : (Nat, Types.ProposalV2)) : Types.ProposalViewV2 {
         if (kv.1.state == #open) {
             return toProposalView(removeVotingInformationFromProposal(kv.1))
         } else {
@@ -248,7 +268,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
 
   // Vote on an open proposal
   public shared({caller}) func vote(args: Types.VoteArgs) : async Result.Result<(), Text> {
-    switch (getProposalInternal(args.proposalId)) {
+    switch (getProposalV2Internal(args.proposalId)) {
       case null { #err("No proposal with ID " # debug_show(args.proposalId) # " exists") };
       case (?proposal) {
         if (proposal.state != #open) {
@@ -280,7 +300,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
             let btcFlowersVoted = List.append(List.fromArray<Nat32>(btcFlowers), proposal.flowersVoted.btcFlowers);
             let ethFlowersVoted = List.append(List.fromArray<Nat32>(ethFlowers), proposal.flowersVoted.ethFlowers);
 
-            let updated_proposal : Types.Proposal = {
+            let updated_proposal : Types.ProposalV2 = {
                 id = proposal.id;
                 description = proposal.description;
                 title = proposal.title;
@@ -293,11 +313,11 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
                 expiryDate = proposal.expiryDate;
                 votesCast = proposal.votesCast + votingPower;
                 proposer = proposal.proposer;
-                votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower)).0;
+                votes = Trie.put(proposal.votes, Types.accountKey(caller), Principal.equal, (args.option, votingPower, btcFlowers.size(), ethFlowers.size())).0;
                 core = proposal.core;
             };
             // updated proposal in stable memory
-            putProposalInternal(args.proposalId, updated_proposal);
+            putProposalV2Internal(args.proposalId, updated_proposal);
             // update voting history in stable memory
             switch (getVotingHistoryInternal(caller)) {
               case null {
@@ -329,7 +349,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   };
 
   public query func hasVoted(flowerId: Nat32, collection: {#btcflower; #ethflower}, proposalId: Nat) : async Result.Result<Bool, Text> {
-    switch (getProposalInternal(proposalId)) {
+    switch (getProposalV2Internal(proposalId)) {
       case null { #err("No proposal with ID " # debug_show(proposalId) # " exists") };
       case (?proposal) {
         switch collection {
@@ -349,7 +369,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   * PRIVATE METHODS *
   *******************/
 
-  func toProposalView(proposal : Types.Proposal) : Types.ProposalView {
+  func toProposalView(proposal : Types.ProposalV2) : Types.ProposalViewV2 {
     return {
       id = proposal.id;
       title = proposal.title;
@@ -358,8 +378,8 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
       proposer = proposal.proposer;
       options = proposal.options;
       state = proposal.state;
-      votes = Trie.toArray<Principal, (option: Nat, votesCast: Nat), (Principal, {option: Nat; votesCast: Nat})>(proposal.votes, func (kv : (Principal, (option: Nat, votesCast: Nat))) : (Principal, {option: Nat; votesCast: Nat}) {
-        return (kv.0, {option = kv.1.0; votesCast = kv.1.1});
+      votes = Trie.toArray<Principal, (option: Nat, votesCast: Nat, btcFlowers : Nat, ethFlowers : Nat), (Principal, {option: Nat; votesCast: Nat; btcFlowers : Nat; ethFlowers : Nat})>(proposal.votes, func (kv : (Principal, (option: Nat, votesCast: Nat, btcFlowers : Nat, ethFlowers : Nat))) : (Principal, {option: Nat; votesCast: Nat; btcFlowers : Nat; ethFlowers : Nat}) {
+        return (kv.0, {option = kv.1.0; votesCast = kv.1.1; btcFlowers = kv.1.2; ethFlowers = kv.1.3});
       });
       flowersVoted = {btcFlowers = List.toArray(proposal.flowersVoted.btcFlowers); ethFlowers = List.toArray(proposal.flowersVoted.ethFlowers)};
       core = proposal.core;
@@ -399,15 +419,15 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
 
   /// Remove expired proposals
   func closeExpiredProposals() {
-    for (kv in Trie.iter(proposals)) {
+    for (kv in Trie.iter(proposalsV2)) {
        if (Time.now() > kv.1.expiryDate) {
          closeProposal(kv.1)
        }
     }
   };
 
-  func removeVotingInformationFromProposal (proposal : Types.Proposal) : Types.Proposal{
-    let openProposal : Types.Proposal= {
+  func removeVotingInformationFromProposal (proposal : Types.ProposalV2) : Types.ProposalV2{
+    let openProposal : Types.ProposalV2 = {
       id = proposal.id; 
       title = proposal.title;
       description = proposal.description;
@@ -424,10 +444,10 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
     return openProposal;
   };
 
-  func closeProposal(proposal: Types.Proposal) {
+  func closeProposal(proposal: Types.ProposalV2) {
     // consider the proposal adopted if we pass the threshold, else rejected
     if (proposal.votesCast > votingThreshold) {
-      let updated : Types.Proposal = {
+      let updated : Types.ProposalV2 = {
         state = #adopted;
         description = proposal.description;
         title = proposal.title;
@@ -440,9 +460,9 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
         votesCast = proposal.votesCast;
         core = proposal.core;
       };
-      putProposalInternal(proposal.id, updated);
+      putProposalV2Internal(proposal.id, updated);
     } else {
-      let updated : Types.Proposal = {
+      let updated : Types.ProposalV2 = {
         state = #rejected;
         description = proposal.description;
         title = proposal.title;
@@ -457,14 +477,14 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
       };
 
       // updated the proposal in stable memory
-      putProposalInternal(proposal.id, updated);
+      putProposalV2Internal(proposal.id, updated);
     };
   };
 
-  func getProposalInternal(id : Nat) : ?Types.Proposal = Trie.get(proposals, Types.proposalKey(id), Nat.equal);
+  func getProposalV2Internal(id : Nat) : ?Types.ProposalV2 = Trie.get(proposalsV2, Types.proposalKey(id), Nat.equal);
 
-  func putProposalInternal(id : Nat, proposal : Types.Proposal) {
-    proposals := Trie.put(proposals, Types.proposalKey(id), Nat.equal, proposal).0;
+  func putProposalV2Internal(id : Nat, proposal : Types.ProposalV2) {
+    proposalsV2 := Trie.put(proposalsV2, Types.proposalKey(id), Nat.equal, proposal).0;
   };
 
   func getVotingHistoryInternal(principal : Principal) : ?List.List<{id: Nat; option: Nat}> = Trie.get(votingHistories, Types.accountKey(principal), Principal.equal);

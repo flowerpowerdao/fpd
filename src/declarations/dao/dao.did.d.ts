@@ -23,7 +23,7 @@ export interface DAO {
     [number, { 'btcflower' : null } | { 'ethflower' : null }, bigint],
     Result_2,
   >,
-  'listProposals' : ActorMethod<[], Array<ProposalView>>,
+  'listProposals' : ActorMethod<[], Array<ProposalViewV2>>,
   'submitProposal' : ActorMethod<[ProposalPublic], Result_1>,
   'vote' : ActorMethod<[VoteArgs], Result>,
 }
@@ -63,10 +63,20 @@ export interface ProposalPublic {
 export type ProposalState = { 'open' : null } |
   { 'rejected' : null } |
   { 'adopted' : null };
-export interface ProposalView {
+export interface ProposalViewV2 {
   'id' : bigint,
   'title' : string,
-  'votes' : Array<[Principal, { 'option' : bigint, 'votesCast' : bigint }]>,
+  'votes' : Array<
+    [
+      Principal,
+      {
+        'btcFlowers' : bigint,
+        'option' : bigint,
+        'ethFlowers' : bigint,
+        'votesCast' : bigint,
+      },
+    ]
+  >,
   'expiryDate' : bigint,
   'core' : boolean,
   'description' : string,
@@ -85,7 +95,7 @@ export type Result_1 = { 'ok' : bigint } |
   { 'err' : Array<string> };
 export type Result_2 = { 'ok' : boolean } |
   { 'err' : string };
-export type Result_3 = { 'ok' : ProposalView } |
+export type Result_3 = { 'ok' : ProposalViewV2 } |
   { 'err' : string };
 export type UpdateCallsAggregatedData = Array<bigint>;
 export interface VoteArgs { 'option' : bigint, 'proposalId' : bigint }

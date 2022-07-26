@@ -4,10 +4,15 @@ type VoteArgs =
    proposalId: nat;
  };
 type UpdateCallsAggregatedData = vec nat64;
+type Result_3 = 
+ variant {
+   err: text;
+   ok: ProposalViewV2;
+ };
 type Result_2 = 
  variant {
    err: text;
-   ok: ProposalView;
+   ok: bool;
  };
 type Result_1 = 
  variant {
@@ -19,7 +24,7 @@ type Result =
    err: text;
    ok;
  };
-type ProposalView = 
+type ProposalViewV2 = 
  record {
    core: bool;
    description: text;
@@ -33,13 +38,17 @@ type ProposalView =
    proposer: principal;
    state: ProposalState;
    title: text;
-   votes: vec record {
-                principal;
-                record {
-                  option: nat;
-                  votesCast: nat;
-                };
-              };
+   votes:
+    vec
+     record {
+       principal;
+       record {
+         btcFlowers: nat;
+         ethFlowers: nat;
+         option: nat;
+         votesCast: nat;
+       };
+     };
    votesCast: nat;
  };
 type ProposalState = 
@@ -101,13 +110,18 @@ type CanisterCyclesAggregatedData = vec nat64;
 service : {
   collectCanisterMetrics: () -> ();
   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-  getProposal: (nat) -> (Result_2) query;
+  getProposal: (nat) -> (Result_3) query;
   getProposalHistory: () -> (vec nat) query;
   getVotingHistory: () -> (vec record {
                                  id: nat;
                                  option: nat;
                                }) query;
-  listProposals: () -> (vec ProposalView) query;
+  hasVoted: (nat32, variant {
+                      btcflower;
+                      ethflower;
+                    }, nat) -> (Result_2) query;
+  initV2: () -> ();
+  listProposals: () -> (vec ProposalViewV2) query;
   submitProposal: (ProposalPublic) -> (Result_1);
   vote: (VoteArgs) -> (Result);
 }

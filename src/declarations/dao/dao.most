@@ -18,7 +18,8 @@ type Hash = Nat32;
 type Key<K> = {hash : Hash; key : K};
 type Leaf<K, V> = {keyvals : AssocList__1<Key<K>, V>; size : Nat};
 type List<T> = ?(T, List<T>);
-type Proposal =
+type ProposalState = {#adopted; #open; #rejected};
+type ProposalV2 =
   {
     core : Bool;
     description : Text;
@@ -29,10 +30,9 @@ type Proposal =
     proposer : Principal;
     state : ProposalState;
     title : Text;
-    votes : Trie<Principal, (Nat, Nat)>;
+    votes : Trie<Principal, (Nat, Nat, Nat, Nat)>;
     votesCast : Nat
   };
-type ProposalState = {#adopted; #open; #rejected};
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type UpgradeData = {#v1 : {dayData : [UpgradeDataDayTuple]}};
 type UpgradeDataDayTuple = (DayDataId, DayData);
@@ -46,8 +46,12 @@ actor {
       #empty;
       #leaf : Leaf<Principal, List<Nat>>
     };
-  stable var proposals :
-    {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
+  stable var proposalsV2 :
+    {
+      #branch : Branch<Nat, ProposalV2>;
+      #empty;
+      #leaf : Leaf<Nat, ProposalV2>
+    };
   stable var votingHistories :
     {
       #branch : Branch<Principal, List<{id : Nat; option : Nat}>>;

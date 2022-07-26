@@ -43,13 +43,18 @@ export const idlFactory = ({ IDL }) => {
     'rejected' : IDL.Null,
     'adopted' : IDL.Null,
   });
-  const ProposalView = IDL.Record({
+  const ProposalViewV2 = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
     'votes' : IDL.Vec(
       IDL.Tuple(
         IDL.Principal,
-        IDL.Record({ 'option' : IDL.Nat, 'votesCast' : IDL.Nat }),
+        IDL.Record({
+          'btcFlowers' : IDL.Nat,
+          'option' : IDL.Nat,
+          'ethFlowers' : IDL.Nat,
+          'votesCast' : IDL.Nat,
+        }),
       )
     ),
     'expiryDate' : IDL.Int,
@@ -64,7 +69,7 @@ export const idlFactory = ({ IDL }) => {
     }),
     'options' : IDL.Vec(IDL.Text),
   });
-  const Result_3 = IDL.Variant({ 'ok' : ProposalView, 'err' : IDL.Text });
+  const Result_3 = IDL.Variant({ 'ok' : ProposalViewV2, 'err' : IDL.Text });
   const Result_2 = IDL.Variant({ 'ok' : IDL.Bool, 'err' : IDL.Text });
   const ProposalPublic = IDL.Record({
     'title' : IDL.Text,
@@ -97,7 +102,7 @@ export const idlFactory = ({ IDL }) => {
         [Result_2],
         ['query'],
       ),
-    'listProposals' : IDL.Func([], [IDL.Vec(ProposalView)], ['query']),
+    'listProposals' : IDL.Func([], [IDL.Vec(ProposalViewV2)], ['query']),
     'submitProposal' : IDL.Func([ProposalPublic], [Result_1], []),
     'vote' : IDL.Func([VoteArgs], [Result], []),
   });
