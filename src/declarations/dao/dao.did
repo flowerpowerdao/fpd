@@ -112,6 +112,7 @@ type DAO =
                        btcflower;
                        ethflower;
                      }, nat) -> (Result_2) query;
+   initV2: () -> ();
    listProposals: () -> (vec ProposalViewV2) query;
    submitProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);

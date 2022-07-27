@@ -1,4 +1,5 @@
 # migration
+
 - deploy this version
 - call `initV2`
 - remove `initV2` (and `proposals`)
@@ -20,3 +21,7 @@ export NFT_MINT_ADDRESSES="\"1111156ca79711111c288cbe0da2c9ae073304329dcd11111d8
 - run `npm run deploy` from root. this sets up the project for development, including starting dfx and deploying local versions of the `btcflower` and `ethflower` canisters
 - in a new terminal window, run `npm run dev` from root. this starts the development server and allows you to instantly see changes on the frontend
 - to seed the local `dao` canister with proposals, run `npm run seed` from root. this create a bunch of dummy proposals on the local canister
+
+# deployment
+
+run `dfx deploy --network ic --argument '(null, vec {principal "<core_team_principal_1>"; principal "core_team_principal_2>"})'` to deploy the dao

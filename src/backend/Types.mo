@@ -6,7 +6,7 @@ import Result "mo:base/Result";
 import Trie "mo:base/Trie";
 
 module {
-  public type Proposal = {
+  public type ProposalDeprecated = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
@@ -20,7 +20,7 @@ module {
     core : Bool; // is the proposal a core proposal
   };
 
-  public type ProposalView = {
+  public type ProposalViewDeprecated = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
@@ -34,7 +34,7 @@ module {
     core : Bool; // is the proposal a core proposal
   };
   
-  public type ProposalV2 = {
+  public type Proposal = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
@@ -48,7 +48,7 @@ module {
     core : Bool; // is the proposal a core proposal
   };
 
-  public type ProposalViewV2 = {
+  public type ProposalView = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description

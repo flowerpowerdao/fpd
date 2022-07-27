@@ -23,6 +23,7 @@ export interface DAO {
     [number, { 'btcflower' : null } | { 'ethflower' : null }, bigint],
     Result_2,
   >,
+  'initV2' : ActorMethod<[], undefined>,
   'listProposals' : ActorMethod<[], Array<ProposalViewV2>>,
   'submitProposal' : ActorMethod<[ProposalPublic], Result_1>,
   'vote' : ActorMethod<[VoteArgs], Result>,
