@@ -38,13 +38,17 @@ type ProposalView =
    proposer: principal;
    state: ProposalState;
    title: text;
-   votes: vec record {
-                principal;
-                record {
-                  option: nat;
-                  votesCast: nat;
-                };
-              };
+   votes:
+    vec
+     record {
+       principal;
+       record {
+         btcFlowers: nat;
+         ethFlowers: nat;
+         option: nat;
+         votesCast: nat;
+       };
+     };
    votesCast: nat;
  };
 type ProposalState = 

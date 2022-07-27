@@ -66,7 +66,17 @@ export type ProposalState = { 'open' : null } |
 export interface ProposalView {
   'id' : bigint,
   'title' : string,
-  'votes' : Array<[Principal, { 'option' : bigint, 'votesCast' : bigint }]>,
+  'votes' : Array<
+    [
+      Principal,
+      {
+        'btcFlowers' : bigint,
+        'option' : bigint,
+        'ethFlowers' : bigint,
+        'votesCast' : bigint,
+      },
+    ]
+  >,
   'expiryDate' : bigint,
   'core' : boolean,
   'description' : string,

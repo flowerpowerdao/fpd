@@ -6,7 +6,7 @@ import Result "mo:base/Result";
 import Trie "mo:base/Trie";
 
 module {
-  public type Proposal = {
+  public type ProposalDeprecated = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
@@ -20,12 +20,40 @@ module {
     core : Bool; // is the proposal a core proposal
   };
 
-  public type ProposalView = {
+  public type ProposalViewDeprecated = {
     id : Nat; // unique proposal id
     title : Text; // title of the proposal
     description : Text; // short description
     options : [Text]; // options that can be voted on
     votes : [(Principal, {option : Nat; votesCast : Nat})]; // votes cast by each principal
+    flowersVoted : {btcFlowers : [Nat32]; ethFlowers : [Nat32]};  // flowers that already voted
+    state : ProposalState; // is the proposal accepting votes or not
+    expiryDate : Int; // when the voting period ends
+    votesCast : Nat; // total votes cast
+    proposer : Principal; // principal of the creator of the proposal
+    core : Bool; // is the proposal a core proposal
+  };
+  
+  public type Proposal = {
+    id : Nat; // unique proposal id
+    title : Text; // title of the proposal
+    description : Text; // short description
+    options : [Text]; // options that can be voted on
+    votes : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)>; // votes cast by each principal
+    flowersVoted : {btcFlowers : List.List<Nat32>; ethFlowers : List.List<Nat32>}; // flowers that already voted
+    state : ProposalState; // is the proposal accepting votes or not
+    expiryDate : Int; // when the voting period ends
+    votesCast: Nat; // total votes cast
+    proposer : Principal; // principal of the creator of the proposal
+    core : Bool; // is the proposal a core proposal
+  };
+
+  public type ProposalView = {
+    id : Nat; // unique proposal id
+    title : Text; // title of the proposal
+    description : Text; // short description
+    options : [Text]; // options that can be voted on
+    votes : [(Principal, {option : Nat; votesCast : Nat; btcFlowers : Nat; ethFlowers : Nat})]; // votes cast by each principal
     flowersVoted : {btcFlowers : [Nat32]; ethFlowers : [Nat32]};  // flowers that already voted
     state : ProposalState; // is the proposal accepting votes or not
     expiryDate : Int; // when the voting period ends

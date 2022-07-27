@@ -49,7 +49,12 @@ export const idlFactory = ({ IDL }) => {
     'votes' : IDL.Vec(
       IDL.Tuple(
         IDL.Principal,
-        IDL.Record({ 'option' : IDL.Nat, 'votesCast' : IDL.Nat }),
+        IDL.Record({
+          'btcFlowers' : IDL.Nat,
+          'option' : IDL.Nat,
+          'ethFlowers' : IDL.Nat,
+          'votesCast' : IDL.Nat,
+        }),
       )
     ),
     'expiryDate' : IDL.Int,
