@@ -89,25 +89,6 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
   /******************
   * PUBLIC METHODS *
   ******************/
-  public shared({caller}) func initV2() : async () {
-    for (proposal in Trie.iter(proposals)) {
-      putProposalV2Internal(proposal.0, {
-        id = proposal.1.id;
-        title =  proposal.1.title;
-        description = proposal.1.description;
-        options = proposal.1.options;
-        votes = Trie.mapFilter<Principal, (option : Nat, votesCast : Nat), (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)>(proposal.1.votes, func (k : Principal, v : (option : Nat, votesCast : Nat)) {
-          return ?(v.0, v.1, 0, 0);
-        });
-        flowersVoted = proposal.1.flowersVoted;
-        state = proposal.1.state;
-        expiryDate = proposal.1.expiryDate;
-        votesCast = proposal.1.votesCast;
-        proposer = proposal.1.proposer;
-        core = proposal.1.core;
-        })
-    }
-  };
 
   /// Submit a proposal
   public shared({caller}) func submitProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {

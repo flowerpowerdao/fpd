@@ -29,20 +29,6 @@ type Proposal =
     proposer : Principal;
     state : ProposalState;
     title : Text;
-    votes : Trie<Principal, (Nat, Nat, Nat, Nat)>;
-    votesCast : Nat
-  };
-type ProposalDeprecated =
-  {
-    core : Bool;
-    description : Text;
-    expiryDate : Int;
-    flowersVoted : {btcFlowers : List<Nat32>; ethFlowers : List<Nat32>};
-    id : Nat;
-    options : [Text];
-    proposer : Principal;
-    state : ProposalState;
-    title : Text;
     votes : Trie<Principal, (Nat, Nat)>;
     votesCast : Nat
   };
@@ -61,12 +47,6 @@ actor {
       #leaf : Leaf<Principal, List<Nat>>
     };
   stable var proposals :
-    {
-      #branch : Branch<Nat, ProposalDeprecated>;
-      #empty;
-      #leaf : Leaf<Nat, ProposalDeprecated>
-    };
-  stable var proposalsV2 :
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
   stable var votingHistories :
     {
