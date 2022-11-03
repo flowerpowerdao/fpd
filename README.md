@@ -7,6 +7,9 @@
 # development 👷‍♀️
 
 - install dfx versions `0.8.5`, `0.9.2` and `0.9.3` (`DFX_VERSION=<version> sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"`)
+- install [Vessel](https://github.com/dfinity/vessel)
+- install [jq](https://stedolan.github.io/jq/download/)
+- install [Plug](https://plugwallet.ooo/)
 - clone the repository and run `git submodule init` and `git submodule update`. this pulls the submodules the project depends on
 - run `npm install` from root
 - create a `set-deploy-env.zsh` file in the root directory according to the following example and replace the `NFT_CANISTER_OWNER_PRINICPAL` with the principal of your local `dfx identity` (usually `dfx identity get-principal`) and the `NFT_MINT_ADDRESSES` with addresses you would like to mint NFTs for.
