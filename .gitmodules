@@ -4,3 +4,6 @@
 [submodule "ethflower-nft-canister"]
 	path = ethflower-nft-canister
 	url = git@github.com:flowerpowerdao/ethflower-nft-canister.git
+[submodule "icpflower-nft-canister"]
+	path = icpflower-nft-canister
+	url = git@github.com:flowerpowerdao/icpflower-nft-canister.git
