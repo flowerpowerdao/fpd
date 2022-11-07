@@ -11,7 +11,7 @@
     "deploy:ethflower": "cd ethflower-nft-canister && dfx deploy --argument '(principal '$NFT_CANISTER_OWNER_PRINCIPAL')' staging && dfx canister call staging addAsset '(record {name = \"privat\";payload = record {ctype = \"text/html\"; data = vec {blob \"hello world!\"} } })' && dfx canister call staging initMint '(vec {'$NFT_MINT_ADDRESSES'})' && cd ..",
     "deploy:icpflower": "cd icpflower-nft-canister && dfx deploy --argument '(principal '$NFT_CANISTER_OWNER_PRINCIPAL')' staging && dfx canister call staging addAsset '(record {name = \"privat\";payload = record {ctype = \"text/html\"; data = vec {blob \"hello world!\"} } })' && dfx canister call staging initMint '(vec {'$NFT_MINT_ADDRESSES'})' && cd ..",
     "prebuild": "npm run copy:types",
-    "predev": ". ./set-env.zsh && dfx canister create dao && dfx build dao && npm run copy:types && dfx deploy --argument '(opt record { btcflower = '$BTCFLOWER_LOCAL_CANISTER_ID'; ethflower = '$ETHFLOWER_LOCAL_CANISTER_ID'}, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --mode=reinstall dao",
+    "predev": ". ./set-env.zsh && dfx canister create dao && dfx build dao && npm run copy:types && dfx deploy --argument '(opt record { btcflower = '$BTCFLOWER_LOCAL_CANISTER_ID'; ethflower = '$ETHFLOWER_LOCAL_CANISTER_ID'; icpflower = '$ICPFLOWER_LOCAL_CANISTER_ID'}, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --mode=reinstall dao",
     "copy:types": "rsync -avr .dfx/$(echo ${DFX_NETWORK:-'**'})/canisters/** --exclude='assets/' --exclude='idl/' --exclude='*.wasm' --delete src/declarations",
     "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'"
   },

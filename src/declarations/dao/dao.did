@@ -111,6 +111,7 @@ type DAO =
    hasVoted: (nat32, variant {
                        btcflower;
                        ethflower;
+                       icpflower;
                      }, nat) -> (Result_2) query;
    listProposals: () -> (vec ProposalView) query;
    submitProposal: (ProposalPublic) -> (Result_1);
@@ -128,4 +129,5 @@ type CanisterCyclesAggregatedData = vec nat64;
 service : (opt record {
                  btcflower: text;
                  ethflower: text;
+                 icpflower: text;
                }, vec principal) -> DAO

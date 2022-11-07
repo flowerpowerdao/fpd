@@ -20,7 +20,13 @@ export interface DAO {
     Array<{ 'id' : bigint, 'option' : bigint }>,
   >,
   'hasVoted' : ActorMethod<
-    [number, { 'btcflower' : null } | { 'ethflower' : null }, bigint],
+    [
+      number,
+      { 'btcflower' : null } |
+        { 'icpflower' : null } |
+        { 'ethflower' : null },
+      bigint,
+    ],
     Result_2,
   >,
   'listProposals' : ActorMethod<[], Array<ProposalView>>,

@@ -17,14 +17,14 @@ import Types "./Types";
 import Utils "./Utils";
 import Validation "./Validation";
 
-shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text; ethflower : Text}, coreTeamPrincipals : [Principal]) = Self {
+shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text; ethflower : Text; icpflower : Text}, coreTeamPrincipals : [Principal]) = Self {
 
   /*************
   * CONSTANTS *
   *************/
 
   let votingPeriod = 7; // in days
-  let votingThreshold = 3017; // we assume that 3017 - ((2009*2) + 2015) / 2 - votes is the minimum threshold for adoption
+  let votingThreshold = 4027; // we assume that 4027 - ((2009*2) + 2015 + 2021) / 2 - votes is the minimum threshold for adoption
   let canistergeekMonitor = Canistergeek.Monitor();
   
   /********************
@@ -130,7 +130,8 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
         case null {
           {
             btcFlowers = List.nil();
-            ethFlowers = List.nil()
+            ethFlowers = List.nil();
+            icpFlowers = List.nil()
           }
         };
         case _ {
@@ -138,13 +139,15 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
           if (proposalId % 2 == 0) {
             {
               btcFlowers = List.nil();
-              ethFlowers = List.nil()
+              ethFlowers = List.nil();
+              icpFlowers = List.nil()
             }
           // rejected & adopted 
           } else {
             {
               btcFlowers = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9]);
-              ethFlowers = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9])
+              ethFlowers = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9]);
+              icpFlowers = List.fromArray<Nat32>([1,2,3,4,5,6,7,8,9])
             }
           }
         }
@@ -260,7 +263,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
         };
         switch (await getFlowersFrom(caller)) {
           case (#err(error)) { return #err(error) };
-          case (#ok({btcFlowers : [Nat32]; ethFlowers : [Nat32]})) {
+          case (#ok({btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32]})) {
 
             // check if a flower already voted
             for (userFlower in Iter.fromArray(btcFlowers)) {
@@ -273,6 +276,11 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
                   return #err("Already voted. If you bought a new Flower that you want to use to vote, but already casted a vote, please send the new flower to a new wallet and vote there.");
               };
             };
+            // for (userFlower in Iter.fromArray(icpFlowers)) {
+            //   if (List.some(proposal.flowersVoted.icpFlowers,func (e : Nat32) : Bool = e == userFlower)) {
+            //       return #err("Already voted. If you bought a new Flower that you want to use to vote, but already casted a vote, please send the new flower to a new wallet and vote there.");
+            //   };
+            // };
 
             // get the amount of flowers and thus voting power a holder has
             let votingPower : Nat = (btcFlowers.size() * 2) + ethFlowers.size();
@@ -280,6 +288,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
             // track flowers that were used to cast a vote
             let btcFlowersVoted = List.append(List.fromArray<Nat32>(btcFlowers), proposal.flowersVoted.btcFlowers);
             let ethFlowersVoted = List.append(List.fromArray<Nat32>(ethFlowers), proposal.flowersVoted.ethFlowers);
+            // let icpFlowersVoted = List.append(List.fromArray<Nat32>(icpFlowers), proposal.flowersVoted.icpFlowers);
 
             let updated_proposal : Types.Proposal = {
                 id = proposal.id;
@@ -288,6 +297,7 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
                 flowersVoted = {
                   btcFlowers = btcFlowersVoted;
                   ethFlowers = ethFlowersVoted;
+                  // icpFlowers = icpFlowersVoted;
                 };
                 options = proposal.options;
                 state = proposal.state;
@@ -329,17 +339,21 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
     };
   };
 
-  public query func hasVoted(flowerId: Nat32, collection: {#btcflower; #ethflower}, proposalId: Nat) : async Result.Result<Bool, Text> {
+  public query func hasVoted(flowerId: Nat32, collection: {#btcflower; #ethflower; #icpflower}, proposalId: Nat) : async Result.Result<Bool, Text> {
     switch (getProposalV2Internal(proposalId)) {
       case null { #err("No proposal with ID " # debug_show(proposalId) # " exists") };
       case (?proposal) {
         switch collection {
           case (#btcflower) {
-            return #ok(List.some(proposal.flowersVoted.btcFlowers,func (e : Nat32) : Bool = e == flowerId));
+            return #ok(List.some(proposal.flowersVoted.btcFlowers, func (e : Nat32) : Bool = e == flowerId));
           };
           case (#ethflower) {
-            return #ok(List.some(proposal.flowersVoted.ethFlowers,func (e : Nat32) : Bool = e == flowerId));
-          }
+            return #ok(List.some(proposal.flowersVoted.ethFlowers, func (e : Nat32) : Bool = e == flowerId));
+          };
+          case (#icpflower) {
+            // return #ok(List.some(proposal.flowersVoted.icpFlowers, func (e : Nat32) : Bool = e == flowerId));
+            return #ok(List.some(proposal.flowersVoted.ethFlowers, func (e : Nat32) : Bool = e == flowerId));
+          };
         }
       };
     }
@@ -368,34 +382,44 @@ shared(install) actor class DAO(localDeploymentCanisterIds : ?{btcflower : Text;
     };
   };
 
-  func getFlowersFrom(principal: Principal) : async Result.Result<{btcFlowers : [Nat32]; ethFlowers : [Nat32]}, Text> {
+  func getFlowersFrom(principal: Principal) : async Result.Result<{btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32]}, Text> {
+    type TokensRes = {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other: Text}};
+
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
-    var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
-    var ethflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+    var btcflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async TokensRes};
+    var ethflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async TokensRes};
+    var icpflower = actor("aaaaa-aa") : actor { tokens: (Text) -> async TokensRes};
 
     switch (localDeploymentCanisterIds) {
       case null {
-        btcflower := actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
-        ethflower := actor("dhiaa-ryaaa-aaaae-qabva-cai") : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+        btcflower := actor("pk6rk-6aaaa-aaaae-qaazq-cai") : actor  { tokens: (Text) -> async TokensRes};
+        ethflower := actor("dhiaa-ryaaa-aaaae-qabvea-cai") : actor  { tokens: (Text) -> async TokensRes};
+        icpflower := actor("4ggk4-mqaaa-aaaae-qad6q-cai") : actor  { tokens: (Text) -> async TokensRes};
       };
       case (?localDeploymentCanisterIds) {
-        btcflower := actor(localDeploymentCanisterIds.btcflower) : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
-        ethflower := actor(localDeploymentCanisterIds.ethflower) : actor  { tokens: (Text) -> async {#ok: [Nat32]; #err: {#InvalidToken: Text; #Other:Text}}};
+        btcflower := actor(localDeploymentCanisterIds.btcflower) : actor  { tokens: (Text) -> async TokensRes};
+        ethflower := actor(localDeploymentCanisterIds.ethflower) : actor  { tokens: (Text) -> async TokensRes};
+        icpflower := actor(localDeploymentCanisterIds.icpflower) : actor  { tokens: (Text) -> async TokensRes};
       };
     };
 
-    switch (await btcflower.tokens(accountId), await ethflower.tokens(accountId)) {
-      case (#ok(btcFlowers), #err(error)) {
-        return #ok({btcFlowers = btcFlowers; ethFlowers = []});
+    func unwrapResult(res: TokensRes): [Nat32] {
+      switch (res) {
+        case (#ok(flowers)) { flowers };
+        case (#err(error)) { [] };
       };
-      case (#err(error), #ok(ethFlowers)) {
-        return #ok({btcFlowers = []; ethFlowers});
-      };
-      case (#ok(btcFlowers), #ok(ethFlowers)) {
-        return #ok({btcFlowers; ethFlowers});
-      };
-      case _ return #err("Account doesn't own any flowers");
+    };
+
+    let btcFlowers = unwrapResult(await btcflower.tokens(accountId));
+    let ethFlowers = unwrapResult(await ethflower.tokens(accountId));
+    let icpFlowers = unwrapResult(await icpflower.tokens(accountId));
+
+    if (btcFlowers.size() == 0 and ethFlowers.size() == 0 and icpFlowers.size() == 0) {
+      return #err("Account doesn't own any flowers");
     }
+    else {
+      return #ok({btcFlowers; ethFlowers; icpFlowers});
+    };
   };
 
   /// Remove expired proposals

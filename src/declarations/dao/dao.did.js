@@ -96,7 +96,11 @@ export const idlFactory = ({ IDL }) => {
     'hasVoted' : IDL.Func(
         [
           IDL.Nat32,
-          IDL.Variant({ 'btcflower' : IDL.Null, 'ethflower' : IDL.Null }),
+          IDL.Variant({
+            'btcflower' : IDL.Null,
+            'icpflower' : IDL.Null,
+            'ethflower' : IDL.Null,
+          }),
           IDL.Nat,
         ],
         [Result_2],
@@ -110,7 +114,13 @@ export const idlFactory = ({ IDL }) => {
 };
 export const init = ({ IDL }) => {
   return [
-    IDL.Opt(IDL.Record({ 'btcflower' : IDL.Text, 'ethflower' : IDL.Text })),
+    IDL.Opt(
+      IDL.Record({
+        'btcflower' : IDL.Text,
+        'icpflower' : IDL.Text,
+        'ethflower' : IDL.Text,
+      })
+    ),
     IDL.Vec(IDL.Principal),
   ];
 };
