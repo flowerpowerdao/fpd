@@ -405,32 +405,31 @@ const getVotingPower = async (
 
   console.log("voting power fetched", btcflowerResult, ethflowerResult, icpflowerResult);
 
-  // this if statement has to come first, otherwise we miss voting power
+  let votingPower = 0;
+  if (fromVariantToString(btcflowerResult) === "ok") {
+    votingPower += getVariantValue(btcflowerResult).length * 2;
+  }
+  if (fromVariantToString(ethflowerResult) === "ok") {
+    votingPower += getVariantValue(ethflowerResult).length;
+  }
+  if (fromVariantToString(icpflowerResult) === "ok") {
+    votingPower += getVariantValue(icpflowerResult).length;
+  }
+
   if (
-    fromVariantToString(btcflowerResult) === "ok" &&
-    fromVariantToString(ethflowerResult) === "ok" &&
-    fromVariantToString(icpflowerResult) === "ok"
+    fromVariantToString(btcflowerResult) === "err" ||
+    fromVariantToString(ethflowerResult) === "err" ||
+    fromVariantToString(icpflowerResult) === "err"
   ) {
-    return (
-      getVariantValue(btcflowerResult).length * 2 +
-      getVariantValue(ethflowerResult).length +
-      getVariantValue(icpflowerResult).length
-    );
-  } else if (fromVariantToString(btcflowerResult) === "ok") {
-    return getVariantValue(btcflowerResult).length * 2;
-  } else if (fromVariantToString(ethflowerResult) === "ok") {
-    return getVariantValue(ethflowerResult).length;
-  } else if (fromVariantToString(icpflowerResult) === "ok") {
-    return getVariantValue(icpflowerResult).length;
-  } else {
     console.error(
       `error getting voting power: ${JSON.stringify(
         // error message is the same for both canisters so we can just take btcflowers
         getVariantValue(btcflowerResult),
       )}`,
     );
-    return 0;
   }
+
+  return votingPower;
 };
 
 export const store = createStore({

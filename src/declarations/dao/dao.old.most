@@ -47,25 +47,6 @@ type ProposalDeprecated =
     votesCast : Nat
   };
 type ProposalState = {#adopted; #open; #rejected};
-type ProposalV3 =
-  {
-    core : Bool;
-    description : Text;
-    expiryDate : Int;
-    flowersVoted :
-      {
-        btcFlowers : List<Nat32>;
-        ethFlowers : List<Nat32>;
-        icpFlowers : List<Nat32>
-      };
-    id : Nat;
-    options : [Text];
-    proposer : Principal;
-    state : ProposalState;
-    title : Text;
-    votes : Trie<Principal, (Nat, Nat, Nat, Nat, Nat)>;
-    votesCast : Nat
-  };
 type Trie<K, V> = {#branch : Branch<K, V>; #empty; #leaf : Leaf<K, V>};
 type UpgradeData = {#v1 : {dayData : [UpgradeDataDayTuple]}};
 type UpgradeDataDayTuple = (DayDataId, DayData);
@@ -87,12 +68,6 @@ actor {
     };
   stable var proposalsV2 :
     {#branch : Branch<Nat, Proposal>; #empty; #leaf : Leaf<Nat, Proposal>};
-  stable var proposalsV3 :
-    {
-      #branch : Branch<Nat, ProposalV3>;
-      #empty;
-      #leaf : Leaf<Nat, ProposalV3>
-    };
   stable var votingHistories :
     {
       #branch : Branch<Principal, List<{id : Nat; option : Nat}>>;
