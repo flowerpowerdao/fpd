@@ -26,12 +26,12 @@ import {
   idlFactory as ethflowerIdlFactory,
 } from "../declarations/ethflower";
 import {
-  staging as icpflowerActor,
+  icpflowerActor,
   createActor as createIcpflowerActor,
   canisterId as icpflowerCanisterId,
   idlFactory as icpflowerIdlFactory,
 } from "../declarations/icpflower";
-import type { ProposalView } from "../declarations/dao/dao.did";
+import type { ProposalViewV3 } from "../declarations/dao/dao.did";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -53,8 +53,8 @@ type State = {
   icpflowerActor: typeof icpflowerActor;
   votingPower: number;
   error: string;
-  proposals: ProposalView[];
-  filteredProposals: ProposalView[];
+  proposals: ProposalViewV3[];
+  filteredProposals: ProposalViewV3[];
   filters: Filters;
   votingHistory: { id: bigint; option: bigint }[];
   proposalHistory: bigint[];
@@ -403,7 +403,12 @@ const getVotingPower = async (
     icpflower.tokens(principalToAccountId(principal, null)),
   ]);
 
-  console.log("voting power fetched", btcflowerResult, ethflowerResult, icpflowerResult);
+  console.log(
+    "voting power fetched",
+    btcflowerResult,
+    ethflowerResult,
+    icpflowerResult,
+  );
 
   let votingPower = 0;
   if (fromVariantToString(btcflowerResult) === "ok") {
@@ -433,7 +438,12 @@ const getVotingPower = async (
 };
 
 export const store = createStore({
-  whitelist: [daoCanisterId, btcflowerCanisterId, ethflowerCanisterId, icpflowerCanisterId],
+  whitelist: [
+    daoCanisterId,
+    btcflowerCanisterId,
+    ethflowerCanisterId,
+    icpflowerCanisterId,
+  ],
   host: HOST,
 });
 
@@ -449,7 +459,10 @@ declare global {
           host?: string;
         }) => Promise<any>;
         createActor: (options: {}) => Promise<
-          typeof daoActor | typeof btcflowerActor | typeof ethflowerActor | typeof icpflowerActor
+          | typeof daoActor
+          | typeof btcflowerActor
+          | typeof ethflowerActor
+          | typeof icpflowerActor
         >;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
