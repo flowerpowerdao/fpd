@@ -122,6 +122,105 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   * PUBLIC METHODS *
   ******************/
 
+  // Seed proposals
+  public shared ({ caller }) func seed(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
+    assert (localDeploymentCanisterIds != null);
+
+    let proposalId = nextProposalId;
+    nextProposalId += 1;
+
+    let proposal : Types.Proposal = {
+      id = proposalId;
+      title = newProposal.title;
+      description = newProposal.description;
+      // for local deployment every second proposal is considered adopted
+      expiryDate = do {
+        if (proposalId % 2 == 0) {
+          Time.now() + (86_400_000_000_000 * votingPeriod) // 5 days
+          // rejected & adopted
+        } else {
+          Time.now();
+        };
+      };
+      proposer = caller;
+      flowersVoted = do {
+        // open
+        if (proposalId % 2 == 0) {
+          {
+            btcFlowers = List.nil();
+            ethFlowers = List.nil();
+            icpFlowers = List.nil();
+          }
+          // rejected & adopted
+        } else {
+          {
+            btcFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            ethFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            icpFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+          };
+        };
+      };
+      options = newProposal.options;
+      // for local deployment every second proposal is considered adopted
+      votes = do {
+        // open
+        if (proposalId % 2 == 0) {
+          Trie.empty()
+          // adopted
+        } else if (proposalId % 3 == 0) {
+          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
+          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 1000, 400, 200)).0;
+          // we need to use different principals here, otherwise the trie entry is just overwritten
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100, 110, 20)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050, 500, 50)).0;
+          temp
+          // rejected
+        } else {
+          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
+          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 100, 40, 20)).0;
+          // we need to use different principals here, otherwise the trie entry is just overwritten
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50, 20, 10)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50, 20, 10)).0;
+          temp;
+        };
+      };
+      state = #open;
+      // check if the proposal was submitted by a core team member
+      core = do {
+        var isCoreTeamMember = false;
+        label coreLoop for (corePrincipal in Iter.fromArray(coreTeamPrincipals)) {
+          if (Principal.equal(corePrincipal, caller)) {
+            isCoreTeamMember := true;
+            break coreLoop;
+          };
+        };
+        isCoreTeamMember;
+      };
+      votesCast = do {
+        // open
+        if (proposalId % 2 == 0) {
+          0
+          // adopted
+        } else if (proposalId % 3 == 0) {
+          3150
+          // rejected
+        } else {
+          200;
+        };
+      };
+    };
+    putProposalV2Internal(proposalId, proposal);
+    // check if there is already a proposal history available for the given caller
+    switch (getProposalHistoryInternal(caller)) {
+      // if so, append the new proposal id to the list
+      case (?proposalHistory) putProposalHistoryInternal(caller, List.push(proposalId, proposalHistory));
+      // if not, create a new entry
+      case null putProposalHistoryInternal(caller, List.make(proposalId));
+    };
+    Debug.print(debug_show (proposalHistories));
+    #ok(proposalId);
+  };
+
   /// Submit a proposal
   public shared ({ caller }) func submitProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
     switch (await getFlowersFrom(caller)) {
@@ -141,77 +240,15 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
       id = proposalId;
       title = newProposal.title;
       description = newProposal.description;
-      expiryDate = // for local deployment every second proposal is considered adopted
-      switch (localDeploymentCanisterIds) {
-        // production
-        case null Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
-        // local
-        case _ {
-          // open
-          if (proposalId % 2 == 0) {
-            Time.now() + (86_400_000_000_000 * votingPeriod) // 5 days
-            // rejected & adopted
-          } else {
-            Time.now();
-          };
-        };
-      };
+      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
       proposer = caller;
-      flowersVoted = switch (localDeploymentCanisterIds) {
-        case null {
-          {
-            btcFlowers = List.nil();
-            ethFlowers = List.nil();
-            icpFlowers = List.nil();
-          };
-        };
-        case _ {
-          // open
-          if (proposalId % 2 == 0) {
-            {
-              btcFlowers = List.nil();
-              ethFlowers = List.nil();
-              icpFlowers = List.nil();
-            }
-            // rejected & adopted
-          } else {
-            {
-              btcFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-              ethFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-              icpFlowers = List.fromArray<Nat32>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-            };
-          };
-        };
+      flowersVoted = {
+        btcFlowers = List.nil();
+        ethFlowers = List.nil();
+        icpFlowers = List.nil();
       };
       options = newProposal.options;
-      votes = // for local deployment every second proposal is considered adopted
-      switch (localDeploymentCanisterIds) {
-        // production
-        case null Trie.empty();
-        // local
-        case _ {
-          // open
-          if (proposalId % 2 == 0) {
-            Trie.empty()
-            // adopted
-          } else if (proposalId % 3 == 0) {
-            var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat, icpFlowers : Nat)> = Trie.empty();
-            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 1000, 400, 200, 200)).0;
-            // we need to use different principals here, otherwise the trie entry is just overwritten
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100, 110, 20, 20)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050, 500, 50, 50)).0;
-            temp
-            // rejected
-          } else {
-            var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat, icpFlowers : Nat)> = Trie.empty();
-            temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 100, 40, 20, 20)).0;
-            // we need to use different principals here, otherwise the trie entry is just overwritten
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50, 20, 10, 10)).0;
-            temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50, 20, 10, 10)).0;
-            temp;
-          };
-        };
-      };
+      votes = Trie.empty();
       state = #open;
       // check if the proposal was submitted by a core team member
       core = do {
@@ -224,21 +261,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
         };
         isCoreTeamMember;
       };
-      votesCast = switch (localDeploymentCanisterIds) {
-        case null 0;
-        case _ {
-          // open
-          if (proposalId % 2 == 0) {
-            0
-            // adopted
-          } else if (proposalId % 3 == 0) {
-            3150
-            // rejected
-          } else {
-            200;
-          };
-        };
-      };
+      votesCast = 0;
     };
     putProposalV3Internal(proposalId, proposal);
     // check if there is already a proposal history available for the given caller
