@@ -422,8 +422,8 @@ const getVotingPower = async (
   }
 
   if (
-    fromVariantToString(btcflowerResult) === "err" ||
-    fromVariantToString(ethflowerResult) === "err" ||
+    fromVariantToString(btcflowerResult) === "err" &&
+    fromVariantToString(ethflowerResult) === "err" &&
     fromVariantToString(icpflowerResult) === "err"
   ) {
     console.error(
