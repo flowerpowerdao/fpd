@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import spinner from "../assets/loading.gif";
   import Button from "./Button.svelte";

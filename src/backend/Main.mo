@@ -122,7 +122,6 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   * PUBLIC METHODS *
   ******************/
 
-
   // Seed proposals
   public shared ({ caller }) func seed(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
     assert (localDeploymentCanisterIds != null);

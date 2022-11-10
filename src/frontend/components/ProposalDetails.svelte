@@ -1,7 +1,7 @@
 <script lang="ts">
   import { pop } from "svelte-spa-router";
 
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did.d";
   import Button from "./Button.svelte";
   import CastVote from "./CastVote.svelte";
   import ProposalState from "./ProposalState.svelte";

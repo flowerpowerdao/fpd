@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did.d";
   import SvelteMarkdown from "svelte-markdown";
   import { truncate } from "../utils";
   import Card from "./Card.svelte";
