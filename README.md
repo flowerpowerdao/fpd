@@ -21,7 +21,7 @@ export NFT_CANISTER_OWNER_PRINCIPAL="\"aaaaa-hhhh-dgumq-aaaaa-aaaaa-ayr3z-moywz-
 export NFT_MINT_ADDRESSES="\"1111156ca79711111c288cbe0da2c9ae073304329dcd11111d8df19416baf3b0\";\"11111eb53f60d028b4bdfe7bc1594c907b81311111d6f6713121dcb5611111\";\"111111ac04a4e2b2e90ca2f55e11111edf53a67a7ed22804411111726eb24f\""
 ```
 
-- run `npm run deploy` from root. this sets up the project for development, including starting dfx and deploying local versions of the `btcflower` and `ethflower` canisters
+- run `npm run deploy` from root. this sets up the project for development, including starting dfx and deploying local versions of the `btcflower`, `icpflower` and `ethflower` canisters
 - in a new terminal window, run `npm run dev` from root. this starts the development server and allows you to instantly see changes on the frontend
 - to seed the local `dao` canister with proposals, run `npm run seed` from root. this create a bunch of dummy proposals on the local canister
 
