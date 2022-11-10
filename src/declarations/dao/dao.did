@@ -117,6 +117,7 @@ type DAO =
                        icpflower;
                      }, nat) -> (Result_2) query;
    listProposals: () -> (vec ProposalViewV3) query;
+   seed: (ProposalPublic) -> (Result_1);
    submitProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);
  };

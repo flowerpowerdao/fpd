@@ -109,6 +109,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalViewV3)], ['query']),
+    'seed' : IDL.Func([ProposalPublic], [Result_1], []),
     'submitProposal' : IDL.Func([ProposalPublic], [Result_1], []),
     'vote' : IDL.Func([VoteArgs], [Result], []),
   });
