@@ -4,7 +4,7 @@
     fromTimestamp,
     getWinningOption,
   } from "../utils";
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did";
 
   export let proposal: Proposal;
   export let detail = false;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import ProgressBar from "./ProgressBar.svelte";
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did";
   import { fromVariantToString, getVotesForOption } from "../utils";
   import Card from "./Card.svelte";
 

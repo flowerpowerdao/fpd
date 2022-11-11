@@ -101,26 +101,6 @@ type DailyMetricsData =
    timeMillis: int;
    updateCalls: nat64;
  };
-type DAO = 
- service {
-   collectCanisterMetrics: () -> ();
-   getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
-   getProposal: (nat) -> (Result_3) query;
-   getProposalHistory: () -> (vec nat) query;
-   getVotingHistory: () -> (vec record {
-                                  id: nat;
-                                  option: nat;
-                                }) query;
-   hasVoted: (nat32, variant {
-                       btcflower;
-                       ethflower;
-                       icpflower;
-                     }, nat) -> (Result_2) query;
-   listProposals: () -> (vec ProposalViewV3) query;
-   seed: (ProposalPublic) -> (Result_1);
-   submitProposal: (ProposalPublic) -> (Result_1);
-   vote: (VoteArgs) -> (Result);
- };
 type CanisterMetricsData = 
  variant {
    daily: vec DailyMetricsData;
@@ -130,8 +110,22 @@ type CanisterMetrics = record {data: CanisterMetricsData;};
 type CanisterMemoryAggregatedData = vec nat64;
 type CanisterHeapMemoryAggregatedData = vec nat64;
 type CanisterCyclesAggregatedData = vec nat64;
-service : (opt record {
-                 btcflower: text;
-                 ethflower: text;
-                 icpflower: text;
-               }, vec principal) -> DAO
+service : {
+  collectCanisterMetrics: () -> ();
+  getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getProposal: (nat) -> (Result_3) query;
+  getProposalHistory: () -> (vec nat) query;
+  getVotingHistory: () -> (vec record {
+                                 id: nat;
+                                 option: nat;
+                               }) query;
+  hasVoted: (nat32, variant {
+                      btcflower;
+                      ethflower;
+                      icpflower;
+                    }, nat) -> (Result_2) query;
+  listProposals: () -> (vec ProposalViewV3) query;
+  seed: (ProposalPublic) -> (Result_1);
+  submitProposal: (ProposalPublic) -> (Result_1);
+  vote: (VoteArgs) -> (Result);
+}

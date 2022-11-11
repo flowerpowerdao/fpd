@@ -8,16 +8,22 @@
 
   let loading = false;
   let mintNumber: number;
-  let collection: "ethflower" | "btcflower";
+  let collection: "ethflower" | "btcflower" | "icpflower";
   let proposalId: number;
   let answer: string = "";
   let dao = createActor(canisterId, { agentOptions: { host: HOST } });
 
   async function checkVotingStatus() {
-    let collectionVariant: { btcflower: null } | { ethflower: null };
-    collection === "ethflower"
-      ? (collectionVariant = { ethflower: null })
-      : (collectionVariant = { btcflower: null });
+    let collectionVariant: { btcflower: null } | { ethflower: null } | { icpflower: null };
+    if (collection === "btcflower") {
+      collectionVariant = { btcflower: null }
+    }
+    else if (collection === "ethflower") {
+      collectionVariant = { ethflower: null }
+    }
+    else if (collection === "icpflower") {
+      collectionVariant = { icpflower: null }
+    }
 
     loading = true;
     let result = await dao.hasVoted(
@@ -67,6 +73,7 @@
           >
             <option value="ethflower">ethflower</option>
             <option value="btcflower">btcflower</option>
+            <option value="icpflower">icpflower</option>
           </select>
         </div>
         <div class="mt-10 flex flex-col mx-2 font-mono">

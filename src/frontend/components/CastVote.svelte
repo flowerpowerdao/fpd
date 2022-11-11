@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fromVariantToString } from "../utils";
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did.d";
   import { store } from "../store";
   import { onMount } from "svelte";
   import { ConfettiExplosion } from "svelte-confetti-explosion";

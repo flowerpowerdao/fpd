@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { ProposalView as Proposal } from "../../declarations/dao/dao.did.d";
+  import type { ProposalViewV3 as Proposal } from "../../declarations/dao/dao.did.d";
   import { isOk, fromOk } from "../utils";
   import { store } from "../store";
   import ProposalDetails from "../components/ProposalDetails.svelte";
