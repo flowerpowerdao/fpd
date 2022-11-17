@@ -1,6 +1,6 @@
 import { sha224 } from "js-sha256";
 import crc32 from "crc-32";
-import type { ProposalView as Proposal } from "../declarations/dao/dao.did";
+import type { ProposalViewV3 as Proposal } from "../declarations/dao/dao.did";
 
 // Results
 export function fromOk(result): any {
