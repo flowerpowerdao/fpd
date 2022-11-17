@@ -24,6 +24,7 @@ export NFT_MINT_ADDRESSES="\"1111156ca79711111c288cbe0da2c9ae073304329dcd11111d8
 - run `npm run deploy` from root. this sets up the project for development, including starting dfx and deploying local versions of the `btcflower`, `icpflower` and `ethflower` canisters
 - in a new terminal window, run `npm run dev` from root. this starts the development server and allows you to instantly see changes on the frontend
 - to seed the local `dao` canister with proposals, run `npm run seed` from root. this create a bunch of dummy proposals on the local canister. note that the proposals are created in `proposalsV2`, so they're only visible after upgrading the canister and thus triggering the `postupgrade` method that turns `v2` proposals into `v3` proposals
+- to trigger a canister upgrade run `npm run upgrade`
 
 # deployment
 
