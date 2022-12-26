@@ -50,37 +50,6 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   system func postupgrade() {
     canistergeekMonitor.postupgrade(_canistergeekMonitorUD);
     _canistergeekMonitorUD := null;
-
-    // proposals V2 -> V3
-    if (Trie.isEmpty(proposalsV3)) {
-      proposalsV3 := Trie.mapFilter<Nat, Types.Proposal, Types.ProposalV3>(
-        proposalsV2,
-        func(key : Nat, proposalV2 : Types.Proposal) {
-          ?{
-            id = proposalV2.id;
-            title = proposalV2.title;
-            description = proposalV2.description;
-            options = proposalV2.options;
-            votes = Trie.mapFilter<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat), (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat, icpFlowers : Nat)>(
-              proposalV2.votes,
-              func(key : Principal, v : (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)) {
-                return ?(v.0, v.1, v.2, v.3, 0);
-              },
-            );
-            flowersVoted = {
-              btcFlowers = proposalV2.flowersVoted.btcFlowers;
-              ethFlowers = proposalV2.flowersVoted.ethFlowers;
-              icpFlowers = List.nil();
-            };
-            state = proposalV2.state;
-            expiryDate = proposalV2.expiryDate;
-            votesCast = proposalV2.votesCast;
-            proposer = proposalV2.proposer;
-            core = proposalV2.core;
-          };
-        },
-      );
-    };
   };
 
   /*************
@@ -129,7 +98,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
     let proposalId = nextProposalId;
     nextProposalId += 1;
 
-    let proposal : Types.Proposal = {
+    let proposal : Types.ProposalV3 = {
       id = proposalId;
       title = newProposal.title;
       description = newProposal.description;
@@ -168,19 +137,19 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
           Trie.empty()
           // adopted
         } else if (proposalId % 3 == 0) {
-          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
-          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 1000, 400, 200)).0;
+          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat, icpFlowers : Nat)> = Trie.empty();
+          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 1000, 400, 200, 200)).0;
           // we need to use different principals here, otherwise the trie entry is just overwritten
-          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100, 110, 20)).0;
-          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050, 500, 50)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 1100, 110, 20, 20)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 1050, 500, 50, 50)).0;
           temp
           // rejected
         } else {
-          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat)> = Trie.empty();
-          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 100, 40, 20)).0;
+          var temp : Trie.Trie<Principal, (option : Nat, votesCast : Nat, btcFlowers : Nat, ethFlowers : Nat, icpFlowers : Nat)> = Trie.empty();
+          temp := Trie.put(temp, Types.accountKey(caller), Principal.equal, (0, 100, 40, 20, 20)).0;
           // we need to use different principals here, otherwise the trie entry is just overwritten
-          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50, 20, 10)).0;
-          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50, 20, 10)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("fqfmg-4iaaa-aaaae-qabaa-cai")), Principal.equal, (1, 50, 20, 10, 10)).0;
+          temp := Trie.put(temp, Types.accountKey(Principal.fromText("zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae")), Principal.equal, (2, 50, 20, 10, 10)).0;
           temp;
         };
       };
@@ -209,7 +178,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
         };
       };
     };
-    putProposalV2Internal(proposalId, proposal);
+    putProposalV3Internal(proposalId, proposal);
     // check if there is already a proposal history available for the given caller
     switch (getProposalHistoryInternal(caller)) {
       // if so, append the new proposal id to the list
