@@ -470,7 +470,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
         btcflower := actor ("pk6rk-6aaaa-aaaae-qaazq-cai") : actor {
           tokens : (Text) -> async TokensRes;
         };
-        ethflower := actor ("dhiaa-ryaaa-aaaae-qabvea-cai") : actor {
+        ethflower := actor ("dhiaa-ryaaa-aaaae-qabva-cai") : actor {
           tokens : (Text) -> async TokensRes;
         };
         icpflower := actor ("4ggk4-mqaaa-aaaae-qad6q-cai") : actor {
