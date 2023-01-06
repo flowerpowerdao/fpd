@@ -20,18 +20,21 @@
       {#if fromVariantToString(proposal.state) === "open"}
         <ProgressBar
           votesCast={Number(proposal.votesCast)}
+          expiryDate={Number(proposal.expiryDate)}
           title={"votes cast"}
         />
       {:else}
         <div class="mb-5">
           <ProgressBar
             votesCast={Number(proposal.votesCast)}
+            expiryDate={Number(proposal.expiryDate)}
             title={"votes cast"}
           />
         </div>
         {#each proposal.options as option, index}
           <ProgressBar
             votesCast={getVotesForOption(proposal, index)}
+            expiryDate={Number(proposal.expiryDate)}
             title={option}
           />
         {/each}
