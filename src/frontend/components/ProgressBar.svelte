@@ -1,12 +1,13 @@
 <script lang="ts">
   export let title: string;
   export let votesCast: number;
+  export let expiryDate: number;
 
   function calculateProgress(votesCast: number, totalVotes: number): number {
     return Math.round((votesCast / totalVotes) * 100);
   }
 
-  const totalVotes = 8054;
+  const totalVotes = expiryDate < 1668184000000000000 ? 6033 : 8054;
 </script>
 
 <div>
