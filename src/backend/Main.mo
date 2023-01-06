@@ -209,7 +209,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
       id = proposalId;
       title = newProposal.title;
       description = newProposal.description;
-      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
+      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 7 days
       proposer = caller;
       flowersVoted = {
         btcFlowers = List.nil();
