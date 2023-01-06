@@ -209,7 +209,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
       id = proposalId;
       title = newProposal.title;
       description = newProposal.description;
-      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 5 days
+      expiryDate = Time.now() + (86_400_000_000_000 * votingPeriod); // 7 days
       proposer = caller;
       flowersVoted = {
         btcFlowers = List.nil();
@@ -505,8 +505,12 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   };
 
   func closeProposal(proposal : Types.ProposalV3) {
+    let icpflowersAddDate = 1668184000000000000; // 11.11.2022
+    let oldThreshold = 3017;
+    let threshold = if (proposal.expiryDate < icpflowersAddDate) { oldThreshold } else { votingThreshold };
+
     // consider the proposal adopted if we pass the threshold, else rejected
-    if (proposal.votesCast > votingThreshold) {
+    if (proposal.votesCast > threshold) {
       let updated : Types.ProposalV3 = {
         state = #adopted;
         description = proposal.description;
