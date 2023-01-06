@@ -505,12 +505,12 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   };
 
   func closeProposal(proposal : Types.ProposalV3) {
-    let icpflowersAddDate = 1668184000000000000; // 11.11.2022
-    let oldThreshold = 3017;
-    let threshold = if (proposal.expiryDate < icpflowersAddDate) { oldThreshold } else { votingThreshold };
+    if (proposal.state != #open) {
+      return;
+    };
 
     // consider the proposal adopted if we pass the threshold, else rejected
-    if (proposal.votesCast > threshold) {
+    if (proposal.votesCast > votingThreshold) {
       let updated : Types.ProposalV3 = {
         state = #adopted;
         description = proposal.description;
