@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "noEmit": true,
     "allowSyntheticDefaultImports": true,

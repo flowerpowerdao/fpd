@@ -457,7 +457,8 @@ export const createStore = ({
     if (store.isAuthed === "stoic") {
       StoicIdentity.disconnect();
     } else if (store.isAuthed === "plug") {
-      await window.ic.plug.disconnect();
+      // awaiting this fails, promise never returns
+      window.ic.plug.disconnect();
     } else if (store.isAuthed === "bitfinity") {
       await window.ic.bitfinityWallet.disconnect();
     }
@@ -607,7 +608,7 @@ declare global {
         }) => Promise<any>;
         createActor: (options: {}) => Promise<Actor>;
         isConnected: () => Promise<boolean>;
-        disconnect: () => Promise<boolean>;
+        disconnect: () => Promise<void>;
         createAgent: (args?: {
           whitelist: string[];
           host?: string;

@@ -1,9 +1,9 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export type CanisterCyclesAggregatedData = Array<bigint>;
-export type CanisterHeapMemoryAggregatedData = Array<bigint>;
-export type CanisterMemoryAggregatedData = Array<bigint>;
+export type CanisterCyclesAggregatedData = BigUint64Array | bigint[];
+export type CanisterHeapMemoryAggregatedData = BigUint64Array | bigint[];
+export type CanisterMemoryAggregatedData = BigUint64Array | bigint[];
 export interface CanisterMetrics { 'data' : CanisterMetricsData }
 export type CanisterMetricsData = { 'hourly' : Array<HourlyMetricsData> } |
   { 'daily' : Array<DailyMetricsData> };
@@ -11,13 +11,13 @@ export interface DAO {
   'collectCanisterMetrics' : ActorMethod<[], undefined>,
   'getCanisterMetrics' : ActorMethod<
     [GetMetricsParameters],
-    [] | [CanisterMetrics],
+    [] | [CanisterMetrics]
   >,
   'getProposal' : ActorMethod<[bigint], Result_3>,
   'getProposalHistory' : ActorMethod<[], Array<bigint>>,
   'getVotingHistory' : ActorMethod<
     [],
-    Array<{ 'id' : bigint, 'option' : bigint }>,
+    Array<{ 'id' : bigint, 'option' : bigint }>
   >,
   'hasVoted' : ActorMethod<
     [
@@ -27,7 +27,7 @@ export interface DAO {
         { 'ethflower' : null },
       bigint,
     ],
-    Result_2,
+    Result_2
   >,
   'listProposals' : ActorMethod<[], Array<ProposalViewV3>>,
   'seed' : ActorMethod<[ProposalPublic], Result_1>,
@@ -92,9 +92,9 @@ export interface ProposalViewV3 {
   'votesCast' : bigint,
   'proposer' : Principal,
   'flowersVoted' : {
-    'btcFlowers' : Array<number>,
-    'icpFlowers' : Array<number>,
-    'ethFlowers' : Array<number>,
+    'btcFlowers' : Uint32Array | number[],
+    'icpFlowers' : Uint32Array | number[],
+    'ethFlowers' : Uint32Array | number[],
   },
   'options' : Array<string>,
 }
@@ -106,6 +106,6 @@ export type Result_2 = { 'ok' : boolean } |
   { 'err' : string };
 export type Result_3 = { 'ok' : ProposalViewV3 } |
   { 'err' : string };
-export type UpdateCallsAggregatedData = Array<bigint>;
+export type UpdateCallsAggregatedData = BigUint64Array | bigint[];
 export interface VoteArgs { 'option' : bigint, 'proposalId' : bigint }
 export interface _SERVICE extends DAO {}
