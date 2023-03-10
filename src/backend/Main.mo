@@ -119,7 +119,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
             btcFlowers = List.nil();
             ethFlowers = List.nil();
             icpFlowers = List.nil();
-          }
+          };
           // rejected & adopted
         } else {
           {
