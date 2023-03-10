@@ -1,6 +1,6 @@
 import { writable, get } from "svelte/store";
 import type { Principal } from "@dfinity/principal";
-import { HttpAgent } from "@dfinity/agent";
+import { Actor, HttpAgent } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import {
   fromVariantToString,
@@ -32,6 +32,7 @@ import {
   idlFactory as icpflowerIdlFactory,
 } from "../declarations/icpflower";
 import type { ProposalViewV3 } from "../declarations/dao/dao.did";
+import { InterfaceFactory } from "@dfinity/candid/lib/cjs/idl";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -45,7 +46,7 @@ type Filters = {
 };
 
 type State = {
-  isAuthed: "plug" | "stoic" | null;
+  isAuthed: "plug" | "stoic" | "bitfinity" | null;
   daoActor: typeof daoActor;
   principal: Principal;
   btcflowerActor: typeof btcflowerActor;
@@ -98,8 +99,38 @@ export const createStore = ({
   host?: string;
 }) => {
   const { subscribe, update } = writable<State>(defaultState);
+  const checkConnections = async () => {
+    await checkStoicConnection();
+    await checkPlugConnection();
+    await checkBitfinityConnection();
+  };
 
-  const stoicConnect = () => {
+  const checkStoicConnection = async () => {
+    StoicIdentity.load().then(async (identity) => {
+      if (identity !== false) {
+        //ID is a already connected wallet!
+        await stoicConnect();
+      }
+    });
+  };
+
+  const checkPlugConnection = async () => {
+    const connected = await window.ic?.plug?.isConnected();
+    if (connected) {
+      console.log("plug connection detected");
+      await plugConnect();
+    }
+  };
+
+  const checkBitfinityConnection = async () => {
+    const connected = await window.ic?.bitfinityWallet?.isConnected();
+    if (connected) {
+      console.log("bitfinity connection detected");
+      await bitfinityConnect();
+    }
+  };
+
+  const stoicConnect = async () => {
     StoicIdentity.load().then(async (identity) => {
       if (identity !== false) {
         //ID is a already connected wallet!
@@ -248,6 +279,83 @@ export const createStore = ({
     initStore(principal, btcflowerPlug, ethflowerPlug, icpflowerPlug);
   };
 
+  const bitfinityConnect = async () => {
+    // check if bitfinity is installed in the browser
+    if (window.ic?.bitfinityWallet === undefined) {
+      window.open("https://wallet.infinityswap.one/", "_blank");
+      return;
+    }
+
+    // check if bitfinity is connected
+    const bitfinityConnected = await window.ic?.bitfinityWallet?.isConnected();
+    if (!bitfinityConnected) {
+      try {
+        await window.ic?.bitfinityWallet.requestConnect({ whitelist });
+        console.log("bitfinity connected");
+      } catch (e) {
+        console.warn(e);
+        return;
+      }
+    }
+
+    await initBitfinity();
+  };
+
+  const initBitfinity = async () => {
+    const daoActorBitfinity = (await window.ic.bitfinityWallet.createActor({
+      canisterId: daoCanisterId,
+      interfaceFactory: daoIdlFactory,
+      host: HOST,
+    })) as typeof daoActor;
+
+    const btcflowerActorBitfinity =
+      (await window.ic.bitfinityWallet.createActor({
+        canisterId: btcflowerCanisterId,
+        interfaceFactory: btcflowerIdlFactory,
+        host: HOST,
+      })) as typeof btcflowerActor;
+
+    const ethflowerActorBitfinity =
+      (await window.ic.bitfinityWallet.createActor({
+        canisterId: ethflowerCanisterId,
+        interfaceFactory: ethflowerIdlFactory,
+        host: HOST,
+      })) as typeof ethflowerActor;
+
+    const icpflowerActorBitfinity =
+      (await window.ic.bitfinityWallet.createActor({
+        canisterId: icpflowerCanisterId,
+        interfaceFactory: icpflowerIdlFactory,
+        host: HOST,
+      })) as typeof icpflowerActor;
+
+    if (!daoActor || !btcflowerActor || !ethflowerActor || !icpflowerActor) {
+      console.warn("couldn't create actors");
+      return;
+    }
+
+    const principal = await window.ic.bitfinityWallet.getPrincipal();
+
+    update((state) => ({
+      ...state,
+      daoActor: daoActorBitfinity,
+      btcflowerActor: btcflowerActorBitfinity,
+      ethflowerActor: ethflowerActorBitfinity,
+      icpflowerActor: icpflowerActorBitfinity,
+      principal,
+      isAuthed: "bitfinity",
+    }));
+
+    await initStore(
+      principal,
+      btcflowerActorBitfinity,
+      ethflowerActorBitfinity,
+      icpflowerActorBitfinity,
+    );
+
+    console.log("bitfinity is authed");
+  };
+
   const initStore = async (
     principal: Principal,
     btcflower: typeof btcflowerActor,
@@ -345,12 +453,16 @@ export const createStore = ({
   };
 
   const disconnect = async () => {
+    const store = get({ subscribe });
+    if (store.isAuthed === "stoic") {
+      StoicIdentity.disconnect();
+    } else if (store.isAuthed === "plug") {
+      // awaiting this fails, promise never returns
+      window.ic.plug.disconnect();
+    } else if (store.isAuthed === "bitfinity") {
+      await window.ic.bitfinityWallet.disconnect();
+    }
     console.log("disconnected");
-    StoicIdentity.disconnect();
-    window.ic?.plug?.disconnect();
-    // wait for 500ms to ensure that the disconnection is complete
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log("plug status: ", await window.ic?.plug?.isConnected());
     update((prevState) => {
       return {
         ...defaultState,
@@ -381,7 +493,9 @@ export const createStore = ({
     update,
     plugConnect,
     stoicConnect,
+    bitfinityConnect,
     disconnect,
+    checkConnections,
     submitProposal,
     fetchProposals,
     fetchVotingHistory,
@@ -450,22 +564,51 @@ export const store = createStore({
 declare global {
   interface Window {
     ic: {
+      bitfinityWallet: {
+        requestConnect: (options?: {
+          whitelist?: string[];
+          timeout?: number;
+        }) => Promise<{ derKey: Buffer; rawKey: Buffer }>;
+        isConnected: () => Promise<boolean>;
+        createActor: (options: {
+          canisterId: string;
+          interfaceFactory: InterfaceFactory;
+          host: string;
+        }) => Promise<Actor>;
+        getPrincipal: () => Promise<Principal>;
+        disconnect: () => Promise<boolean>;
+        getAccountID: () => Promise<string>;
+        getUserAssets: () => Promise<
+          {
+            id: string;
+            name: string;
+            fee: string;
+            symbol: string;
+            balance: string;
+            decimals: number;
+            hide: boolean;
+            isTestToken: boolean;
+            logo: string;
+            standard: string;
+          }[]
+        >;
+      };
       plug: {
         agent: HttpAgent;
+        sessionManager: {
+          sessionData: {
+            accountId: string;
+          };
+        };
         getPrincipal: () => Promise<Principal>;
         deleteAgent: () => void;
         requestConnect: (options?: {
           whitelist?: string[];
           host?: string;
         }) => Promise<any>;
-        createActor: (options: {}) => Promise<
-          | typeof daoActor
-          | typeof btcflowerActor
-          | typeof ethflowerActor
-          | typeof icpflowerActor
-        >;
+        createActor: (options: {}) => Promise<Actor>;
         isConnected: () => Promise<boolean>;
-        disconnect: () => Promise<boolean>;
+        disconnect: () => Promise<void>;
         createAgent: (args?: {
           whitelist: string[];
           host?: string;
@@ -485,7 +628,7 @@ declare global {
           amount: number;
           opts?: {
             fee?: number;
-            memo?: number;
+            memo?: string;
             from_subaccount?: number;
             created_at_time?: {
               timestamp_nanos: number;

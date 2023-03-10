@@ -11,6 +11,12 @@
   import SubmittedProposals from "./pages/SubmittedProposals.svelte";
   import CheckVote from "./pages/CheckVote.svelte";
   import { polyfill } from "seamless-scroll-polyfill";
+  import { store } from "./store";
+  import { onMount } from "svelte";
+
+  onMount(async () => {
+    await store.checkConnections();
+  });
 
   polyfill();
 
