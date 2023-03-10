@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "prebuild": "dfx generate",
+    "prebuild": "dfx generate dao",
     "serve": "HOST=0.0.0.0 vite preview --host",
     "seed": "./seed.zsh",
     "deploy": ". ./set-deploy-env.zsh && dfx stop && rm -rf .dfx btcflower-nft/btcflower-nft/.dfx ethflower-nft-canister/.dfx icpflower-nft-canister/.dfx && dfx start --clean --background && npm run deploy:btcflower && npm run deploy:ethflower && npm run deploy:icpflower",
