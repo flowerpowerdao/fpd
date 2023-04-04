@@ -16,6 +16,7 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 import Utils "./Utils";
 import Validation "./Validation";
+import Timer "mo:base/Timer";
 
 shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Text; ethflower : Text; icpflower : Text }, coreTeamPrincipals : [Principal]) = Self {
 
@@ -26,6 +27,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   let votingPeriod = 7; // in days
   let votingThreshold = 4027; // we assume that 4027 - ((2009*2) + 2015 + 2021) / 2 - votes is the minimum threshold for adoption
   let canistergeekMonitor = Canistergeek.Monitor();
+  let duration = #seconds 600; // in seconds (10 minutes)
 
   /********************
   * STABLE VARIABLES *
@@ -50,15 +52,13 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   system func postupgrade() {
     canistergeekMonitor.postupgrade(_canistergeekMonitorUD);
     _canistergeekMonitorUD := null;
-  };
-
-  /*************
-  * HEARTBEAT *
-  *************/
-
-  system func heartbeat() : async () {
-    closeExpiredProposals();
-    canistergeekMonitor.collectMetrics();
+    ignore Timer.recurringTimer(
+      duration,
+      func() : async () {
+        closeExpiredProposals();
+        canistergeekMonitor.collectMetrics();
+      },
+    );
   };
 
   /***********************
