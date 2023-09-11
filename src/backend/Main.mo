@@ -18,7 +18,7 @@ import Utils "./Utils";
 import Validation "./Validation";
 import Timer "mo:base/Timer";
 
-shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Text; ethflower : Text; icpflower : Text }, coreTeamPrincipals : [Principal]) = Self {
+shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal]) = Self {
 
   /*************
   * CONSTANTS *
@@ -91,9 +91,9 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   * PUBLIC METHODS *
   ******************/
 
-  // Seed proposals
-  public shared ({ caller }) func seed(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
-    assert (localDeploymentCanisterIds != null);
+  // add test proposal for local testing
+  public shared ({ caller }) func submitTestProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
+    assert (isLocal);
 
     let proposalId = nextProposalId;
     nextProposalId += 1;
@@ -422,42 +422,14 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
       #ok : [Nat32];
       #err : { #InvalidToken : Text; #Other : Text };
     };
+    type FlowerActor = actor {
+      tokens : (Text) -> async TokensRes;
+    };
 
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
-    var btcflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-    var ethflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-    var icpflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-
-    switch (localDeploymentCanisterIds) {
-      case null {
-        btcflower := actor ("pk6rk-6aaaa-aaaae-qaazq-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        ethflower := actor ("dhiaa-ryaaa-aaaae-qabva-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        icpflower := actor ("4ggk4-mqaaa-aaaae-qad6q-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-      };
-      case (?localDeploymentCanisterIds) {
-        btcflower := actor (localDeploymentCanisterIds.btcflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        ethflower := actor (localDeploymentCanisterIds.ethflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        icpflower := actor (localDeploymentCanisterIds.icpflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-      };
-    };
+    var btcflower = actor ("pk6rk-6aaaa-aaaae-qaazq-cai") : FlowerActor;
+    var ethflower = actor ("dhiaa-ryaaa-aaaae-qabva-cai") : FlowerActor;
+    var icpflower = actor ("4ggk4-mqaaa-aaaae-qad6q-cai") : FlowerActor;
 
     func unwrapResult(res : TokensRes) : [Nat32] {
       switch (res) {

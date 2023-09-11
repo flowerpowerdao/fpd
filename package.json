@@ -2,18 +2,30 @@
   "name": "fpd",
   "version": "0.0.0",
   "scripts": {
+    "start": "npm run replica && dfx generate dao && npm run serve",
+    "replica": "dfx stop && dfx start --clean --background && npm run create-canisters && npm run deploy && npm run mint",
     "dev": "vite",
     "build": "tsc && vite build",
     "prebuild": "dfx generate dao",
     "serve": "HOST=0.0.0.0 vite preview --host",
-    "seed": "./seed.zsh",
-    "deploy": ". ./set-deploy-env.zsh && dfx stop && rm -rf .dfx btcflower-nft/btcflower-nft/.dfx ethflower-nft-canister/.dfx icpflower-nft-canister/.dfx && dfx start --clean --background && npm run deploy:btcflower && npm run deploy:ethflower && npm run deploy:icpflower",
-    "deploy:btcflower": "cd btcflower-nft/btcflower-nft && DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx deploy --argument '(principal '$NFT_CANISTER_OWNER_PRINCIPAL')' staging && dfx canister call staging addAsset '(record {name = \"privat\";payload = record {ctype = \"text/html\"; data = vec {blob \"hello world!\"} } })' && dfx canister call staging initMint '(vec {'$NFT_MINT_ADDRESSES'})' && cd ../..",
-    "deploy:ethflower": "cd ethflower-nft-canister && DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx deploy --argument '(principal '$NFT_CANISTER_OWNER_PRINCIPAL')' staging && dfx canister call staging addAsset '(record {name = \"privat\";payload = record {ctype = \"text/html\"; data = vec {blob \"hello world!\"} } })' && dfx canister call staging initMint '(vec {'$NFT_MINT_ADDRESSES'})' && cd ..",
-    "deploy:icpflower": "cd icpflower-nft-canister && DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx deploy --argument '(principal '$NFT_CANISTER_OWNER_PRINCIPAL')' staging && dfx canister call staging addAsset '(record {name = \"privat\";payload = record {ctype = \"text/html\"; data = vec {blob \"hello world!\"} } })' && dfx canister call staging initMint '(vec {'$NFT_MINT_ADDRESSES'})' && cd ..",
-    "predev": ". ./set-env.zsh && dfx canister create dao && dfx build dao && dfx generate dao && dfx deploy --argument '(opt record { btcflower = '$BTCFLOWER_LOCAL_CANISTER_ID'; ethflower = '$ETHFLOWER_LOCAL_CANISTER_ID'; icpflower = '$ICPFLOWER_LOCAL_CANISTER_ID'}, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --mode=reinstall -y dao",
-    "upgrade": ". ./set-env.zsh && dfx canister create dao && dfx build dao && dfx generate dao && dfx canister stop dao && dfx canister install --argument '(opt record { btcflower = '$BTCFLOWER_LOCAL_CANISTER_ID'; ethflower = '$ETHFLOWER_LOCAL_CANISTER_ID'; icpflower = '$ICPFLOWER_LOCAL_CANISTER_ID'}, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --upgrade-unchanged --mode=upgrade dao && dfx canister start dao",
-    "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'"
+    "test-proposals": "./test-proposals.zsh",
+    "build-power-equalizer": "cd power-equalizer && dfx build staging --check",
+    "create-canisters": "npm run create:dao && npm run create:btcflower && npm run create:ethflower && npm run create:icpflower",
+    "create:dao": "dfx canister create dao --specified-id fqfmg-4iaaa-aaaae-qabaa-cai",
+    "create:ledger": "dfx canister create ledger --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai",
+    "create:btcflower": "dfx canister create btcflower --specified-id pk6rk-6aaaa-aaaae-qaazq-cai",
+    "create:ethflower": "dfx canister create ethflower --specified-id dhiaa-ryaaa-aaaae-qabva-cai",
+    "create:icpflower": "dfx canister create icpflower --specified-id 4ggk4-mqaaa-aaaae-qad6q-cai",
+    "deploy": "npm run build-power-equalizer && npm run deploy:dao && npm run deploy:btcflower && npm run deploy:ethflower && npm run deploy:icpflower",
+    "deploy:dao": "DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx build dao && dfx generate dao && dfx deploy dao --argument '(true, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --mode reinstall --yes",
+    "deploy:btcflower": "dfx deploy btcflower --argument \"$(cat btcflower-initArgs.did)\" --mode reinstall --yes && dfx canister call btcflower initMint && dfx canister call btcflower shuffleTokensForSale && dfx canister call btcflower airdropTokens && dfx canister call btcflower enableSale",
+    "deploy:ethflower": "dfx deploy ethflower --argument \"$(cat ethflower-initArgs.did)\" --mode reinstall --yes && dfx canister call ethflower initMint && dfx canister call ethflower shuffleTokensForSale && dfx canister call ethflower airdropTokens && dfx canister call ethflower enableSale",
+    "deploy:icpflower": "dfx deploy icpflower --argument \"$(cat icpflower-initArgs.did)\" --mode reinstall --yes && dfx canister call icpflower initMint && dfx canister call icpflower shuffleTokensForSale && dfx canister call icpflower airdropTokens && dfx canister call icpflower enableSale",
+    "deploy-ic": "DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx deploy dao --network ic --argument '(false, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\";})' && dfx deploy assets --network ic",
+    "upgrade": ". ./set-env.zsh && dfx canister create dao && dfx build dao && dfx generate dao && dfx canister stop dao && dfx canister install dao --argument '(true, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --upgrade-unchanged --mode=upgrade dao && dfx canister start dao",
+    "mint": ". ./set-deploy-env.zsh && tsx ./test/mint.ts",
+    "format": "prettier --write 'src/frontend/**/*.{ts,svelte,js,json,css}'",
+    "postinstall": "vessel install"
   },
   "dependencies": {
     "@dfinity/agent": "0.10.0",
@@ -34,6 +46,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@dfinity/nns": "^0.10.0",
     "@sveltejs/vite-plugin-svelte": "next",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^16.11.25",
@@ -48,6 +61,7 @@
     "svelte-preprocess": "^4.9.4",
     "tailwindcss": "^3.0.18",
     "tslib": "^2.3.1",
+    "tsx": "^3.12.8",
     "typescript": "^4.4.3",
     "vite": "^2.9.16"
   }
