@@ -30,8 +30,8 @@ export interface DAO {
     Result_2
   >,
   'listProposals' : ActorMethod<[], Array<ProposalViewV3>>,
-  'seed' : ActorMethod<[ProposalPublic], Result_1>,
   'submitProposal' : ActorMethod<[ProposalPublic], Result_1>,
+  'submitTestProposal' : ActorMethod<[ProposalPublic], Result_1>,
   'vote' : ActorMethod<[VoteArgs], Result>,
 }
 export interface DailyMetricsData {

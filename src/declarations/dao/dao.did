@@ -117,8 +117,8 @@ type DAO =
                        icpflower;
                      }, nat) -> (Result_2) query;
    listProposals: () -> (vec ProposalViewV3) query;
-   seed: (ProposalPublic) -> (Result_1);
    submitProposal: (ProposalPublic) -> (Result_1);
+   submitTestProposal: (ProposalPublic) -> (Result_1);
    vote: (VoteArgs) -> (Result);
  };
 type CanisterMetricsData = 
@@ -130,8 +130,4 @@ type CanisterMetrics = record {data: CanisterMetricsData;};
 type CanisterMemoryAggregatedData = vec nat64;
 type CanisterHeapMemoryAggregatedData = vec nat64;
 type CanisterCyclesAggregatedData = vec nat64;
-service : (opt record {
-                 btcflower: text;
-                 ethflower: text;
-                 icpflower: text;
-               }, vec principal) -> DAO
+service : (bool, vec principal) -> DAO
