@@ -1,3 +1,6 @@
 [submodule "power-equalizer"]
 	path = power-equalizer
 	url = https://github.com/flowerpowerdao/power-equalizer.git
+[submodule "garden"]
+	path = garden
+	url = https://github.com/flowerpowerdao/garden.git
