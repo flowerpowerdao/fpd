@@ -17,7 +17,7 @@
     "create:btcflower": "dfx canister create btcflower --specified-id pk6rk-6aaaa-aaaae-qaazq-cai",
     "create:ethflower": "dfx canister create ethflower --specified-id dhiaa-ryaaa-aaaae-qabva-cai",
     "create:icpflower": "dfx canister create icpflower --specified-id 4ggk4-mqaaa-aaaae-qad6q-cai",
-    "create:garden": "dfx canister create garden --specified-id 22cl3-kqaaa-aaaaf-add7q-cai",
+    "create:garden": "dfx canister create garden --specified-id afcvu-dyaaa-aaaap-qboqq-cai",
     "deploy": "npm run build-power-equalizer && npm run build-garden && npm run deploy:dao && npm run deploy:btcflower && npm run deploy:ethflower && npm run deploy:icpflower && npm run deploy:garden",
     "deploy:dao": "DFX_MOC_PATH=\"$(vessel bin)/moc\" dfx build dao && dfx generate dao && dfx deploy dao --argument '(true, vec {principal \"zvkal-dnnsd-syh57-zvwzw-3aa6g-nt4vz-2ncib-dqfd4-oaisq-xhv6y-eae\"})' --mode reinstall --yes && npm run test-proposals",
     "deploy:btcflower": "dfx deploy btcflower --argument \"$(cat btcflower-initArgs.did)\" --mode reinstall --yes && dfx canister call btcflower initMint && dfx canister call btcflower shuffleTokensForSale && dfx canister call btcflower airdropTokens && dfx canister call btcflower enableSale",

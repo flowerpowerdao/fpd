@@ -286,6 +286,9 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
         if (args.option >= proposal.options.size()) {
           return #err("Proposal " # debug_show (args.proposalId) # " does not have an option " # debug_show (args.option));
         };
+
+        let stakedVotingPower = await getUserStakedVotingPower(caller);
+
         switch (await getFlowersFrom(caller)) {
           case (#err(error)) { return #err(error) };
           case (#ok({ btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32] })) {
@@ -308,7 +311,7 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
             };
 
             // get the amount of flowers and thus voting power a holder has
-            let votingPower : Nat = (btcFlowers.size() * 2) + ethFlowers.size() + icpFlowers.size();
+            let votingPower : Nat = (btcFlowers.size() * 2) + ethFlowers.size() + icpFlowers.size() + stakedVotingPower;
 
             // track flowers that were used to cast a vote
             let btcFlowersVoted = List.append(List.fromArray<Nat32>(btcFlowers), proposal.flowersVoted.btcFlowers);
@@ -447,6 +450,11 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
     } else {
       return #ok({ btcFlowers; ethFlowers; icpFlowers });
     };
+  };
+
+  func getUserStakedVotingPower(principal : Principal) : async Nat {
+    var garden = actor ("afcvu-dyaaa-aaaap-qboqq-cai") : actor { getUserVotingPower : (Principal) -> async Nat };
+    await garden.getUserVotingPower(principal);
   };
 
   /// Remove expired proposals

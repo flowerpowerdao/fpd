@@ -1,0 +1,77 @@
+type anon_class_10_1 = 
+ service {
+   claimRewards: (NeuronId, Account) -> (Result_1);
+   disburseNeuron: (NeuronId, Account) -> (Result_1);
+   dissolveNeuron: (NeuronId) -> (Result_1);
+   getCallerNeurons: () -> (vec Neuron) query;
+   getStakingAccount: (nat16) -> (Account) query;
+   getUserVotingPower: (principal) -> (nat) query;
+   restake: (NeuronId) -> (Result_1);
+   stake: (nat16) -> (Result);
+ };
+type TokenIndex = nat;
+type Time = int;
+type Result_1 = 
+ variant {
+   err: text;
+   ok;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: NeuronId;
+ };
+type NeuronId = nat;
+type Neuron = 
+ record {
+   createdAt: Time;
+   dissolveState: DissolveState;
+   flowers: vec Flower;
+   id: nat;
+   prevRewardTime: Time;
+   rewards: nat;
+   stakedAt: Time;
+   stakingAccount: Account;
+   totalRewards: nat;
+   userId: principal;
+ };
+type InitArgs = 
+ record {
+   dailyRewards: record {
+                   btcFlower: nat;
+                   ethFlower: nat;
+                   icpFlower: nat;
+                 };
+   rewardInterval: Duration;
+   stakePeriod: Duration;
+ };
+type Flower = 
+ record {
+   collection: Collection;
+   tokenIndex: TokenIndex;
+ };
+type Duration = 
+ variant {
+   days: nat;
+   hours: nat;
+   minutes: nat;
+   nanoseconds: nat;
+   seconds: nat;
+ };
+type DissolveState = 
+ variant {
+   DissolveDelay: Time;
+   DissolveTimestamp: Time;
+ };
+type Collection = 
+ variant {
+   BTCFlower;
+   ETHFlower;
+   ICPFlower;
+ };
+type Account = 
+ record {
+   owner: principal;
+   subaccount: opt vec nat8;
+ };
+service : (principal, InitArgs) -> anon_class_10_1
