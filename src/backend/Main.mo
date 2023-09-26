@@ -8,6 +8,9 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
+import Timer "mo:base/Timer";
+import Buffer "mo:base/Buffer";
+import Nat32 "mo:base/Nat32";
 
 import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Canistergeek "mo:canistergeek/canistergeek";
@@ -16,7 +19,6 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 import Utils "./Utils";
 import Validation "./Validation";
-import Timer "mo:base/Timer";
 
 shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal]) = Self {
 
@@ -287,8 +289,6 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
           return #err("Proposal " # debug_show (args.proposalId) # " does not have an option " # debug_show (args.option));
         };
 
-        let stakedVotingPower = await getUserStakedVotingPower(caller);
-
         switch (await getFlowersFrom(caller)) {
           case (#err(error)) { return #err(error) };
           case (#ok({ btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32] })) {
@@ -311,7 +311,7 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
             };
 
             // get the amount of flowers and thus voting power a holder has
-            let votingPower : Nat = (btcFlowers.size() * 2) + ethFlowers.size() + icpFlowers.size() + stakedVotingPower;
+            let votingPower : Nat = (btcFlowers.size() * 2) + ethFlowers.size() + icpFlowers.size();
 
             // track flowers that were used to cast a vote
             let btcFlowersVoted = List.append(List.fromArray<Nat32>(btcFlowers), proposal.flowersVoted.btcFlowers);
@@ -421,6 +421,11 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
   };
 
   func getFlowersFrom(principal : Principal) : async Result.Result<{ btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32] }, Text> {
+    let btcFlowers = Buffer.Buffer<Nat32>(0);
+    let ethFlowers = Buffer.Buffer<Nat32>(0);
+    let icpFlowers = Buffer.Buffer<Nat32>(0);
+
+    // flower canister
     type TokensRes = {
       #ok : [Nat32];
       #err : { #InvalidToken : Text; #Other : Text };
@@ -441,20 +446,50 @@ shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal
       };
     };
 
-    let btcFlowers = unwrapResult(await btcflower.tokens(accountId));
-    let ethFlowers = unwrapResult(await ethflower.tokens(accountId));
-    let icpFlowers = unwrapResult(await icpflower.tokens(accountId));
+    btcFlowers.append(Buffer.fromArray(unwrapResult(await btcflower.tokens(accountId))));
+    ethFlowers.append(Buffer.fromArray(unwrapResult(await ethflower.tokens(accountId))));
+    icpFlowers.append(Buffer.fromArray(unwrapResult(await icpflower.tokens(accountId))));
+
+    // garden canister
+    type Collection = {
+      #BTCFlower;
+      #ETHFlower;
+      #ICPFlower;
+    };
+    type Neuron = {
+      flowers : [{
+        collection : Collection;
+        tokenIndex : Nat;
+      }];
+    };
+
+    var garden = actor ("afcvu-dyaaa-aaaap-qboqq-cai") : actor { getUserNeurons : (Principal) -> async [Neuron] };
+    let neurons = await garden.getUserNeurons(principal);
+    for (neuron in neurons.vals()) {
+      for (flower in neuron.flowers.vals()) {
+        switch (flower.collection) {
+          case (#BTCFlower) {
+            btcFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+          case (#ETHFlower) {
+            ethFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+          case (#ICPFlower) {
+            icpFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+        };
+      };
+    };
 
     if (btcFlowers.size() == 0 and ethFlowers.size() == 0 and icpFlowers.size() == 0) {
       return #err("Account doesn't own any flowers");
     } else {
-      return #ok({ btcFlowers; ethFlowers; icpFlowers });
+      return #ok({
+        btcFlowers = Buffer.toArray(btcFlowers);
+        ethFlowers = Buffer.toArray(ethFlowers);
+        icpFlowers = Buffer.toArray(icpFlowers);
+      });
     };
-  };
-
-  func getUserStakedVotingPower(principal : Principal) : async Nat {
-    var garden = actor ("afcvu-dyaaa-aaaap-qboqq-cai") : actor { getUserVotingPower : (Principal) -> async Nat };
-    await garden.getUserVotingPower(principal);
   };
 
   /// Remove expired proposals
