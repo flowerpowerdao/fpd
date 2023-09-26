@@ -1,6 +1,5 @@
 import { Principal } from "@dfinity/principal";
 import { AccountIdentifier, SubAccount } from "@dfinity/nns";
-import { Account } from '../src/declarations/icrc1/icrc1.did';
 
 export function feeOf(amount: bigint, fee: bigint) {
   return amount * fee / 100_000n;
@@ -35,6 +34,13 @@ export let tokenIdentifier = (canisterId, index) => {
 export let toAccount = (address: string) => {
   return { account: AccountIdentifier.fromHex(address).toNumbers() };
 }
+
+type Subaccount = Uint8Array | number[];
+
+type Account = {
+  'owner': Principal,
+  'subaccount': [] | [Subaccount],
+};
 
 export let toAccountId = (account: Account) => {
   if (account.subaccount[0]) {

@@ -4,8 +4,8 @@ import canisterIds from '../.dfx/local/canister_ids.json';
 import { idlFactory as idlFactoryDao } from '../src/declarations/dao/index.js';
 import { _SERVICE as _SERVICE_DAO } from '../src/declarations/dao/dao.did';
 
-import { idlFactory as idlFactoryExt } from '../src/declarations/ext/index.js';
-import { _SERVICE as _SERVICE_EXT } from '../src/declarations/ext/ext.did';
+import { idlFactory as idlFactoryExt } from '../src/declarations/power-equalizer/index.js';
+import { _SERVICE as _SERVICE_EXT } from '../src/declarations/power-equalizer/staging.did';
 
 // import { idlFactory as idlFactorySeed } from '../src/declarations/icrc1/index.js';
 // import { _SERVICE as _SERVICE_SEED } from '../src/declarations/icrc1/icrc1.did';

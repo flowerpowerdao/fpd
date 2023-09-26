@@ -14,23 +14,10 @@ import {
   idlFactory as daoIdlFactory,
 } from "../declarations/dao";
 import {
-  btcflowerActor,
-  createActor as createBtcflowerActor,
-  canisterId as btcflowerCanisterId,
-  idlFactory as btcflowerIdlFactory,
-} from "../declarations/btcflower";
-import {
-  ethflowerActor,
-  createActor as createEthflowerActor,
-  canisterId as ethflowerCanisterId,
-  idlFactory as ethflowerIdlFactory,
-} from "../declarations/ethflower";
-import {
-  icpflowerActor,
-  createActor as createIcpflowerActor,
-  canisterId as icpflowerCanisterId,
-  idlFactory as icpflowerIdlFactory,
-} from "../declarations/icpflower";
+  staging as powerEqualizerActor,
+  createActor as createPowerEqualizerActor,
+  idlFactory as powerEqualizerIdlFactory,
+} from "../declarations/power-equalizer";
 import {
   main as gardenActor,
   createActor as createGardenActor,
@@ -39,6 +26,10 @@ import {
 } from "../declarations/garden";
 import type { ProposalViewV3 } from "../declarations/dao/dao.did";
 import { InterfaceFactory } from "@dfinity/candid/lib/cjs/idl";
+
+let btcflowerCanisterId = "pk6rk-6aaaa-aaaae-qaazq-cai";
+let ethflowerCanisterId = "dhiaa-ryaaa-aaaae-qabva-cai";
+let icpflowerCanisterId = "4ggk4-mqaaa-aaaae-qad6q-cai";
 
 export const HOST =
   process.env.NODE_ENV === "development"
@@ -55,9 +46,9 @@ type State = {
   isAuthed: "plug" | "stoic" | "bitfinity" | null;
   daoActor: typeof daoActor;
   principal: Principal;
-  btcflowerActor: typeof btcflowerActor;
-  ethflowerActor: typeof ethflowerActor;
-  icpflowerActor: typeof icpflowerActor;
+  btcflowerActor: typeof powerEqualizerActor;
+  ethflowerActor: typeof powerEqualizerActor;
+  icpflowerActor: typeof powerEqualizerActor;
   gardenActor: typeof gardenActor;
   votingPower: number;
   error: string;
@@ -78,13 +69,13 @@ export type NewProposal = {
 const defaultState: State = {
   isAuthed: null,
   daoActor: createDaoActor(daoCanisterId, { agentOptions: { host: HOST } }),
-  btcflowerActor: createBtcflowerActor(btcflowerCanisterId, {
+  btcflowerActor: createPowerEqualizerActor(btcflowerCanisterId, {
     agentOptions: { host: HOST },
   }),
-  ethflowerActor: createEthflowerActor(ethflowerCanisterId, {
+  ethflowerActor: createPowerEqualizerActor(ethflowerCanisterId, {
     agentOptions: { host: HOST },
   }),
-  icpflowerActor: createIcpflowerActor(icpflowerCanisterId, {
+  icpflowerActor: createPowerEqualizerActor(icpflowerCanisterId, {
     agentOptions: { host: HOST },
   }),
   gardenActor: createGardenActor(gardenCanisterId, {
@@ -156,14 +147,14 @@ export const createStore = ({
         },
       });
 
-      const btcflowerStoic = createBtcflowerActor(btcflowerCanisterId, {
+      const btcflowerStoic = createPowerEqualizerActor(btcflowerCanisterId, {
         agentOptions: {
           identity,
           host: HOST,
         },
       });
 
-      const ethflowerStoic = createEthflowerActor(ethflowerCanisterId, {
+      const ethflowerStoic = createPowerEqualizerActor(ethflowerCanisterId, {
         agentOptions: {
           identity,
           host: HOST,
@@ -177,7 +168,7 @@ export const createStore = ({
         },
       });
 
-      const icpflowerStoic = createIcpflowerActor(icpflowerCanisterId, {
+      const icpflowerStoic = createPowerEqualizerActor(icpflowerCanisterId, {
         agentOptions: {
           identity,
           host: HOST,
@@ -263,18 +254,18 @@ export const createStore = ({
 
     const btcflowerPlug = (await window.ic?.plug.createActor({
       canisterId: btcflowerCanisterId,
-      interfaceFactory: btcflowerIdlFactory,
-    })) as typeof btcflowerActor;
+      interfaceFactory: powerEqualizerIdlFactory,
+    })) as typeof powerEqualizerActor;
 
     const ethflowerPlug = (await window.ic?.plug.createActor({
       canisterId: ethflowerCanisterId,
-      interfaceFactory: ethflowerIdlFactory,
-    })) as typeof ethflowerActor;
+      interfaceFactory: powerEqualizerIdlFactory,
+    })) as typeof powerEqualizerActor;
 
     const icpflowerPlug = (await window.ic?.plug.createActor({
       canisterId: icpflowerCanisterId,
-      interfaceFactory: icpflowerIdlFactory,
-    })) as typeof icpflowerActor;
+      interfaceFactory: powerEqualizerIdlFactory,
+    })) as typeof powerEqualizerActor;
 
     const gardenPlug = (await window.ic?.plug.createActor({
       canisterId: gardenCanisterId,
@@ -335,23 +326,23 @@ export const createStore = ({
     const btcflowerActorBitfinity =
       (await window.ic.bitfinityWallet.createActor({
         canisterId: btcflowerCanisterId,
-        interfaceFactory: btcflowerIdlFactory,
+        interfaceFactory: powerEqualizerIdlFactory,
         host: HOST,
-      })) as typeof btcflowerActor;
+      })) as typeof powerEqualizerActor;
 
     const ethflowerActorBitfinity =
       (await window.ic.bitfinityWallet.createActor({
         canisterId: ethflowerCanisterId,
-        interfaceFactory: ethflowerIdlFactory,
+        interfaceFactory: powerEqualizerIdlFactory,
         host: HOST,
-      })) as typeof ethflowerActor;
+      })) as typeof powerEqualizerActor;
 
     const icpflowerActorBitfinity =
       (await window.ic.bitfinityWallet.createActor({
         canisterId: icpflowerCanisterId,
-        interfaceFactory: icpflowerIdlFactory,
+        interfaceFactory: powerEqualizerIdlFactory,
         host: HOST,
-      })) as typeof icpflowerActor;
+      })) as typeof powerEqualizerActor;
 
     const gardenActorBitfinity =
       (await window.ic.bitfinityWallet.createActor({
@@ -360,7 +351,7 @@ export const createStore = ({
         host: HOST,
       })) as typeof gardenActor;
 
-    if (!daoActor || !btcflowerActor || !ethflowerActor || !icpflowerActor || !gardenActor) {
+    if (!daoActorBitfinity || !btcflowerActorBitfinity || !ethflowerActorBitfinity || !icpflowerActorBitfinity || !gardenActorBitfinity) {
       console.warn("couldn't create actors");
       return;
     }
@@ -391,9 +382,9 @@ export const createStore = ({
 
   const initStore = async (
     principal: Principal,
-    btcflower: typeof btcflowerActor,
-    ethflower: typeof ethflowerActor,
-    icpflower: typeof icpflowerActor,
+    btcflower: typeof powerEqualizerActor,
+    ethflower: typeof powerEqualizerActor,
+    icpflower: typeof powerEqualizerActor,
     garden: typeof gardenActor,
   ) => {
     console.log("init store");
@@ -540,9 +531,9 @@ export const createStore = ({
 
 const getVotingPower = async (
   principal: Principal,
-  btcflower: typeof btcflowerActor,
-  ethflower: typeof ethflowerActor,
-  icpflower: typeof icpflowerActor,
+  btcflower: typeof powerEqualizerActor,
+  ethflower: typeof powerEqualizerActor,
+  icpflower: typeof powerEqualizerActor,
   garden: typeof gardenActor,
 ): Promise<number> => {
   // if we have a principal, get the voting power

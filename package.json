@@ -13,7 +13,6 @@
     "build-garden": "cd garden && dfx build main --check",
     "create-canisters": "npm run create:dao && npm run create:btcflower && npm run create:ethflower && npm run create:icpflower && npm run create:garden",
     "create:dao": "dfx canister create dao --specified-id fqfmg-4iaaa-aaaae-qabaa-cai",
-    "create:ledger": "dfx canister create ledger --specified-id ryjl3-tyaaa-aaaaa-aaaba-cai",
     "create:btcflower": "dfx canister create btcflower --specified-id pk6rk-6aaaa-aaaae-qaazq-cai",
     "create:ethflower": "dfx canister create ethflower --specified-id dhiaa-ryaaa-aaaae-qabva-cai",
     "create:icpflower": "dfx canister create icpflower --specified-id 4ggk4-mqaaa-aaaae-qad6q-cai",
