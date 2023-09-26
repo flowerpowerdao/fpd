@@ -8,6 +8,9 @@ import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
 import Trie "mo:base/Trie";
+import Timer "mo:base/Timer";
+import Buffer "mo:base/Buffer";
+import Nat32 "mo:base/Nat32";
 
 import AccountIdentifier "mo:accountid/AccountIdentifier";
 import Canistergeek "mo:canistergeek/canistergeek";
@@ -16,9 +19,8 @@ import Hex "mo:hex/Hex";
 import Types "./Types";
 import Utils "./Utils";
 import Validation "./Validation";
-import Timer "mo:base/Timer";
 
-shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Text; ethflower : Text; icpflower : Text }, coreTeamPrincipals : [Principal]) = Self {
+shared (install) actor class DAO(isLocal : Bool, coreTeamPrincipals : [Principal]) = Self {
 
   /*************
   * CONSTANTS *
@@ -91,9 +93,9 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   * PUBLIC METHODS *
   ******************/
 
-  // Seed proposals
-  public shared ({ caller }) func seed(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
-    assert (localDeploymentCanisterIds != null);
+  // add test proposal for local testing
+  public shared ({ caller }) func submitTestProposal(newProposal : Types.ProposalPublic) : async Result.Result<Nat, [Text]> {
+    assert (isLocal);
 
     let proposalId = nextProposalId;
     nextProposalId += 1;
@@ -286,6 +288,7 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
         if (args.option >= proposal.options.size()) {
           return #err("Proposal " # debug_show (args.proposalId) # " does not have an option " # debug_show (args.option));
         };
+
         switch (await getFlowersFrom(caller)) {
           case (#err(error)) { return #err(error) };
           case (#ok({ btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32] })) {
@@ -418,46 +421,23 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
   };
 
   func getFlowersFrom(principal : Principal) : async Result.Result<{ btcFlowers : [Nat32]; ethFlowers : [Nat32]; icpFlowers : [Nat32] }, Text> {
+    let btcFlowers = Buffer.Buffer<Nat32>(0);
+    let ethFlowers = Buffer.Buffer<Nat32>(0);
+    let icpFlowers = Buffer.Buffer<Nat32>(0);
+
+    // flower canister
     type TokensRes = {
       #ok : [Nat32];
       #err : { #InvalidToken : Text; #Other : Text };
     };
+    type FlowerActor = actor {
+      tokens : (Text) -> async TokensRes;
+    };
 
     let accountId = Utils.toLowerString(AccountIdentifier.toText(AccountIdentifier.fromPrincipal(principal, null)));
-    var btcflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-    var ethflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-    var icpflower = actor ("aaaaa-aa") : actor {
-      tokens : (Text) -> async TokensRes;
-    };
-
-    switch (localDeploymentCanisterIds) {
-      case null {
-        btcflower := actor ("pk6rk-6aaaa-aaaae-qaazq-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        ethflower := actor ("dhiaa-ryaaa-aaaae-qabva-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        icpflower := actor ("4ggk4-mqaaa-aaaae-qad6q-cai") : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-      };
-      case (?localDeploymentCanisterIds) {
-        btcflower := actor (localDeploymentCanisterIds.btcflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        ethflower := actor (localDeploymentCanisterIds.ethflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-        icpflower := actor (localDeploymentCanisterIds.icpflower) : actor {
-          tokens : (Text) -> async TokensRes;
-        };
-      };
-    };
+    var btcflower = actor ("pk6rk-6aaaa-aaaae-qaazq-cai") : FlowerActor;
+    var ethflower = actor ("dhiaa-ryaaa-aaaae-qabva-cai") : FlowerActor;
+    var icpflower = actor ("4ggk4-mqaaa-aaaae-qad6q-cai") : FlowerActor;
 
     func unwrapResult(res : TokensRes) : [Nat32] {
       switch (res) {
@@ -466,14 +446,49 @@ shared (install) actor class DAO(localDeploymentCanisterIds : ?{ btcflower : Tex
       };
     };
 
-    let btcFlowers = unwrapResult(await btcflower.tokens(accountId));
-    let ethFlowers = unwrapResult(await ethflower.tokens(accountId));
-    let icpFlowers = unwrapResult(await icpflower.tokens(accountId));
+    btcFlowers.append(Buffer.fromArray(unwrapResult(await btcflower.tokens(accountId))));
+    ethFlowers.append(Buffer.fromArray(unwrapResult(await ethflower.tokens(accountId))));
+    icpFlowers.append(Buffer.fromArray(unwrapResult(await icpflower.tokens(accountId))));
+
+    // garden canister
+    type Collection = {
+      #BTCFlower;
+      #ETHFlower;
+      #ICPFlower;
+    };
+    type Neuron = {
+      flowers : [{
+        collection : Collection;
+        tokenIndex : Nat;
+      }];
+    };
+
+    var garden = actor ("afcvu-dyaaa-aaaap-qboqq-cai") : actor { getUserNeurons : (Principal) -> async [Neuron] };
+    let neurons = await garden.getUserNeurons(principal);
+    for (neuron in neurons.vals()) {
+      for (flower in neuron.flowers.vals()) {
+        switch (flower.collection) {
+          case (#BTCFlower) {
+            btcFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+          case (#ETHFlower) {
+            ethFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+          case (#ICPFlower) {
+            icpFlowers.add(Nat32.fromNat(flower.tokenIndex));
+          };
+        };
+      };
+    };
 
     if (btcFlowers.size() == 0 and ethFlowers.size() == 0 and icpFlowers.size() == 0) {
       return #err("Account doesn't own any flowers");
     } else {
-      return #ok({ btcFlowers; ethFlowers; icpFlowers });
+      return #ok({
+        btcFlowers = Buffer.toArray(btcFlowers);
+        ethFlowers = Buffer.toArray(ethFlowers);
+        icpFlowers = Buffer.toArray(icpFlowers);
+      });
     };
   };
 

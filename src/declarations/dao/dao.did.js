@@ -109,21 +109,10 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'listProposals' : IDL.Func([], [IDL.Vec(ProposalViewV3)], ['query']),
-    'seed' : IDL.Func([ProposalPublic], [Result_1], []),
     'submitProposal' : IDL.Func([ProposalPublic], [Result_1], []),
+    'submitTestProposal' : IDL.Func([ProposalPublic], [Result_1], []),
     'vote' : IDL.Func([VoteArgs], [Result], []),
   });
   return DAO;
 };
-export const init = ({ IDL }) => {
-  return [
-    IDL.Opt(
-      IDL.Record({
-        'btcflower' : IDL.Text,
-        'icpflower' : IDL.Text,
-        'ethflower' : IDL.Text,
-      })
-    ),
-    IDL.Vec(IDL.Principal),
-  ];
-};
+export const init = ({ IDL }) => { return [IDL.Bool, IDL.Vec(IDL.Principal)]; };

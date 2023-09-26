@@ -1,8 +1,8 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 
 // Imports and re-exports candid interface
-import { idlFactory } from "./dao.did.js";
-export { idlFactory } from "./dao.did.js";
+import { idlFactory } from "./main.did.js";
+export { idlFactory } from "./main.did.js";
 
 /* CANISTER_ID is replaced by webpack based on node environment
  * Note: canister environment variable will be standardized as
@@ -10,8 +10,8 @@ export { idlFactory } from "./dao.did.js";
  * beginning in dfx 0.15.0
  */
 export const canisterId =
-  process.env.CANISTER_ID_DAO ||
-  process.env.DAO_CANISTER_ID;
+  process.env.CANISTER_ID_GARDEN ||
+  process.env.GARDEN_CANISTER_ID;
 
 export const createActor = (canisterId, options = {}) => {
   const agent = options.agent || new HttpAgent({ ...options.agentOptions });
@@ -40,4 +40,8 @@ export const createActor = (canisterId, options = {}) => {
   });
 };
 
-export const dao = createActor(canisterId);
+/**
+ * A ready-to-use agent for the garden canister
+ * @type {import("@dfinity/agent").ActorSubclass<import("./main.did.js")._SERVICE>}
+ */
+export const main = createActor(canisterId);

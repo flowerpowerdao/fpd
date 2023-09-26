@@ -1,9 +1,6 @@
-[submodule "btcflower-nft"]
-	path = btcflower-nft
-	url = git@github.com:letmejustputthishere/btcflower-nft.git
-[submodule "ethflower-nft-canister"]
-	path = ethflower-nft-canister
-	url = git@github.com:flowerpowerdao/ethflower-nft-canister.git
-[submodule "icpflower-nft-canister"]
-	path = icpflower-nft-canister
-	url = git@github.com:flowerpowerdao/icpflower-nft-canister.git
+[submodule "power-equalizer"]
+	path = power-equalizer
+	url = https://github.com/flowerpowerdao/power-equalizer.git
+[submodule "garden"]
+	path = garden
+	url = https://github.com/flowerpowerdao/garden.git

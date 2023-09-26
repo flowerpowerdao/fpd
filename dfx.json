@@ -11,6 +11,46 @@
       },
       "source": ["dist/"],
       "type": "assets"
+    },
+    "btcflower": {
+      "type": "custom",
+      "wasm": "power-equalizer/.dfx/local/canisters/staging/staging.wasm",
+      "candid": "power-equalizer/.dfx/local/canisters/staging/staging.did",
+      "remote": {
+        "id": {
+          "ic": "pk6rk-6aaaa-aaaae-qaazq-cai"
+        }
+      }
+    },
+    "ethflower": {
+      "type": "custom",
+      "wasm": "power-equalizer/.dfx/local/canisters/staging/staging.wasm",
+      "candid": "power-equalizer/.dfx/local/canisters/staging/staging.did",
+      "remote": {
+        "id": {
+          "ic": "dhiaa-ryaaa-aaaae-qabva-cai"
+        }
+      }
+    },
+    "icpflower": {
+      "type": "custom",
+      "wasm": "power-equalizer/.dfx/local/canisters/staging/staging.wasm",
+      "candid": "power-equalizer/.dfx/local/canisters/staging/staging.did",
+      "remote": {
+        "id": {
+          "ic": "4ggk4-mqaaa-aaaae-qad6q-cai"
+        }
+      }
+    },
+    "garden": {
+      "type": "custom",
+      "wasm": "garden/.dfx/local/canisters/main/main.wasm",
+      "candid": "garden/.dfx/local/canisters/main/main.did",
+      "remote": {
+        "id": {
+          "ic": "afcvu-dyaaa-aaaap-qboqq-cai"
+        }
+      }
     }
   },
   "defaults": {
@@ -18,5 +58,6 @@
       "packtool": "vessel sources"
     }
   },
+  "dfx": "0.15.0",
   "version": 1
 }

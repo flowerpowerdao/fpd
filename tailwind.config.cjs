@@ -5,7 +5,7 @@ const typography = require("@tailwindcss/typography");
 const config = {
   darkMode: "class",
   mode: "jit",
-  content: ["index.html", "./src/**/*.{html,js,svelte,ts}"],
+  content: ["index.html", "./src/**/*.{html,js,svelte,ts}", "./node_modules/fpdao-ui/**/*"],
   theme: {
     extend: {
       boxShadow: {
